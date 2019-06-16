@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="tipdm-dmserver:war">
-    <output-path>$PROJECT_DIR$/tipdm-server_CE/target</output-path>
-    <root id="archive" name="tipdm-dmserver-v1.0-20190606091317.war">
-      <element id="artifact" artifact-name="tipdm-dmserver:war exploded" />
-    </root>
-  </artifact>
-</component>

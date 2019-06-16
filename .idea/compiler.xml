@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <annotationProcessing>
-      <profile name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <module name="framework-common" />
-        <module name="framework-model" />
-        <module name="framework-persist" />
-        <module name="framework-service" />
-        <module name="tipdm-dmserver" />
-      </profile>
-    </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
-      <module name="framework-common" target="1.8" />
-      <module name="framework-model" target="1.8" />
-      <module name="framework-persist" target="1.8" />
-      <module name="framework-service" target="1.8" />
-      <module name="tipdm-dmserver" target="1.8" />
-      <module name="tipdmframework-root" target="1.8" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>

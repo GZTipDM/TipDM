@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/backend/tipdm-server/lib/icb-utils.jar!/" />
+      <root url="jar://$PROJECT_DIR$/backend/tipdm-server/lib/feature-stats-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/backend/tipdm-server/lib/datax-core-0.0.1-SNAPSHOT.jar!/" />
+      <root url="jar://$PROJECT_DIR$/backend/tipdm-server/lib/datax-common-0.0.1-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
