@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+echo -------------------------------------------
+echo start server
+echo -------------------------------------------
+
+# 设置项目代码路径
+export WEB_ROOT="/Users/zhoulong/Documents/Work/code/TipDM/dmServer/tipdm-server_RB/target/tipdm-dmserver-build"
+
+#验证项目代码路径
+if [ ! -d $WEB_ROOT ]; then
+  echo "$WEB_ROOT No such file or directory"
+  exit
+fi
+
+# 设置上下文, 默认“dmserver”
+export CONTEXT_PATH="dmserver"
+
+# 设置端口号, 如果不设置则默认端口号：8088
+export PORT=8088
+
+# 设置依赖路径
+export CLASSPATH="$WEB_ROOT/WEB-INF/classes:$WEB_ROOT/WEB-INF/lib/*"
+
+# java可执行文件位置
+export _EXECJAVA="$JAVA_HOME/bin/java"
+
+# JVM启动参数，内存设置
+export JAVA_OPTS="-agentlib:decrypt -server -Xms1024m -Xmx2048m -XX:MaxDirectMemorySize=128m -Dfile.encoding=UTF-8"
+
+# 服务端端口、上下文、项目根配置
+export SERVER_INFO="-Dserver.port=$PORT -Dserver.contextPath=$CONTEXT_PATH -Dserver.docBase=$WEB_ROOT"
+
+# 设置启动类
+export MAIN_CLASS=com.tipdm.framework.launch.Bootstrap
+
+# 启动Tomcat
+$_EXECJAVA $JAVA_OPTS -classpath $CLASSPATH $SERVER_INFO $MAIN_CLASS &
+
+echo "log file stored on this path => $WEB_ROOT/WEB-INF/classes/sysconfig/system.properties[LOG_HOME]"

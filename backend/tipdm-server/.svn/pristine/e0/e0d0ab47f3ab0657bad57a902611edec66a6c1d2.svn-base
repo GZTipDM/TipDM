@@ -1,0 +1,54 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+       default-lazy-init="true">
+
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 线程池维护线程的最小数量-->
+        <property name="corePoolSize" value="${quartz.corePoolSize}" />
+        <!-- 线程池维护线程的最大数量-->
+        <property name="maxPoolSize" value="${quartz.maxPoolSize}" />
+        <!-- 闲置线程的最大存活时长，单位:秒-->
+        <property name="keepAliveSeconds" value="${quartz.keepAliveSeconds}"/>
+        <!-- 缓冲队列的大小-->
+        <property name="queueCapacity" value="${quartz.queueCapacity}" />
+    </bean>
+
+    <bean id="schedulerListener" class="com.tipdm.framework.dmserver.core.task.listener.SchedulerListener"/>
+    <!-- quartz持久化存储  -->
+    <bean name="quartzScheduler" id="scheduler"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!--<property name="dataSource" ref="dataSource"></property>-->
+        <!-- 使用Spring线程池-->
+        <property name="taskExecutor" ref="taskExecutor"/>
+        <!--<property name="transactionManager" ref="transactionManager">-->
+        <!--</property>-->
+        <!-- 延迟15秒启动Scheduler -->
+        <property name="startupDelay" value="15"></property>
+        <property name="jobFactory">
+            <bean class="com.tipdm.framework.dmserver.core.task.SpringBeanJobFactory" />
+        </property>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext" />
+        <property name="configLocation" value="classpath:sysconfig/quartz.properties" />
+        <property name="schedulerListeners">
+            <list>
+                <ref bean="schedulerListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="workFlowScheduler" class="com.tipdm.framework.dmserver.core.task.schedule.WorkFlowScheduler">
+        <property name="scheduler" ref="scheduler"/>
+    </bean>
+
+</beans>

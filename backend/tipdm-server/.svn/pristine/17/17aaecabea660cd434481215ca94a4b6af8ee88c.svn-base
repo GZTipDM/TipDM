@@ -1,0 +1,211 @@
+package com.tipdm.framework.model.dmserver;
+
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.dmserver.core.task.schedule.TaskState;
+import com.tipdm.framework.dmserver.task.job.ProjectJobBean;
+import com.tipdm.framework.dmserver.task.job.SyncDataJobBean;
+import com.tipdm.framework.model.IdEntity;
+import com.tipdm.framework.persist.datatype.JsonType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import org.hibernate.type.TextType;
+
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+@Table(name = "dm_task", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "creator_id"})})//唯一约束
+@TypeDefs({@TypeDef(name = "json", typeClass = JsonType.class), @TypeDef(name = "text", typeClass = TextType.class)})
+public class Task extends IdEntity<Long> {
+
+    private static final long serialVersionUID = 1379568999461418536L;
+
+    @JsonIgnore
+    @Column(name = "task_group", length = 128, nullable = false)
+    private String taskGroup = "TipDM-Task-Group";//任务组
+
+    @Column(name = "name", length = 128, nullable = false)
+    private String name;//任务名称
+
+    @Column(name = "expression", length = 128, nullable = false)
+    private String expression;//表达式
+
+    @Column(name = "status")
+    @Enumerated()
+    private TaskState status = TaskState.INIT;
+
+    @Column(name = "description")
+    @Type(type = "text")
+    private String description;//任务描述
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "next_Fire_time")
+    private Date nextFireTime;//下次触发时间
+
+    @Enumerated
+    @Column(name = "task_type")
+    private TaskType taskType = TaskType.DATASOURCE;
+
+    @Column(name = "dependent_task_id")
+    private Long dependentTaskId;
+
+    @Enumerated
+    @Column(name = "dependent_mode")
+    private DependentMode dependentMode = DependentMode.AFTER;
+
+    @Column(name = "instance_id")
+    private Long instanceId;
+
+    @JsonIgnore
+    @Transient
+    private Class taskClass;
+
+    @JsonIgnore
+    @Transient
+    private Boolean abortAfterFinished = Boolean.FALSE;//执行完成后不再继续（忽略子任务）
+
+    @Transient
+    private String instanceName;
+
+    @Transient
+    private String dependentTaskName;
+
+    @Transient
+    private Boolean hasDepend = Boolean.FALSE;
+
+    public String getTaskGroup() {
+        return this.taskGroup + "-" + this.getId();
+    }
+
+    public void setTaskGroup(String taskGroup) {
+//        this.taskGroup = taskGroup;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+
+    public TaskState getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskState status) {
+        this.status = status;
+    }
+
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
+    }
+
+    public Long getDependentTaskId() {
+        return dependentTaskId;
+    }
+
+    public void setDependentTaskId(Long dependentTaskId) {
+        this.dependentTaskId = dependentTaskId;
+    }
+
+    public DependentMode getDependentMode() {
+        return dependentMode;
+    }
+
+    public void setDependentMode(DependentMode dependentMode) {
+        this.dependentMode = dependentMode;
+    }
+
+    public Date getNextFireTime() {
+        return nextFireTime;
+    }
+
+    public void setNextFireTime(Date nextFireTime) {
+        this.nextFireTime = nextFireTime;
+    }
+
+    public Long getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(Long instanceId) {
+        this.instanceId = instanceId;
+    }
+
+ /*   public Date getPreFireTime() {
+        return preFireTime;
+    }
+
+    public void setPreFireTime(Date preFireTime) {
+        this.preFireTime = preFireTime;
+    }*/
+
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
+    }
+
+    public String getDependentTaskName() {
+        return dependentTaskName;
+    }
+
+    public void setDependentTaskName(String dependentTaskName) {
+        this.dependentTaskName = dependentTaskName;
+    }
+
+    public Boolean getHasDepend() {
+        if(this.dependentTaskId != null){
+           this.hasDepend = Boolean.TRUE;
+        }
+        return this.hasDepend;
+    }
+
+    public Class getTaskClass() {
+        if (taskType == TaskType.DATASOURCE) {
+            return SyncDataJobBean.class;
+        } else {
+            return ProjectJobBean.class;
+        }
+    }
+
+    public Boolean getAbortAfterFinished() {
+        return abortAfterFinished;
+    }
+
+    public void setAbortAfterFinished(Boolean abortAfterFinished) {
+        this.abortAfterFinished = abortAfterFinished;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
+}

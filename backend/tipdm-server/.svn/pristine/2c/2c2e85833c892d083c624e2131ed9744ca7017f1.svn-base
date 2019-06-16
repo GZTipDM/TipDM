@@ -1,0 +1,98 @@
+
+package com.tipdm.license.util;
+
+import com.tipdm.license.License;
+import com.tipdm.license.SecretKeyKit;
+import com.tipdm.securetoken.MachineInfo;
+import com.tipdm.securetoken.Tokenizer;
+import de.schlichtherle.license.LicenseContentException;
+
+
+public class LicenseModel {
+	
+	private String machineCode;
+	
+//	private String menus;
+	
+	private String version = "basic";
+	
+//	private int allowUserAmount;
+
+	
+	public String getMachineCode() {
+		return machineCode;
+	}
+
+	public void setMachineCode(String machineCode) {
+		this.machineCode = machineCode;
+	}
+	
+//	public String getMenus() {
+//		return menus;
+//	}
+//
+//	public void setMenus(String menus) {
+//		if(StringUtils.isBlank(menus)){
+//			menus = properties.getProperty(this.version+"_menus");
+//		}
+//		this.menus = menus;
+//	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public boolean validate() throws LicenseContentException {
+
+//		File lastUsed = new File(ServletActionContext.getServletContext().getRealPath("/WEB-INF/license"), "sys.lock");
+//
+//		if(!lastUsed.exists()){
+//			return false;
+//		}
+//
+//		Date currentDate = Calendar.getInstance().getTime();
+//		Date date = null;
+//		try {
+//			String tmp = FileUtils.readFileToString(lastUsed);
+//			date = DateUtils.parseDate(StringUtil2.decrypt(StringUtil2.decrypt(tmp)), "yyyy-MM-dd HH:mm:ss");
+//		} catch (Exception e) {
+//
+//		}
+//
+//		if(currentDate.compareTo(date)<1){
+//			throw new LicenseContentException("License验证失败，请校正系统时间后再试！");
+//		}
+
+//		try {
+//			FileUtils.write(lastUsed, StringUtil2.encrypt(StringUtil2.encrypt(DateFormatUtils.format(currentDate, "yyyy-MM-dd HH:mm:ss"))), false);
+//		} catch (IOException e) {
+//		}
+		MachineInfo machineInfo = new MachineInfo();
+		String sn = machineInfo.getSn();
+		String decryptCode = null;
+		try {
+			decryptCode = SecretKeyKit.decrypt(SecretKeyKit.decrypt(machineCode));
+		}catch (Exception ex){
+			ex.printStackTrace();
+			return false;
+		}
+		MachineInfo compare = Tokenizer.objectify(MachineInfo.class, decryptCode, License.SECRET_WORD);
+
+		return sn.equals(compare.getSn());
+	}
+
+//	public int getAllowUserAmount() {
+//		return allowUserAmount;
+//	}
+//
+//	public void setAllowUserAmount(int allowUserAmount) {
+//		if(allowUserAmount == 0){
+//			allowUserAmount = Integer.valueOf(properties.getProperty(this.version+"_userAmount"));
+//		}
+//		this.allowUserAmount = allowUserAmount;
+//	}
+}

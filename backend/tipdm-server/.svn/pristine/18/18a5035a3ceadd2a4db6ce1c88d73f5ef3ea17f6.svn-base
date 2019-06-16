@@ -1,0 +1,60 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="  
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd  
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+	default-lazy-init="true">
+
+	<!--定义服务层代码存放的包扫描路径 -->
+	<context:component-scan base-package="com.tipdm.framework.dmserver.config, com.tipdm.framework.service, com.tipdm.framework.dmserver.task, com.tipdm.framework.dmserver.websocket" />
+
+	<import resource="datasource-config.xml" />
+
+	<!--实体的工厂bean -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="packagesToScan" value="com.tipdm.framework.model" />
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!--<prop key="hibernate.dialect">com.tipdm.framework.persist.dialect.DmPostgreSQL94Dialect</prop>-->
+				<!--<prop key="hibernate.multiTenancy" >SCHEMA</prop>
+				<prop key="hibernate.tenant_identifier_resolver">com.tipdm.framework.multitenancy.SchemaResolver</prop>
+				<prop key="hibernate.multi_tenant_connection_provider">com.tipdm.framework.multitenancy.MultiTenantProvider</prop>-->
+			</props>
+		</property>
+	</bean>
+
+	<bean id="hibernateJpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="databasePlatform">
+			<bean factory-method="getDialect"
+				class="com.tipdm.framework.persist.datasource.Hibernates">
+				<constructor-arg ref="dataSource" />
+			</bean>
+		</property>
+		<property name="showSql" value="false" />
+	</bean>
+
+	<!--事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<!-- repository实现类的后缀 ，有时候spring data的接口不能满足我们的要求，可以自己写实现类 -->
+	<jpa:repositories base-package="com.tipdm.framework.repository"
+		repository-impl-postfix="Impl" entity-manager-factory-ref="entityManagerFactory"
+		/>
+
+	<!--声明采用注解的方式申明事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

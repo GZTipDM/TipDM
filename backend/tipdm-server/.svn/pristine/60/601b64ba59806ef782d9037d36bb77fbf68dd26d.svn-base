@@ -1,0 +1,18 @@
+#
+2017/11/10
+    1、调整algo, task目录结构
+    2、修改pom.xml, 添加Tomcat依赖
+    3、更改打包方式，集成TomcatWeb容器, 打包命令: mvn clean(可选) package -DskipTests=true
+
+2017/11/21
+    1、支持动态添加JDBC数据源支持。
+        添加步骤：
+        a) 拷贝驱动包到%APP_HOME%/WEB_INF/lib
+        b) 修改%APP_HOME%/sysconfig/jdbcSupport.config，新增一项记录，完成相关参数的设置。
+    2、调整/api/datasource/connection/test接口，返回结果新增数据类型
+
+2018/03/01
+    1、新增修改工程描述接口
+    2、修复数据源的字段在预览数据界面跟字段列表不一致的bug
+    3、修复运行流程需要至少1分钟的bug
+    4、修复其他bug

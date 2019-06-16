@@ -1,0 +1,75 @@
+package com.tipdm.framework.dmserver.core.algo.unparallel.listener;
+
+import com.tipdm.framework.dmserver.core.algo.unparallel.executor.ExecutorContext;
+import com.tipdm.framework.dmserver.exception.AlgorithmException;
+import com.tipdm.framework.dmserver.pyserve.PySession;
+import com.tipdm.framework.model.dmserver.Component;
+import com.tipdm.framework.model.dmserver.ComponentIO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Created by TipDM on 2017/6/21.
+ * E-mail:devp@tipdm.com
+ */
+@SuppressWarnings("all")
+public class PyAlgorithmListener implements AlgorithmListener {
+
+    private final Logger logger = LoggerFactory.getLogger(PyAlgorithmListener.class);
+
+    @Override
+    public void init(ExecutorContext executorContext) throws AlgorithmException {
+
+
+    }
+
+    @Override
+    public void wasExecuted(ExecutorContext executorContext, AlgorithmException ex) {
+
+        //接收算法报告 & 保存模型
+        if (null == ex) {
+            PySession session = (PySession) executorContext.getSession();
+            Component component = executorContext.getComponent();
+            //接收报告
+            receiveReport(session, component);
+
+            //保存模型
+            saveModel(session, component);
+        }
+    }
+
+    void receiveReport(PySession session, Component component) {
+
+    }
+
+    void saveModel(PySession session, Component component) {
+        File file = null;
+        try {
+            Map<String, String> params = component.getParameters();
+            if (!params.containsKey("features")) {
+                logger.warn("参数缺失，参数名：{}", "features");
+                return;
+            }
+
+            logger.info("检测算法是否有模型输出");
+            Optional<ComponentIO> optional = component.getOutputs().stream().filter(x -> "model".equals(x.getKey())).findFirst();
+            if (!optional.isPresent()) {
+                logger.info("未能检测到模型相关配置");
+                return;
+            }
+
+
+        } catch (Exception e) {
+            logger.error("保存算法模型出错，错误信息: {}", e.getMessage());
+            if (file != null) {
+                file.delete();
+            }
+        }
+    }
+}

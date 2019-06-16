@@ -1,0 +1,329 @@
+package com.tipdm.framework.controller.dmserver;
+
+import com.tipdm.framework.common.controller.base.BaseController;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
+
+@RestController
+@ApiIgnore
+@RequestMapping("/api/model")
+//@Api(value = "/api/model", position = 1, description = "模型管理")
+@PropertySource(value = "classpath:sysconfig/system.properties")
+public class ModelController extends BaseController{
+/*
+    private final Logger logger = LoggerFactory.getLogger(ModelController.class);
+
+    @Value("${model.dir}")
+    private String modelDir;
+
+    @Autowired
+    private TokenManager tokenManager;
+
+    @Autowired
+    private ModelService modelService;
+
+//    @RequestMapping(value = "/own/list", method = RequestMethod.GET)
+//    @ApiOperation(value = "个人模型列表")
+//    public Result getOwnList(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken) {
+//
+//        Result result = new Result();
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//
+//        List<Model> modelList = modelService.findOwnModels(tokenModel.getUserId());
+//        result.setData(modelList);
+//
+//        result.setStatus(Result.Status.SUCCESS);
+//        return result;
+//    }
+
+    @RequiresPermissions("model:save")
+    @RequestMapping(value = "/{catId}/", method = RequestMethod.POST)
+    @ApiOperation(value = "保存模型", position = 1)
+    public Result save(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                       @ApiParam(value = "模型分类ID", required = true)@PathVariable(name = "catId") Long catId,
+                       @ApiParam(value = "模型", required = true)@RequestBody com.tipdm.framework.controller.dmserver.entity.Model model,
+                       HttpServletRequest request) {
+
+        Result result = new Result();
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+
+        Map<String,Object> map = (Map<String,Object>) RedisUtils.getMap(model.getWorkFlowId());
+        Map<String, Model> models = (Map<String, Model>) map.get("models");
+        Optional<Map.Entry<String, Model>> optional  = models.entrySet().stream().filter(x -> model.getNodeClientId().equals(x.getValue().getNodeId())).findFirst();
+
+        if(!optional.isPresent()){
+            result.setStatus(Result.Status.FAIL);
+            result.setMessage("clientId["+model.getNodeClientId()+"]对应的模型文件不存在");
+            return result;
+        }
+        Model model1 = optional.get().getValue();
+
+//        Long id = modelService.saveModel(model1);
+//        result.setData(id);
+        model1.setModelName(model.getModelName());
+        model1.setCreatorId(tokenModel.getUserId());
+        model1.setReportFile(request.getScheme()+"://" + request.getServerName() + ":" + request.getServerPort() +request.getContextPath() +"/report/"+model1.getReportFile());
+        model1.setParentId(catId);
+        try {
+            Long id = modelService.saveModel(model1);
+            result.setData(id);
+            return result;
+        } catch (Exception ex){
+            logger.error("save model fail, error message: {}", ex);
+            if(ex.getMessage().contains("ConstraintViolationException")) {
+                result.setMessage("模型保存失败，错误信息：模型名称违反唯一约束");
+            } else {
+                result.setMessage(ex.getMessage());
+            }
+            result.setStatus(Result.Status.FAIL);
+            return result;
+        }
+    }
+
+    @RequiresPermissions("model:node")
+    @RequestMapping(value = "/node", method = RequestMethod.POST)
+    @ApiOperation(value = "新增模型分类", position = 2)
+    public Result createDocument(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                                 @ApiParam(value = "新增的节点对象", required = true) @RequestBody TreeNode node,
+                                 HttpServletRequest request) {
+
+        Result result = new Result();
+
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+
+        String docDir = request.getSession().getServletContext().getRealPath("/"+this.modelDir+"/"+tokenModel.getUsername());
+
+        ModelTree modelTree = new ModelTree();
+        BeanUtils.copyProperties(node, modelTree);
+
+        modelTree.setCreatorId(tokenModel.getUserId());
+        modelTree.setCreatorName(tokenModel.getUsername());
+        modelTree.setDelete(Boolean.FALSE);
+        modelTree.setLeaf(Boolean.FALSE);
+
+        Long nodeId = modelService.createNode(modelTree);
+
+        File dir = new File(docDir + "/" + modelService.getRealPathByNodeId(nodeId));
+        dir.mkdirs();
+        result.setMessage("添加节点成功");
+        result.setData(nodeId);
+        return result;
+    }
+
+    @RequiresPermissions("model:list")
+    @RequestMapping(value = "/shared/list", method = RequestMethod.GET)
+    @ApiOperation(value = "分享的模型列表", position = 3)
+    public Result getSharedList(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken) {
+
+        Result result = new Result();
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+
+        List<Model> modelList = modelService.findSharedModels(tokenModel.getUserId());
+        result.setData(modelList);
+        result.setStatus(Result.Status.SUCCESS);
+        return result;
+    }
+
+    @RequiresPermissions("model:child")
+    @RequestMapping(value = "/node/{nodeId}/child", method = RequestMethod.GET)
+    @ApiOperation(value = "获取个人模型列表(懒加载)", position = 4)
+    public Result getChild(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                           @ApiParam(value = "节点Id", required = true) @PathVariable(name = "nodeId") Long nodeId)  {
+        Result result = new Result();
+
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+
+        List<ModelTree> nodeList = modelService.getChild(nodeId, tokenModel.getUserId());
+
+        result.setData(nodeList);
+        result.setMessage("数据加载成功");
+
+        return result;
+    }
+
+    @RequiresPermissions("model:delete")
+    @RequestMapping(value = "/node/{nodeId}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "删除分类/模型", position = 5)
+    public Result delete(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                         @ApiParam(value = "节点Id", required = true) @PathVariable(name = "nodeId") Long nodeId,
+                         HttpServletRequest request) throws IOException {
+        Result result = new Result();
+
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        String docDir = request.getServletContext().getRealPath("/"+this.modelDir+"/"+tokenModel.getUsername());
+        modelService.deleteNode(nodeId, docDir);
+
+        result.setMessage("删除成功");
+        return result;
+    }
+
+    @RequiresPermissions("model:share")
+    @RequestMapping(value = "/{modelId}/share", method = RequestMethod.POST)
+    @ApiOperation(value = "分享模型", position = 6)
+    public Result shareModel(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                       @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+                       @ApiParam(value = "分享的目标用户", allowMultiple = true, required = true)@RequestParam Long[] users) {
+        Result result = new Result();
+
+        if(ArrayUtils.isNotEmpty(users)){
+            modelService.shareModel(modelId, users);
+            result.setMessage("模型分享成功");
+            return result;
+        }
+        result.setMessage("分享的用户不能为空");
+        result.setStatus(Result.Status.FAIL);
+        return result;
+    }
+
+    @RequiresPermissions("model:validate")
+    @RequestMapping(value = "/{modelId}/validate", method = RequestMethod.GET)
+    @ApiOperation(value = "检验模型", notes = "验证模型文件是否存在，是否支持转换成PMML", position = 7)
+    public Result beforeExport(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                                              @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+                                              HttpServletRequest request) {
+        Result result = new Result();
+
+        Model model = modelService.findOne(modelId);
+        if(model == null){
+            result.setMessage("模型不存在或已被删除");
+            result.setStatus(Result.Status.FAIL);
+            return result;
+        }
+
+        if(!model.getModelPath().endsWith(".pmml")){
+            result.setMessage("该模型不支持转换成PMML文件");
+            result.setStatus(Result.Status.FAIL);
+            return result;
+        }
+        return result;
+    }
+
+    @RequiresPermissions("model:pmml")
+    @RequestMapping(value = "/{modelId}/pmml", method = RequestMethod.GET)
+    @ApiOperation(value = "模型导出", notes = "导出模型为PMML文件，导出前先调用validate验证模型", position = 8)
+    public ResponseEntity<byte[]> export2PMML(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                                              @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+                                              HttpServletRequest request) throws Exception {
+
+        Model model = modelService.findOne(modelId);
+        String modelPath = model.getModelPath();
+        File modelFile = new File(RedisUtils.get(Constants.MODEL_DIR, String.class), modelPath);
+
+        byte[] bytes = FileUtils.readFileToByteArray(modelFile);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", URLEncoder.encode(model.getModelName()+".pmml", com.tipdm.framework.common.Constants.CHARACTER));
+        headers.setContentLength(bytes.length);
+        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+    }
+
+    @RequiresPermissions("model:importModel")
+    @RequestMapping(value = "/{catId}/pmml", method = RequestMethod.POST)
+    @ApiOperation(value = "导入模型", notes = "支持导入PMML version 3.0+的分类/回归模型", position = 9)
+    public Result importModel(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+                              @ApiParam(value = "模型分类ID", required = true)@PathVariable(name = "catId") Long catId,
+                              @ApiParam(value = "模型名称", required = true, name = "modelName") @RequestPart(required = false, name = "modelName") String modelName,
+                              @ApiParam(value = "PMML文件", required = true) @RequestBody MultipartFile pmmlFile,
+                              MultipartHttpServletRequest request) throws Exception {
+
+        Result result = new Result();
+        if(StringKit.isNotBlank(request.getParameter("modelName"))){
+            modelName = request.getParameter("modelName");
+        } else {
+            throw new MissingServletRequestPartException("Required request part 'modelName' is not present");
+        }
+
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        String modelDir = request.getSession().getServletContext().getRealPath("/"+this.modelDir + "/" + tokenModel.getUsername());
+        File dir = new File(modelDir);
+        if(!dir.exists()){
+            dir.mkdir();
+        }
+
+        String fileName = StringKit.replace(UUID.randomUUID().toString(), "-", "") + ".pmml";
+        File file = new File(dir, fileName);
+        if(file.exists()){
+            file.delete();
+        }
+        pmmlFile.transferTo(file);
+        file.createNewFile();
+
+        PMML pmml = org.jpmml.model.PMMLUtil.unmarshal(new FileInputStream(file));
+        ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+
+        ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+        Evaluator evaluator = (Evaluator)modelEvaluator;
+        List<InputField> inputFields = evaluator.getInputFields();
+        List<TargetField> targetFields = evaluator.getTargetFields();
+
+        List<LinkedHashMap<String, String>> features = new ArrayList<>();
+        for(InputField inputField : inputFields){
+            org.dmg.pmml.DataField pmmlDataField = (org.dmg.pmml.DataField)inputField.getField();
+            org.dmg.pmml.MiningField pmmlMiningField = inputField.getMiningField();
+
+            String fieldName = inputField.getName().getValue();
+            org.dmg.pmml.DataType dataType = inputField.getDataType();
+
+            LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+            linkedHashMap.put("name",fieldName);
+            linkedHashMap.put("datatype",dataType.value());
+            features.add(linkedHashMap);
+//            org.dmg.pmml.OpType opType = inputField.getOpType();
+//
+//            switch(opType){
+//                case CONTINUOUS:
+//                    RangeSet<Double> validArgumentRanges = FieldValueUtil.getValidRanges(pmmlDataField);
+//                    break;
+//                case CATEGORICAL:
+//                case ORDINAL:
+//                    List<org.dmg.pmml.Value> validArgumentValues = FieldValueUtil.getValidValues(pmmlDataField);
+//                    break;
+//                default:
+//                    break;
+//            }
+        }
+
+        List<LinkedHashMap<String, String>> label = new ArrayList<>();
+        for(TargetField targetField : targetFields){
+            org.dmg.pmml.DataField dataField = (org.dmg.pmml.DataField)targetField.getDataField();
+            if(dataField == null || dataField.getName() == null){
+                continue;
+            }
+            String fieldName = dataField.getName().getValue();
+            org.dmg.pmml.DataType dataType = dataField.getDataType();
+
+            LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+            linkedHashMap.put("name",fieldName);
+            linkedHashMap.put("datatype",dataType.value());
+
+            label.add(linkedHashMap);
+        }
+
+//        Map<FieldName, FieldValue> arguments = new LinkedHashMap<FieldName, FieldValue>();
+//        List<InputField> activeFields = evaluator.getActiveFields();
+//        for(InputField activeField : activeFields){
+//            Object userValue = arguments.get(activeField.getField());
+//            FieldValue pmmlValue = evaluator.prepare(activeField, (userValue != null ? userValue.toString() : null));
+//            arguments.put(activeField, pmmlValue);
+//        }
+
+        Model model = new Model();
+        model.setModelPath(fileName);
+        model.setCreatorName(tokenModel.getUsername());
+        model.setCreatorId(tokenModel.getUserId());
+        model.setModelName(modelName);
+        model.setParentId(catId);
+        model.setInfo(evaluator.getSummary());
+        model.setFeatures(JSON.toJSONString(features));
+        model.setLabel(JSON.toJSONString(label));
+//        model.setAlgorithmName(pmml.getModels().get(0).getAlgorithmName());
+//        model.setAlgorithmName("test");
+        Long id = modelService.saveModel(model);
+        result.setData(id);
+        return result;
+    }
+        */
+}

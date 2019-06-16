@@ -1,0 +1,19 @@
+package com.tipdm.framework.repository.dmserver.impl;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+/**
+ * Created by zhoulong on 2016/12/15.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class DBConnectionRepositoryImpl {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
+
+}

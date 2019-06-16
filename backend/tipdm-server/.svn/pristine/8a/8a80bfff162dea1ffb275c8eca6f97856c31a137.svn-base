@@ -1,0 +1,149 @@
+package com.tipdm.framework.service.dmserver.impl;
+
+import com.tipdm.framework.dmserver.exception.ElementNotFoundException;
+import com.tipdm.framework.model.dmserver.Component;
+import com.tipdm.framework.model.dmserver.Widget;
+import com.tipdm.framework.repository.dmserver.ComponentRepository;
+import com.tipdm.framework.repository.dmserver.ElementRepository;
+import com.tipdm.framework.repository.dmserver.WidgetRepository;
+import com.tipdm.framework.service.AbstractBaseServiceImpl;
+import com.tipdm.framework.service.dmserver.ComponentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Calendar;
+import java.util.List;
+import java.util.stream.IntStream;
+
+/**
+ * Created by zhoulong on 2017/1/3.
+ * E-mail:zhoulong8513@gmail.com
+ */
+@Transactional
+@Service("componentService")
+public class ComponentServiceImpl extends AbstractBaseServiceImpl<Component, Long> implements ComponentService {
+
+    @Autowired
+    private ComponentRepository componentRepository;
+
+    @Autowired
+    private ElementRepository elementRepository;
+
+    @Autowired
+    private WidgetRepository widgetRepository;
+
+    @Override
+    public List<Component> findChild(Long parentId, Boolean inBuilt) {
+        List<Component> components = componentRepository.findByParentId(parentId, inBuilt);
+        long count = components.stream().filter(x -> x.getSequence() == null || x.getSequence() < 0).count();//统计排序值为null的组件
+        if(count > 0){
+            IntStream.range(0, components.size()).forEach(index -> {
+                components.get(index).setSequence(index);
+            });
+        }
+        return components;
+    }
+
+    @Override
+    public List<Component> findChild(Long parentId,Long creatorId) {
+
+        List<Component> components = componentRepository.findByParentId(parentId, true);
+        long count = components.stream().filter(x -> x.getSequence() == null || x.getSequence() < 0).count();//统计排序值为null的组件
+        if(count > 0){
+            IntStream.range(0, components.size()).forEach(index -> {
+                components.get(index).setSequence(index);
+            });
+        }
+        return components;
+    }
+
+    @Override
+    public List<Component> findAllInBuiltComponent() {
+        return componentRepository.findByInBuiltTrue();
+    }
+
+
+    @Override
+    public void update(Long id, Component component) {
+        component.setId(id);
+        component.setUpdateTime(Calendar.getInstance().getTime());
+        componentRepository.merge(component);
+    }
+
+    @Transactional
+    @Override
+    public void modifyCatName(Long catId, String catName) {
+        Component component = componentRepository.findOne(catId);
+        if(component == null){
+            throw new ElementNotFoundException("组件分类不存在");
+        }
+        component.setName(catName);
+    }
+
+    @Override
+    public void deleteElement(Long eleId) {
+        elementRepository.delete(eleId);
+    }
+
+    @Override
+    public List<Widget> findWidgetList() {
+
+        Specification<Widget> specification = new Specification<Widget>(){
+            @Override
+            public Predicate toPredicate(Root<Widget> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                return null;
+            }
+        };
+        return widgetRepository.findAll(specification);
+    }
+
+    @Override
+    public void saveWidget(Widget widget) {
+
+        widgetRepository.save(widget);
+    }
+
+    @Transactional
+    @Override
+    public void save(Component component) {
+        List<Component> list = componentRepository.findByParentId(component.getParentId(), true);//保存的时候有几条
+        component.setSequence(list.size());
+        componentRepository.save(component);
+    }
+
+    @Override
+    public Integer updateOrder(Long componentId,String order){
+        //该方法只能实现固定sequence的排序，必须从0开始到N不隔断的数字
+        Component com = componentRepository.findOne(componentId);
+        if(com.getSequence() == null){
+            com.setSequence(0);//如果数据库的数据初始值为空，改为0
+            return 0;
+        }
+
+        List<Component> child = componentRepository.findByParentId(com.getParentId(), true);//根据父节点的ID，获取该父节点下所有子节点
+        Integer sequence = com.getSequence();//取得所点击的节点序列
+        if("up".equals(order)){//判断是上移
+            if(sequence == 0){
+                return sequence;//如果已经是0，已是最大不可移
+            }
+            Component pre = child.get(sequence-1);//取所点击的节点上一个数据(序列必须是0-N 不隔断的)
+            com.setSequence(sequence-1);//上移为本身序列减1
+            pre.setSequence(sequence);//修改所点击的节点的上一级数据序列,把点击上移数据的序列与上级替换
+        } else {
+            if(sequence == child.size()-1){//已是最底下不可移
+                return sequence;
+            }
+            Component next = child.get(sequence+1);//取所点击的节点下一个数据(序列必须是0-N 不隔断的)
+            next.setSequence(sequence);//修改所点击的节点的下一级数据序列,把点击下移数据的序列与下级替换
+            com.setSequence(sequence+1);//下移为本身序列加1
+        }
+        com.setUpdateTime(Calendar.getInstance().getTime());//修改时间
+        return com.getSequence();
+    }
+}

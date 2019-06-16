@@ -1,0 +1,16 @@
+[
+    {
+        connectionUrlPrefix: "jdbc:mysql:",
+        driverClass: "com.mysql.jdbc.Driver",
+        pageSQL: "select * from {{table}} limit 100",
+        jarFileName: "mysql-connector-java-5.1.22.jar",
+        reader: "mysqlreader"
+    },
+    {
+        connectionUrlPrefix: "jdbc:postgresql:",
+        driverClass: "org.postgresql.Driver",
+        pageSQL: "select * from {{table}} limit 100",
+        jarFileName: "postgresql-9.4.1211.jar",
+        reader: "postgresqlreader"
+    }
+]

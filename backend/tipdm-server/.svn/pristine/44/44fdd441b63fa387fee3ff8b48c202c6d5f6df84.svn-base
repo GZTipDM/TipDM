@@ -1,0 +1,16 @@
+package com.tipdm.license;
+
+/**
+ * Created by zhoulong on 2017/8/24.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class GenerateMachineCodeException extends Exception{
+
+    public GenerateMachineCodeException(String message) {
+        super(message);
+    }
+
+    public GenerateMachineCodeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

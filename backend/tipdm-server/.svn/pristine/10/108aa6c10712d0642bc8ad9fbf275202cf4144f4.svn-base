@@ -1,0 +1,19 @@
+package com.tipdm.framework.dmserver;
+
+
+/**
+ * Created by zhoulong on 2017/5/26.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class JMustacheTest {
+
+    static
+    public void main(String[] args){
+//        String text = "One, two, {{three}}. Three sir!";
+//        Template tmpl = Mustache.compiler().compile(text);
+//        Map<String, String> data = new HashMap<String, String>();
+//        data.put("three", "five");
+//        data.put("four", "four");
+//        System.out.println(tmpl.execute(data));
+    }
+}

@@ -1,0 +1,13 @@
+package com.tipdm.framework.dmserver.core.task.schedule;
+
+/**
+ * Created by zhoulong on 2017/1/10.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public enum JobState{
+    INIT,
+    RUNNING,
+    COMPLETE,
+    ERROR,
+    ABORT
+}

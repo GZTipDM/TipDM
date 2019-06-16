@@ -1,0 +1,293 @@
+package com.tipdm.framework.dmserver.core.task.schedule;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.dmserver.core.task.model.Job;
+import com.tipdm.framework.dmserver.core.task.model.Link;
+import com.tipdm.framework.dmserver.core.task.model.Node;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+/**
+ * @author zhoulong E-mail:devp@tipdm.com
+ * @version 创建时间：2016年11月7日 下午2:42:26
+ * 类说明
+ */
+//@REntity
+public class WorkFlow implements Serializable {
+
+    private final static Logger logger = LoggerFactory.getLogger(WorkFlow.class);
+
+//    @RId
+    private String id;
+
+    private String creator;
+
+    private String content;//流程图内容
+
+//    private String nodeId;
+
+    private Command command = Command.STARTALL;
+
+    private List<Node> nodes;//节点
+
+    private List<Link> links;//连接
+
+    private Map<String, Job> jobMap = new ConcurrentHashMap<>();
+
+    private List<Job> userTableJobs;
+
+    private AtomicInteger successNodes = new AtomicInteger(0);
+
+    private AtomicEnum<WorkFlowState> state = new AtomicEnum<WorkFlowState>(WorkFlowState.INIT);
+
+//    private List<String> runningJobs = new CopyOnWriteArrayList<>();
+
+//    public WorkFlow(){
+//
+//    }
+
+    public WorkFlow(String creator, String workFlowJSONContent){
+        this.creator = creator;
+        this.id = StringKit.getBase64FromUUID();
+        this.content = workFlowJSONContent;
+        parseFlowJSON();
+    }
+
+    public WorkFlow(String id, String creator, String workFlowJSONContent){
+        this.creator = creator;
+        this.id = id;
+        this.content = workFlowJSONContent;
+        parseFlowJSON();
+    }
+
+    public WorkFlow(String id, String creator, String workFlowJSONContent, String nodeId, Command command){
+        this.creator = creator;
+        this.id = id;
+        this.content = workFlowJSONContent;
+        this.command = command;
+        parseFlowJSON(nodeId, command);
+    }
+
+    /**
+     * 解析工作流
+     */
+    private void parseFlowJSON(){
+
+        userTableJobs = new ArrayList<>();
+        JSONObject jsonObject = JSONObject.parseObject(content);
+        this.nodes = JSON.parseArray(jsonObject.getString("nodes"), Node.class);
+        this.links = JSON.parseArray(jsonObject.getString("links"), Link.class);
+
+        for(Node node : this.nodes){
+            Job job = new Job();
+            job.setJobId(node.getId());
+            job.setJobName(node.getId());
+            job.setJobGroup(this.id);
+//            job.setWorkFlow(this);
+            job.setTargetClazz(node.getTargetAlgorithm());
+            job.addParameter("component", node, this);
+            jobMap.put(node.getId(), job);
+
+            //节点是userTable(没有输入)
+            if(CollectionUtils.isEmpty(node.getInputs())){
+                userTableJobs.add(job);
+            }
+        }
+
+        for(Job job : jobMap.values()){
+
+            Set<String> preJobs = this.links.stream().filter(x -> x.getTarget().equals(job.getJobId())).map(Link::getSource).collect(Collectors.toSet());
+
+            for(String jobId : preJobs){
+                job.addPreJob(jobMap.get(jobId));
+            }
+
+            Set<String> afterJobs = this.links.stream().filter(x -> x.getSource().equals(job.getJobId())).map(Link::getTarget).collect(Collectors.toSet());
+
+            for(String jobId : afterJobs){
+                job.addAfterJob(jobMap.get(jobId));
+            }
+        }
+    }
+
+
+    /**
+     * 解析工作流
+     */
+    private void parseFlowJSON(String nodeId, Command command){
+        userTableJobs = new ArrayList<>();
+        JSONObject jsonObject = JSONObject.parseObject(content);
+        this.nodes = JSON.parseArray(jsonObject.getString("nodes"), Node.class);
+        this.links = JSON.parseArray(jsonObject.getString("links"), Link.class);
+
+        if(command == Command.ONLY){
+            for(Node node : this.nodes){
+                if(node.getId().equals(nodeId)){
+                    Job job = new Job();
+                    job.setJobId(node.getId());
+                    job.setJobName(node.getId());
+                    job.setJobGroup(this.id);
+//                    job.setWorkFlow(this);
+                    job.setTargetClazz(node.getTargetAlgorithm());
+                    job.addParameter("component", node, this);
+                    job.setEndedNode(true);
+                    jobMap.put(node.getId(), job);
+                    userTableJobs.add(job);
+                    break;
+                }
+            }
+            return;
+        } else if(command == Command.STARTAT){
+            for(Node node : this.nodes){
+                Job job = new Job();
+                job.setJobId(node.getId());
+                job.setJobName(node.getId());
+                job.setJobGroup(this.id);
+//                job.setWorkFlow(this);
+                job.setTargetClazz(node.getTargetAlgorithm());
+                job.addParameter("component", node, this);
+
+                jobMap.put(node.getId(), job);
+                if(node.getId().equals(nodeId)){
+                    userTableJobs.add(job);
+                }
+            }
+        } else if(command == Command.ENDAT){
+            for(Node node : this.nodes){
+                Job job = new Job();
+                job.setJobId(node.getId());
+                job.setJobName(node.getId());
+                job.setJobGroup(this.id);
+//                job.setWorkFlow(this);
+                job.addParameter("component", node, this);
+                job.setTargetClazz(node.getTargetAlgorithm());
+                jobMap.put(node.getId(), job);
+
+                //节点是userTable(没有输入)
+                if(CollectionUtils.isEmpty(node.getInputs())){
+                    userTableJobs.add(job);
+                }
+
+                if(node.getId().equals(nodeId)){
+                    job.setEndedNode(true);
+                }
+            }
+        }
+
+        for(Job job : jobMap.values()){
+
+            if(!(job.getJobId().equals(nodeId) && command == Command.STARTAT)) {
+                Set<String> preJobs = this.links.stream().filter(x -> x.getTarget().equals(job.getJobId())).map(Link::getSource).collect(Collectors.toSet());
+
+                for (String jobId : preJobs) {
+                    job.addPreJob(jobMap.get(jobId));
+                }
+            }
+            Set<String> afterJobs = this.links.stream().filter(x -> x.getSource().equals(job.getJobId())).map(Link::getTarget).collect(Collectors.toSet());
+
+            for(String jobId : afterJobs){
+                job.addAfterJob(jobMap.get(jobId));
+            }
+        }
+    }
+
+
+    public String getOriginalJSON(){
+        return this.content;
+    }
+
+//    public void setId(String id){
+//        this.id = id;
+//    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<Job> getStartNodes() {
+        return userTableJobs;
+    }
+
+
+//    public Map<String, Job> getJobMap() {
+//        return jobMap;
+//    }
+    public Job getJob(String jobId){
+        return jobMap.get(jobId);
+    }
+    public WorkFlowState getState(){
+        return this.state.get();
+    }
+
+    public void updateState(final WorkFlowState state){
+        this.state.getAndSet(state);
+    }
+
+    public List<Link> getLinks(){
+        return this.links;
+    }
+
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
+    public synchronized void increment(){
+        this.successNodes.getAndIncrement();
+        logger.info("node count:{}, 当前已经执行{}个", nodes.size(), successNodes.get());
+//        if(this.flag == Flag.ONLY){
+//            this.state.getAndSet(WorkFlowState.COMPLETE);
+//            return;
+//        }
+//
+//        if(this.successNodes.get() == this.nodes.size()){
+//            this.state.getAndSet(WorkFlowState.COMPLETE);
+//        }
+    }
+
+//    public List<String> getRunningJobs(){
+//        return this.runningJobs;
+//    }
+//
+//    public void addRunningJob(Job job){
+//        if(null != job && !runningJobs.contains(job.getJobId())) {
+//            this.runningJobs.add(job.getJobId());
+//            //
+//            for(String jobId : job.getPreJobs()){
+//                Job preJob = getJob(jobId);
+//                if(preJob.getState().get() != JobState.RUNNING){
+//                    this.removeJobFromRunningJobs(preJob);
+//                }
+//            }
+//        }
+//    }
+//
+//    public void removeJobFromRunningJobs(Job job){
+//        try {
+//            this.runningJobs.remove(job.getJobId());
+//        } catch (Exception ex){
+//            logger.warn(ex.getMessage());
+//        }
+//    }
+//
+//    public synchronized boolean hasRunningJob(){
+//        System.out.println("当前运行的job数量:" + runningJobs.size());
+//        return CollectionUtils.isNotEmpty(this.runningJobs);
+//    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+}

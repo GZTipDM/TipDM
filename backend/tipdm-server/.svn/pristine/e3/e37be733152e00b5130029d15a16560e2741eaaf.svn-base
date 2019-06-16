@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property resource="sysconfig/system.properties" />
+
+    <conversionRule conversionWord="startTag"
+                    converterClass="com.tipdm.framework.dmserver.core.algo.log.StartTagConverter" />
+
+    <conversionRule conversionWord="endTag"
+                    converterClass="com.tipdm.framework.dmserver.core.algo.log.EndTagConverter" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" charset="UTF-8">
+            <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{80} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MAIN-INFO"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/dmserver-info.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxHistory>${log.maxHistory}</maxHistory>
+            <maxFileSize>${log.maxFileSize}</maxFileSize>
+            <totalSizeCap>${log.totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
+        <encoder charset="UTF-8">
+            <pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MAIN-ERROR"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/dmserver-error.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxHistory>${log.maxHistory}</maxHistory>
+            <maxFileSize>${log.maxFileSize}</maxFileSize>
+            <totalSizeCap>${log.totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+
+        <encoder charset="UTF-8">
+            <pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ALGO"
+              class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>component</key>
+            <defaultValue>10086</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${component}"
+                      class="ch.qos.logback.core.FileAppender">
+
+                <file>${LOG_HOME}/${component}.log</file>
+                <append>false</append>
+                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" charset="UTF-8">
+                    <Pattern>
+                        %startTag %d{yyyy-MM-dd HH:mm:ss} %level %logger{35} - %msg%endTag%n
+                    </Pattern>
+                </encoder>
+
+            </appender>
+        </sift>
+    </appender>
+
+
+    <logger name="com.tipdm.framework.dmserver.core.algo" additivity="false" leave="INFO" >
+        <appender-ref ref="ALGO" />
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="com.tipdm.framework.dmserver.task.job" additivity="false" leave="INFO" >
+        <appender-ref ref="ALGO" />
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="com.tipdm.framework.dmserver.core.scheduling" additivity="false" leave="INFO" >
+        <appender-ref ref="ALGO" />
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="com.tipdm.framework.dmserver.rserve" additivity="false" leave="INFO" >
+        <appender-ref ref="ALGO" />
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="MAIN-INFO" />
+        <appender-ref ref="MAIN-ERROR" />
+    </root>
+</configuration>

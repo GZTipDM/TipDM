@@ -1,0 +1,15 @@
+#hive use hive server2 connection
+hive.driver=org.apache.hive.jdbc.HiveDriver
+hive.url=jdbc:hive2://192.168.0.77:10000/default
+hive.username=hive
+hive.password=hive
+#hive no password
+hive.useOrNot = false
+
+hive.default.db=default
+
+# hive  warehouse
+hive.warehouse=/user/hive/warehouse
+
+
+hbase.resolve.new_energy=false

@@ -1,0 +1,121 @@
+package org.springframework.scheduling.quartz;
+
+import com.tipdm.framework.common.utils.RedisUtils;
+import com.tipdm.framework.common.utils.SpringUtils;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.dmserver.core.algo.log.LogAppender;
+import com.tipdm.framework.dmserver.core.task.schedule.JobCallback;
+import com.tipdm.framework.dmserver.core.task.schedule.JobState;
+import com.tipdm.framework.dmserver.core.task.schedule.WorkFlowScheduler;
+import com.tipdm.framework.dmserver.websocket.MessageServer;
+import com.tipdm.framework.dmserver.websocket.workflow.WorkFlowMessage;
+import org.apache.commons.lang3.ThreadUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.quartz.JobKey;
+import org.quartz.SchedulerConfigException;
+import org.quartz.core.JobRunShell;
+import org.quartz.impl.JobExecutionContextImpl;
+import org.quartz.spi.ThreadPool;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+
+/**
+ * Created by TipDM on 2018/1/8.
+ * E-mail:devp@tipdm.com
+ */
+public class LocalTaskExecutorThreadPool implements ThreadPool {
+
+    /**
+     * Logger available to subclasses
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
+
+    private Executor taskExecutor;
+
+    //    private WorkFlowWebSocketHandler workFlowWebSocketHandler = SpringUtils.getBean("workFlowWebSocketHandler", WorkFlowWebSocketHandler.class);
+    private MessageServer messageServer = SpringUtils.getBean("messageServer", MessageServer.class);
+
+    @Override
+    public void setInstanceId(String schedInstId) {
+    }
+
+    @Override
+    public void setInstanceName(String schedName) {
+    }
+
+
+    @Override
+    public void initialize() throws SchedulerConfigException {
+        // Absolutely needs thread-bound TaskExecutor to initialize.
+        this.taskExecutor = SchedulerFactoryBean.getConfigTimeTaskExecutor();
+        if (this.taskExecutor == null) {
+            throw new SchedulerConfigException(
+                    "No local TaskExecutor found for configuration - " +
+                            "'taskExecutor' property must be set on SchedulerFactoryBean");
+        }
+    }
+
+    @Override
+    public void shutdown(boolean waitForJobsToComplete) {
+    }
+
+    @Override
+    public int getPoolSize() {
+        return -1;
+    }
+
+
+    @Override
+    public boolean runInThread(Runnable runnable) {
+        if (runnable == null) {
+            return false;
+        }
+
+        JobRunShell shell = (JobRunShell) runnable;
+        Field field = ReflectionUtils.findField(JobRunShell.class, "jec");
+        ReflectionUtils.makeAccessible(field);
+        JobExecutionContextImpl jobExecutionContext = (JobExecutionContextImpl) ReflectionUtils.getField(field, shell);
+        JobKey jobKey = jobExecutionContext.getJobDetail().getKey();
+
+        JobCallback jobCallback = null;
+        String val = RedisUtils.get("@flow:" + jobKey.getGroup(), String.class);
+        if(StringKit.isNotBlank(val)){
+            long threadId = Long.valueOf(val);
+            jobCallback = (JobCallback) ThreadUtils.findThreadById(threadId, WorkFlowScheduler.jobCallbackGroup);
+        }
+
+        try {
+            this.taskExecutor.execute(runnable);
+            if(null != jobCallback) {
+                jobCallback.addJob(jobKey.getName());
+            }
+            return true;
+        } catch (RejectedExecutionException ex) {
+            logger.error("Task has been rejected by TaskExecutor");
+            if(null != jobCallback) {
+                jobCallback.removeJob(jobKey.getName());
+            }
+            WorkFlowMessage message = new WorkFlowMessage();
+            message.setNodeId(jobKey.getName());
+            message.setState(JobState.ERROR);
+            messageServer.notify(jobKey.getGroup(), message);
+            LogAppender.error(jobKey.getName(), "队列已达到上限，任务提交失败，请联系管理员");
+            return false;
+        }
+    }
+
+    @Override
+    public int blockForAvailableThreads() {
+        // The present implementation always returns 1, making Quartz
+        // always schedule any tasks that it feels like scheduling.
+        // This could be made smarter for specific TaskExecutors,
+        // for example calling {@code getMaximumPoolSize() - getActiveCount()}
+        // on a {@code java.util.concurrent.ThreadPoolExecutor}.
+        return 1;
+    }
+
+}

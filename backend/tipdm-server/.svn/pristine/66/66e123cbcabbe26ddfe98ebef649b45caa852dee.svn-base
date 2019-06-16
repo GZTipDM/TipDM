@@ -1,0 +1,335 @@
+package com.tipdm.framework.dmserver.task.job;
+
+import com.alibaba.fastjson.JSON;
+import com.tipdm.framework.common.Constants;
+import com.tipdm.framework.common.controller.Result;
+import com.tipdm.framework.common.utils.DateKit;
+import com.tipdm.framework.common.utils.FileKit;
+import com.tipdm.framework.common.utils.PropertiesUtil;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.dmserver.websocket.MessageServer;
+import com.tipdm.framework.model.dmserver.DBConnection;
+import com.tipdm.framework.model.dmserver.DataSyncStrategy;
+import com.tipdm.framework.model.dmserver.UserTable;
+import com.tipdm.framework.persist.datasource.NamedParameterStatement;
+import com.tipdm.framework.service.dmserver.UserTableService;
+import org.postgresql.copy.CopyManager;
+import org.postgresql.core.BaseConnection;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.QuartzJobBean;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
+import java.util.stream.Collectors;
+
+/**
+ * Created by TipDM on 2017/1/9.
+ * E-mail:devp@tipdm.com
+ * 数据同步
+ */
+public class SyncDataJobBean extends QuartzJobBean{
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private int batchSize = 50000;
+
+    private int sum = 0;
+
+    private UserTable userTable;
+
+    private Connection source;
+
+    private Connection target;
+
+    private NamedParameterStatement statement = null;
+
+    private ResultSet resultSet = null;
+
+    private DataSyncStrategy strategy;
+
+    private String insert, delete, update;
+
+    private Map<String, Object> variables = new HashMap<>();
+
+//    @Autowired
+//    private SystemWebSocketHandler systemWebSocketHandler;
+
+    @Autowired
+    private UserTableService userTableService;
+
+    @Override
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        if(jobDataMap.containsKey("abort")){
+            throw new JobExecutionException("无法启动定时任务，错误原因：当前任务的依赖项执行失败");
+        }
+        long beginTime = Calendar.getInstance().getTimeInMillis();
+//        userTable = userTableService.findOne(Long.valueOf(jobDataMap.getString("tableId")));
+        try {
+            userTable = (UserTable) jobDataMap.get("userTable");
+        } catch (ClassCastException ex) {
+            userTable = JSON.parseObject(jobDataMap.getString("userTable"), UserTable.class);
+        }
+        String accessToken = jobDataMap.getString("accessToken");
+        DBConnection conn = userTable.getConn();
+        final String url = conn.getUrl();
+        String className = Constants.DRIVERS.keySet().stream().filter(x -> x.equals(url.substring(0, x.length()))).collect(Collectors.toList()).get(0);
+        Properties properties = PropertiesUtil.loadProperties("/sysconfig/database.properties");
+        Date lastSyncTime = Calendar.getInstance().getTime();
+        variables.put("当前更新时间", lastSyncTime);
+        try {
+            strategy = userTableService.getStrategyByTableId(userTable.getId());
+            Class.forName(Constants.DRIVERS.get(className)[0]);
+            try {
+                source = DriverManager.getConnection(url, conn.getUserName(), conn.getPassword());
+            } catch (SQLException e) {
+                throw new JobExecutionException("获取连接失败，无法连接到数据库");
+            }
+            Class.forName(properties.getProperty("db.driver"));
+            target = DriverManager.getConnection(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"));
+            //设置事务为手动提交
+            target.setAutoCommit(false);
+            //增量添加
+            insert();
+            //增量删除
+            delete();
+            //增量修改
+            update();
+            //提交事务
+            target.commit();
+            //更新同步时间
+            if(strategy != null) {
+                userTableService.updateLastSyncTimeForTable(userTable.getId(), lastSyncTime);
+            }
+            //推送通知
+            long endTime = Calendar.getInstance().getTimeInMillis();
+            String content = MessageFormatter.arrayFormat("数据表{}同步成功，同步数据总计：{}条，共耗时：{}秒", new Object[]{userTable.getShowName(), sum, ((endTime - beginTime)/1000)}).getMessage();
+            userTable.setStatus(UserTable.Status.FINISH);
+            userTableService.update(userTable);
+//            systemWebSocketHandler.sendMessageToUser(userTable.getCreatorName(), content);
+
+            Result result = new Result();
+            result.setData(userTable.getShowName());
+            result.setMessage(content);
+            MessageServer.sendDataSyncResult(accessToken, JSON.toJSONString(result));
+        } catch (Exception e) {
+            try {
+                if(null != target) {
+                    target.rollback();
+                }
+            } catch (SQLException e1) {
+            }
+            logger.error(e.getMessage());
+            userTable.setStatus(UserTable.Status.FAILED);
+            userTableService.update(userTable);
+//            systemWebSocketHandler.sendMessageToUser(userTable.getCreatorName(), "数据表" + userTable.getShowName() + "同步失败，错误信息："+ e.getMessage());
+            Result result = new Result();
+            result.setStatus(Result.Status.FAIL);
+            result.setData(userTable.getShowName());
+            result.setMessage( "数据表" + userTable.getShowName() + "同步失败，错误信息："+ e.getMessage());
+            MessageServer.sendDataSyncResult(accessToken, JSON.toJSONString(result));
+            throw new JobExecutionException(e);
+        } finally {
+            try {
+                org.apache.commons.dbutils.DbUtils.close(target);
+            } catch (SQLException e) {
+            }
+
+            try {
+                org.apache.commons.dbutils.DbUtils.close(resultSet);
+            } catch (SQLException e) {
+            }
+
+            try {
+                if(statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+            }
+
+            try {
+                org.apache.commons.dbutils.DbUtils.close(source);
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+
+    private void clear() throws SQLException {
+        if(strategy == null || strategy.getMode() == DataSyncStrategy.Mode.FULL) {
+            //清空表数据
+            try (Statement stmt = target.createStatement()) {
+                stmt.execute("DELETE FROM " + userTable.getTableName());
+            }
+        }
+    }
+
+    /**
+     * 添加
+     * @throws SQLException
+     * @throws IOException
+     */
+    private void insert() throws SQLException, IOException {
+        if(strategy == null || (strategy.getMode() == DataSyncStrategy.Mode.FULL)){
+            insert = userTable.getConn().getSql();
+            clear();
+        } else {
+            insert = strategy.getInsert();
+            variables.put("上次更新时间", DateKit.convert2Str(strategy.getDateFormatter(), strategy.getLastSyncTime()));
+            variables.put("当前更新时间", DateKit.convert2Str(strategy.getDateFormatter(), Calendar.getInstance().getTime()));
+        }
+
+        statement = new NamedParameterStatement(source, insert);
+        statement.setFetchSize(batchSize);
+        statement.setParameter(variables);
+        resultSet = statement.executeQuery();
+
+        writeToTable();
+    }
+
+    private void writeToTable() throws SQLException, IOException {
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        CopyManager copyManager = new CopyManager((BaseConnection) target);
+
+        int counter = 0;
+        String fileName = StringKit.getBase64FromUUID();
+        File tempFile = new File(fileName);
+
+        List<String> lines = new ArrayList<>();
+        while (resultSet.next()) {
+            StringBuilder sb = new StringBuilder();
+            counter += 1;
+            sum += 1;
+            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+//                String lastChar = (i == rsmd.getColumnCount()) ? "\n" : ",";
+                String lastChar = (i == rsmd.getColumnCount()) ? "" : ",";
+                Object value = resultSet.getObject(i);
+                if(value instanceof String){
+                    value = ((String) value).replaceAll("\n", " ");
+                    value = ((String) value).replaceAll("\"", "“");
+                    value = "\"" + value + "\"";
+                }
+                sb.append(value).append(lastChar);
+            }
+            lines.add(sb.toString());
+            //100条记录写一次
+            if(lines.size() == 100){
+                if(!tempFile.exists()){
+                    tempFile.createNewFile();
+                }
+                FileKit.writeLines(tempFile, Constants.CHARACTER, lines, true);
+                lines.clear();
+            }
+            //写入到数据库
+            if (counter == batchSize) {
+                try(FileInputStream in = new FileInputStream(tempFile)){
+                    copyManager.copyIn("copy " + userTable.getTableName() + " from stdin with csv QUOTE '\"' delimiter ',' NULL as 'null'", in);
+                    counter = 0;
+                } finally {
+                    tempFile.delete();
+                }
+            }
+        }
+        if(counter > 0) {
+            if (!lines.isEmpty()){
+                if (!tempFile.exists()) {
+                    tempFile.createNewFile();
+                }
+                FileKit.writeLines(tempFile, Constants.CHARACTER, lines, true);
+                lines.clear();
+            }
+            try(FileInputStream in = new FileInputStream(tempFile)){
+                copyManager.copyIn("copy " + userTable.getTableName() + " from stdin with csv QUOTE '\"' delimiter ',' NULL as 'null'", in);
+            } finally {
+                tempFile.delete();
+            }
+        }
+    }
+    /**
+     * 删除
+     */
+    private void delete() throws SQLException {
+        if (strategy == null || strategy.getMode() == DataSyncStrategy.Mode.FULL) {
+            return;
+        }
+        delete = strategy.getDelete();
+        if(StringKit.isBlank(delete)){
+            return;
+        }
+//        variables.put("上次更新时间", strategy.getLastSyncTime());
+        variables.put("上次更新时间", DateKit.convert2Str(strategy.getDateFormatter(), strategy.getLastSyncTime()));
+        variables.put("当前更新时间", DateKit.convert2Str(strategy.getDateFormatter(), Calendar.getInstance().getTime()));
+        statement = new NamedParameterStatement(source, delete);
+        statement.setFetchSize(batchSize);
+        statement.setParameter(variables);
+        resultSet = statement.executeQuery();
+        try (PreparedStatement stmt = target.prepareStatement("DELETE FROM " + userTable.getTableName() + " where " + strategy.getPrimaryKey() + " = ?")) {
+            while (resultSet.next()) {
+                Object id = resultSet.getObject(1);
+                stmt.setObject(1, id);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
+
+    /**
+     * 修改
+     */
+    private void update() throws SQLException, IOException {
+        if(strategy == null || strategy.getMode() == DataSyncStrategy.Mode.FULL) {
+            return;
+        }
+        update = strategy.getUpdate();
+        if(StringKit.isBlank(update)){
+            return;
+        }
+//        variables.put("上次更新时间", strategy.getLastSyncTime());
+        variables.put("上次更新时间", DateKit.convert2Str(strategy.getDateFormatter(), strategy.getLastSyncTime()));
+        variables.put("当前更新时间", DateKit.convert2Str(strategy.getDateFormatter(), Calendar.getInstance().getTime()));
+        statement = new NamedParameterStatement(source, update);
+        statement.setFetchSize(batchSize);
+        statement.setParameter(variables);
+        //获取需要更新数据列的id
+        resultSet = statement.executeQuery();
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        String primaryKey = metaData.getColumnName(1);
+        StringBuilder s1 = new StringBuilder("delete from ");
+        s1.append(userTable.getTableName());
+        s1.append(" where ").append(strategy.getPrimaryKey()).append(" = ?");
+
+        StringBuilder s2 = new StringBuilder("select * from (").append(userTable.getConn().getSql()).append(" ) TMP where ").append(primaryKey).append(" = ?");
+//        List ids = new ArrayList<>();
+        try(PreparedStatement stmt1 = target.prepareStatement(s1.toString()); PreparedStatement stmt2 = source.prepareStatement(s2.toString())) {
+            stmt1.setFetchSize(batchSize);
+            stmt2.setFetchSize(batchSize);
+            while (resultSet.next()) {
+                Object id = resultSet.getObject(1);
+//                ids.add(id);
+                stmt1.setObject(1, id);
+                stmt1.addBatch();
+
+                stmt2.setObject(1, id);
+                stmt2.addBatch();
+            }
+            //先删除，再插入
+            stmt1.executeBatch();
+            resultSet = stmt2.executeQuery();
+            writeToTable();
+        }
+
+
+    }
+
+}

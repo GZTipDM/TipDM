@@ -1,0 +1,11 @@
+package com.tipdm.framework.model.dmserver;
+
+/**
+ * Created by zhoulong on 2018/1/21.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public enum TaskType {
+
+    ENGINEERING,
+    DATASOURCE;
+}

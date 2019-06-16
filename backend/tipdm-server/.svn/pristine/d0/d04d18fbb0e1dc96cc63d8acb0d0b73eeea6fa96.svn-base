@@ -1,0 +1,704 @@
+/*
+ * Copyright (c) 2015 Villu Ruusmann
+ *
+ * This file is part of Openscoring
+ *
+ * Openscoring is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Openscoring is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Openscoring.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.tipdm.framework.dmserver.mse;
+
+import com.alibaba.druid.util.JdbcConstants;
+import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.tipdm.framework.common.Constants;
+import com.tipdm.framework.common.utils.FileKit;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.controller.dmserver.entity.RestfulDataSource;
+import org.apache.commons.dbutils.DbUtils;
+import org.dmg.pmml.*;
+import org.dmg.pmml.Value;
+import org.jpmml.evaluator.*;
+import org.jpmml.evaluator.OutputField;
+import org.openscoring.common.EvaluationRequest;
+import org.openscoring.common.EvaluationResponse;
+import org.openscoring.common.Field;
+import org.openscoring.common.ModelResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.supercsv.prefs.CsvPreference;
+
+import javax.ws.rs.BadRequestException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.sql.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class ModelUtil {
+
+	private final  static Logger logger = LoggerFactory.getLogger(ModelUtil.class);
+	//defaultName
+	public static final FieldName DEFAULT_NAME = FieldName.create("_default");
+
+	private ModelUtil(){
+	}
+
+	static
+	public Map<String, List<Field>> encodeSchema(ModelEvaluator<?> evaluator){
+		Map<String, List<Field>> result = new LinkedHashMap<>();
+
+		List<InputField> activeFields = evaluator.getActiveFields();
+		List<InputField> groupFields = Collections.emptyList();
+
+		if(evaluator instanceof HasGroupFields){
+			HasGroupFields hasGroupFields = (HasGroupFields)evaluator;
+
+			groupFields = hasGroupFields.getGroupFields();
+		}
+
+		result.put("activeFields", encodeInputFields(activeFields));
+		result.put("groupFields", encodeInputFields(groupFields));
+
+		List<TargetField> targetFields = evaluator.getTargetFields();
+
+		result.put("targetFields", encodeTargetFields(targetFields));
+
+		List<OutputField> outputFields = evaluator.getOutputFields();
+
+		result.put("outputFields", encodeOutputFields(outputFields, evaluator));
+
+		return result;
+	}
+
+	static
+	private List<Field> encodeInputFields(List<InputField> inputFields){
+		Function<InputField, Field> function = new Function<InputField, Field>(){
+
+			@Override
+			public Field apply(InputField inputField){
+				FieldName name = inputField.getName();
+
+				DataField dataField = (DataField)inputField.getField();
+
+				Field field = new Field(name.getValue());
+//				field.setName(dataField.getDisplayName());
+				field.setName(name.getValue());
+				field.setDataType(inputField.getDataType());
+				field.setOpType(inputField.getOpType());
+				field.setValues(encodeValues(dataField));
+
+				return field;
+			}
+		};
+
+		List<Field> fields = new ArrayList<>(Lists.transform(inputFields, function));
+
+		return fields;
+	}
+
+	static
+	private List<Field> encodeTargetFields(List<TargetField> targetFields){
+		Function<TargetField, Field> function = new Function<TargetField, Field>(){
+
+			@Override
+			public Field apply(TargetField targetField){
+				FieldName name = targetField.getName();
+
+				// A "phantom" default target field
+				if(targetField.isSynthetic()){
+					name = DEFAULT_NAME;
+				}
+
+				DataField dataField = targetField.getDataField();
+
+				Field field = new Field(name.getValue());
+//				field.setName(dataField.getDisplayName());
+				field.setName(name.getValue());
+				field.setDataType(targetField.getDataType());
+				field.setOpType(targetField.getOpType());
+				field.setValues(encodeValues(dataField));
+
+				return field;
+			}
+		};
+
+		List<Field> fields = new ArrayList<>(Lists.transform(targetFields, function));
+
+		return fields;
+	}
+
+	static
+	private List<Field> encodeOutputFields(List<OutputField> outputFields, final ModelEvaluator<?> evaluator){
+		Function<OutputField, Field> function = new Function<OutputField, Field>(){
+
+			@Override
+			public Field apply(OutputField outputField){
+				FieldName name = outputField.getName();
+
+				org.dmg.pmml.OutputField pmmlOutputField = outputField.getOutputField();
+
+				DataType dataType = outputField.getDataType();
+				OpType opType = outputField.getOpType();
+
+//				if(dataType == null){
+//
+//					try {
+//						dataType = OutputUtil.getDataType(pmmlOutputField, evaluator);
+//					} catch(Exception e){
+//						// Ignored
+//					}
+//				}
+
+				if(opType == null){
+
+					try {
+						opType = TypeUtil.getOpType(dataType);
+					} catch(Exception e){
+						// Ignored
+					}
+				}
+
+				Field field = new Field(name.getValue());
+//				field.setName(pmmlOutputField.getDisplayName());
+				field.setName(name.getValue());
+				field.setDataType(outputField.getDataType());
+				field.setOpType(outputField.getOpType());
+
+				return field;
+			}
+		};
+
+		List<Field> fields = new ArrayList<>(Lists.transform(outputFields, function));
+
+		return fields;
+	}
+
+	static
+	private List<String> encodeValues(DataField dataField){
+		List<String> result = new ArrayList<>();
+
+		List<Interval> intervals = dataField.getIntervals();
+		for(Interval interval : intervals){
+			StringBuilder sb = new StringBuilder();
+
+			Double leftMargin = interval.getLeftMargin();
+			sb.append(Double.toString(leftMargin != null ? leftMargin : Double.NEGATIVE_INFINITY));
+
+			sb.append(", ");
+
+			Double rightMargin = interval.getRightMargin();
+			sb.append(Double.toString(rightMargin != null ? rightMargin : Double.POSITIVE_INFINITY));
+
+			String value = sb.toString();
+
+			Interval.Closure closure = interval.getClosure();
+			switch(closure){
+				case OPEN_OPEN:
+					result.add("(" + value + ")");
+					break;
+				case OPEN_CLOSED:
+					result.add("(" + value + "]");
+					break;
+				case CLOSED_OPEN:
+					result.add("[" + value + ")");
+					break;
+				case CLOSED_CLOSED:
+					result.add("[" + value + "]");
+					break;
+				default:
+					break;
+			}
+		}
+
+		List<Value> values = dataField.getValues();
+		for(Value value : values){
+			Value.Property property = value.getProperty();
+
+			switch(property){
+				case VALID:
+					result.add(value.getValue());
+					break;
+				default:
+					break;
+			}
+		}
+
+		return result;
+	}
+
+	static
+	public ModelResponse toModelResponse(String id, Model model, boolean expand){
+		ModelResponse response = new ModelResponse(id);
+		response.setMiningFunction(model.getMiningFunction());
+		response.setSummary(model.getSummary());
+		response.setProperties(model.getProperties());
+
+		if(expand){
+			response.setSchema(model.getSchema());
+		}
+
+		return response;
+	}
+
+	static
+	private List<EvaluationRequest> aggregateRequests(FieldName groupName, List<EvaluationRequest> requests){
+		Map<Object, ListMultimap<String, Object>> groupedArguments = new LinkedHashMap<>();
+
+		String key = groupName.getValue();
+
+		for(EvaluationRequest request : requests){
+			Map<String, ?> requestArguments = request.getArguments();
+
+			Object value = requestArguments.get(key);
+			if(value == null && !requestArguments.containsKey(key)){
+				logger.warn("Evaluation request {} does not specify a group field {}", request.getId(), key);
+			}
+
+			ListMultimap<String, Object> groupedArgumentMap = groupedArguments.get(value);
+			if(groupedArgumentMap == null){
+				groupedArgumentMap = ArrayListMultimap.create();
+
+				groupedArguments.put(value, groupedArgumentMap);
+			}
+
+			Collection<? extends Map.Entry<String, ?>> entries = requestArguments.entrySet();
+			for(Map.Entry<String, ?> entry : entries){
+				groupedArgumentMap.put(entry.getKey(), entry.getValue());
+			}
+		}
+
+		// Only continue with request modification if there is a clear need to do so
+		if(groupedArguments.size() == requests.size()){
+			return requests;
+		}
+
+		List<EvaluationRequest> resultRequests = new ArrayList<>();
+
+		Collection<Map.Entry<Object, ListMultimap<String, Object>>> entries = groupedArguments.entrySet();
+		for(Map.Entry<Object, ListMultimap<String, Object>> entry : entries){
+			Map<String, Object> arguments = new LinkedHashMap<>();
+			arguments.putAll((entry.getValue()).asMap());
+
+			// The value of the "group by" column is a single Object, not a Collection (ie. java.util.List) of Objects
+			arguments.put(key, entry.getKey());
+
+			EvaluationRequest resultRequest = new EvaluationRequest();
+			resultRequest.setArguments(arguments);
+
+			resultRequests.add(resultRequest);
+		}
+
+		return resultRequests;
+	}
+
+	static
+	public List<EvaluationResponse> evaluate(ModelEvaluator<?> evaluator, List<EvaluationRequest> requests, boolean allOrNothing){
+//		Model model = null;//this.modelRegistry.get(id, true);
+//		if(model == null){
+//			throw new NotFoundException("Model \"" + id + "\" not found");
+//		}
+
+		List<EvaluationResponse> responses = new ArrayList<>();
+
+		try {
+//			ModelEvaluator<?> evaluator = model.getEvaluator();
+
+			if(evaluator instanceof HasGroupFields){
+				HasGroupFields hasGroupFields = (HasGroupFields)evaluator;
+
+				List<InputField> groupFields = hasGroupFields.getGroupFields();
+				if(groupFields.size() == 1){
+					InputField groupField = groupFields.get(0);
+
+					requests = aggregateRequests(groupField.getName(), requests);
+				} else
+
+				if(groupFields.size() > 1){
+					throw new EvaluationException("Too many group fields");
+				}
+			}
+
+			for(EvaluationRequest request : requests){
+				EvaluationResponse response;
+
+				try {
+					response = evaluate(evaluator, request);
+				} catch(Exception e){
+
+					if(allOrNothing){
+						throw e;
+					}
+
+					response = new EvaluationResponse(request.getId());
+					response.setMessage(e.toString());
+				}
+
+				responses.add(response);
+			}
+		} catch(Exception e){
+			logger.error("Failed to evaluate", e);
+
+			throw new BadRequestException(e);
+		}
+
+		return responses;
+	}
+
+	static
+	private EvaluationResponse evaluate(Evaluator evaluator, EvaluationRequest request){
+		logger.info("Received {}", request);
+
+		Map<String, ?> requestArguments = request.getArguments();
+
+		EvaluationResponse response = new EvaluationResponse(request.getId());
+
+		Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
+
+		List<InputField> activeFields = evaluator.getActiveFields();
+		for(InputField activeField : activeFields){
+			FieldName activeName = activeField.getName();
+
+			String key = activeName.getValue();
+
+			Object value = requestArguments.get(key);
+			if(value == null && !requestArguments.containsKey(key)){
+				logger.warn("Evaluation request {} does not specify an active field {}", request.getId(), key);
+			}
+
+			FieldValue activeValue = activeField.prepare(value);
+
+			arguments.put(activeName, activeValue);
+		}
+
+		logger.debug("Evaluation request {} has prepared arguments: {}", request.getId(), arguments);
+
+		Map<FieldName, ?> result = evaluator.evaluate(arguments);
+
+		// Jackson does not support the JSON serialization of <code>null</code> map keys
+		result = replaceNullKey(result);
+
+		logger.debug("Evaluation response {} has result: {}", response.getId(), result);
+
+		response.setResult(EvaluatorUtil.decode(result));
+
+		logger.info("Returned {}", response);
+
+		return response;
+	}
+
+	static
+	public byte[] doEvaluateCsv(ModelEvaluator<?> evaluator, String delimiterChar, String quoteChar, final Charset charset, InputStream is) throws IOException {
+		final
+		CsvPreference format;
+
+		final
+		CsvUtil.Table<EvaluationRequest> requestTable;
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset)){
+
+				@Override
+				public void close(){
+					// The closing of the underlying java.io.InputStream is handled elsewhere
+				}
+			};
+
+			try {
+				if(delimiterChar != null){
+					format = CsvUtil.getFormat(delimiterChar, quoteChar);
+				} else
+
+				{
+					format = CsvUtil.getFormat(reader);
+				}
+
+				requestTable = CsvUtil.readTable(reader, format);
+			} finally {
+				reader.close();
+			}
+		} catch(Exception e){
+			logger.error("Failed to load CSV document", e);
+
+			throw new BadRequestException(e);
+		}
+
+		List<EvaluationRequest> requests = requestTable.getRows();
+
+		List<EvaluationResponse> responses = evaluate(evaluator, requests, false);
+
+		final
+		CsvUtil.Table<EvaluationResponse> responseTable = new CsvUtil.Table<>();
+		responseTable.setId(requestTable.getId());
+		responseTable.setRows(responses);
+
+		File tmp = new File(UUID.randomUUID().toString()+".csv");
+		OutputStreamWriter writer = new OutputStreamWriter(
+				new FileOutputStream(tmp), charset.name());
+		BufferedWriter bufferedWriter = new BufferedWriter(writer);
+		CsvUtil.writeTable(bufferedWriter, format, responseTable);
+		writer.close();
+		byte[] bytes = FileKit.readFileToByteArray(tmp);
+		tmp.delete();
+		return bytes;
+	}
+
+	static
+	public void doEvaluateRDBMS( ModelEvaluator<?> evaluator, RestfulDataSource dataSource){
+
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Connection connection = null;
+				PreparedStatement query = null;
+				PreparedStatement insert = null;
+				ResultSet rs = null;
+				String dbType = Constants.DRIVERS.keySet().stream().filter(x -> x .equals(dataSource.getUrl().substring(0, x.length()))).collect(Collectors.toList()).get(0);
+				try {
+					Class.forName(Constants.DRIVERS.get(dbType)[0]);
+					connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUser(), dataSource.getPassword());
+					String extractSQL = dataSource.getSql();
+					String target = dataSource.getTarget();
+					DatabaseMetaData dmd = connection.getMetaData();
+					ResultSet resultSet = dmd.getTables(null, null, target, null);
+					boolean existsTable = resultSet.next();
+					if(dataSource.getUrl().contains("jdbc:postgresql")){
+						target = "\"" + target + "\"";
+					}
+					query = connection.prepareStatement(extractSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+					if(JdbcConstants.MYSQL.equals(dbType)){
+						query.setFetchSize(Integer.MIN_VALUE);
+					} else {
+						query.setFetchSize(1000);
+					}
+//					query.setFetchDirection(ResultSet.FETCH_REVERSE);
+
+					rs = query.executeQuery();
+					ResultSetMetaData meta = rs.getMetaData();
+					List<String> columns = new ArrayList<>();
+					for (int i = 1; i <= meta.getColumnCount(); i++) {
+						columns.add(meta.getColumnName(i));
+					}
+
+					connection.setAutoCommit(false);
+					List<Field> outputFields = ModelUtil.encodeOutputFields(evaluator.getOutputFields(), evaluator);
+
+					while (rs.next()) {
+						EvaluationRequest request = new EvaluationRequest();
+						Map<String, Object> argument = new HashMap<>();
+						for(String col : columns){
+							argument.put(col, rs.getBigDecimal(col).doubleValue());
+						}
+						request.setArguments(argument);
+//						List<EvaluationRequest> requestList = Collections.singletonList(request);
+//						List<EvaluationResponse> responseList = evaluate(evaluator, requestList, false);
+						EvaluationResponse response = evaluate(evaluator, request);
+						LinkedHashMap<String, ?> data = (LinkedHashMap<String, ?>) response.getResult();
+						if(null == insert) {
+							String insertSQL = "INSERT INTO " + target + " VALUES ("
+									+ data.keySet().stream().map(c -> "?").collect(Collectors.joining(", "))
+									+ ")";
+							logger.info("insert sql: {}", insertSQL);
+							insert = connection.prepareStatement(insertSQL);
+						}
+						//创建目标表
+						if(!existsTable){
+							List<String> tmp = new ArrayList<>();
+							for(Map.Entry<String, ?> entry : data.entrySet()){
+								Object value = entry.getValue();
+								String key = entry.getKey();
+								if(value instanceof String){
+									value = "'" + value + "'";
+								}
+								if(dataSource.getUrl().contains("jdbc:postgresql")) {
+									key = "\"" + key + "\"";
+									if(value instanceof String ) {
+										value = value + "::TEXT";
+									}
+								}
+								tmp.add(value + " as " + key);
+							}
+							String sql = com.tipdm.framework.dmserver.utils.DbUtils.buildCreateSQL(StringKit.join(tmp, ","), target, Constants.DRIVERS.get(dbType)[1]);
+							logger.info("table schema: {}", sql);
+							connection.createStatement().execute(sql);
+							existsTable = true;
+						} else {
+							if(dataSource.getTruncate()){
+								connection.createStatement().execute("truncate table " + target);
+								logger.info("清空目标表[" + target + "]数据");
+								dataSource.setTruncate(Boolean.FALSE);
+							}
+						}
+
+						int i =1;
+						for(Map.Entry<String, ?> entry : data.entrySet()){
+							insert.setObject(i, entry.getValue());
+							i++;
+						}
+						insert.addBatch();
+					}
+					insert.executeBatch();
+					connection.commit();
+
+				} catch (ClassNotFoundException ex) {
+					return;
+				} catch (SQLException ex){
+					ex.printStackTrace();
+					try {
+						connection.rollback();
+					} catch (SQLException e) {
+
+					}
+					return;
+				} finally {
+					try {
+						DbUtils.close(insert);
+					} catch (SQLException e) {
+
+					}
+
+					try {
+						DbUtils.close(rs);
+					} catch (SQLException e) {
+
+					}
+
+					try {
+						DbUtils.close(query);
+					} catch (SQLException e) {
+
+					}
+
+					try {
+						DbUtils.close(connection);
+					} catch (SQLException e) {
+
+					}
+
+				}
+			}
+		});
+
+		thread.start();
+	}
+
+	static
+	private <V> Map<FieldName, V> replaceNullKey(Map<FieldName, V> map){
+
+		if(map.containsKey(null)){
+			Map<FieldName, V> result = new LinkedHashMap<>(map);
+			result.put(DEFAULT_NAME, result.remove(null));
+
+			return result;
+		}
+
+		return map;
+	}
+
+
+	static
+	public List<Field> decodeValues(net.minidev.json.JSONArray array){
+
+		if(array == null){
+			return null;
+		}
+		List<Field> fieldList = new ArrayList<>();
+		for(int i=0; i< array.size(); i++){
+			LinkedHashMap<String, Object> item = (LinkedHashMap<String, Object>) array.get(i);
+			Field field = mapToField(item);
+			fieldList.add(field);
+		}
+		return fieldList;
+	}
+
+	@SuppressWarnings("all")
+	static
+	private Field mapToField(Map<String, Object> map) throws ClassCastException{
+
+		try {
+			Field field = new Field();
+			String value = (String)map.get("values");
+			String dataType = (String) map.get("dataType");
+			DataType newType = null;
+			switch (dataType) {
+				case "character varying":
+					newType = DataType.STRING;
+					if(StringKit.isNotBlank(value)) {
+						field.setValues(Arrays.asList(StringKit.split(value, ",")));
+					}
+					break;
+				case "numeric":{
+					newType = DataType.DOUBLE;
+					List<String> values = new ArrayList<>();
+					if(StringKit.isNotBlank(value)) {
+						double[] arr = Arrays.stream(StringKit.split(value, ","))
+								.map(String::trim).mapToDouble(Double::parseDouble).toArray();
+						double min = Arrays.stream(arr).min().getAsDouble();
+						double max = Arrays.stream(arr).max().getAsDouble();
+						values.add(min + "");
+						values.add(max + "");
+					}
+					field.setValues(values);
+					break;
+				}
+				case "bigint": {
+					newType = DataType.INTEGER;
+					List<String> values = new ArrayList<>();
+					if(StringKit.isNotBlank(value)) {
+						double[] arr = Arrays.stream(StringKit.split(value, ","))
+								.map(String::trim).mapToDouble(Double::parseDouble).toArray();
+						double min = Arrays.stream(arr).min().getAsDouble();
+						double max = Arrays.stream(arr).max().getAsDouble();
+						values.add(min + "");
+						values.add(max + "");
+					}
+					field.setValues(values);
+					break;
+				}
+				case "integer": {
+					newType = DataType.INTEGER;
+					List<String> values = new ArrayList<>();
+					if(StringKit.isNotBlank(value)) {
+						int[] arr = Arrays.stream(StringKit.split(value, ","))
+								.map(String::trim).mapToInt(Integer::parseInt).toArray();
+						int min = Arrays.stream(arr).min().getAsInt();
+						int max = Arrays.stream(arr).max().getAsInt();
+						values.add(min + "");
+						values.add(max + "");
+					}
+					field.setValues(values);
+					break;
+				}
+				case "date":
+					newType = DataType.DATE;
+					break;
+				case "timestamp":
+					newType = DataType.DATE_TIME_SECONDS_SINCE_1970;
+					break;
+				default:
+					newType = DataType.STRING;
+					if(StringKit.isNotBlank(value)) {
+						field.setValues(Arrays.asList(StringKit.split(value, ",")));
+					}
+					break;
+			}
+			field.setName((String) map.get("name"));
+			field.setDataType(newType);
+			return field;
+		}catch (Exception ex){
+			throw new ClassCastException("can not parse java.util.Map to convert org.openscoring.common.Field");
+		}
+	}
+}

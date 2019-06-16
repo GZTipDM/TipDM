@@ -1,0 +1,539 @@
+package com.tipdm.framework.service.dmserver.impl;
+
+import com.alibaba.fastjson.JSONObject;
+import com.tipdm.framework.common.Constants;
+import com.tipdm.framework.common.utils.*;
+import com.tipdm.framework.controller.dmserver.dto.DataColumn;
+import com.tipdm.framework.controller.dmserver.dto.UploadInfo;
+import com.tipdm.framework.controller.dmserver.dto.datavisual.VisualConfig;
+import com.tipdm.framework.dmserver.exception.DuplicateException;
+import com.tipdm.framework.dmserver.exception.ElementNotFoundException;
+import com.tipdm.framework.dmserver.exception.IllegalOperationException;
+import com.tipdm.framework.dmserver.utils.CommonUtils;
+import com.tipdm.framework.dmserver.utils.DbUtils;
+import com.tipdm.framework.model.dmserver.*;
+import com.tipdm.framework.repository.dmserver.*;
+import com.tipdm.framework.service.AbstractBaseServiceImpl;
+import com.tipdm.framework.service.dmserver.DataTableService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.persistence.criteria.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
+
+/**
+ * Created by TipDM on 2016/12/15.
+ * E-mail:devp@tipdm.com
+ */
+@SuppressWarnings("all")
+@Transactional
+@Service("tableService")
+public class DataTableServiceImpl extends AbstractBaseServiceImpl<DataTable, Long> implements DataTableService {
+
+    private final static Logger logger = LoggerFactory.getLogger(DataTableServiceImpl.class);
+
+    @Autowired
+    private DataTableRepository tableRepository;
+
+    @Autowired
+    private DBConnectionRepository dbConnectionRepository;
+
+    @Autowired
+    private Scheduler scheduler;
+
+    @Autowired
+    private AudienceRepository audienceRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private DataSyncStrategyRepository dataSyncStrategyRepository;
+
+    @Value("${db.url}")
+    private String url;
+
+    @Value("${db.user}")
+    private String username;
+
+    @Value("${db.password}")
+    private String password;
+
+    @Override
+    public List<DataTable> find(Long... ids) {
+        return null;
+    }
+
+    @Override
+    public Page<DataTable> findTableByCondition(final Map<String, Object> params, Pageable pageable) {
+
+        Specification<DataTable> specification = new Specification<DataTable>() {
+            @Override
+            public Predicate toPredicate(Root<DataTable> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+                Predicate predicates = null;
+                String creatorName = (String) params.get("creatorName");
+
+                if (StringKit.isNotBlank(creatorName)) {
+                    predicates = criteriaBuilder.equal(root.get("creatorName").as(String.class), creatorName);
+                    criteriaQuery.where(predicates);
+                }
+
+                String showName = (String) params.get("showName");
+
+                if (StringKit.isNotBlank(showName)) {
+                    Predicate condition = criteriaBuilder.like(root.get("showName").as(String.class), "%" + showName + "%");
+                    if (null == predicates) {
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+                DataTable.Status status = (DataTable.Status) params.get("status");
+
+                if (null != status) {
+                    Predicate condition = criteriaBuilder.equal(root.get("status").as(DataTable.Status.class), status);
+                    if (null == predicates) {
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+
+                Date beginTime = null;
+                Date endTime = null;
+                try {
+                    beginTime = (Date) params.get("beginTime");
+                    endTime = (Date) params.get("endTime");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (beginTime != null && endTime != null) {
+                    Predicate condition = criteriaBuilder.between(root.get("createTime").as(Date.class), beginTime, endTime);
+
+                    if (null == predicates) {
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+                return predicates;
+            }
+        };
+
+        Page<DataTable> page = tableRepository.findAll(specification, pageable);
+        Map<String, Object> map = RedisUtils.getMap(com.tipdm.framework.dmserver.utils.Constants.FILE_UPLOAD_ID);
+
+        page.getContent().parallelStream().forEach(x -> {
+            if (x.getTableType() == DataTable.TableType.FLAT_FILE && (x.getStatus() == DataTable.Status.NOTSYNCHRONIZED || x.getStatus() == DataTable.Status.FAILED)) {
+                Optional optional = map.values().stream().filter(o -> x.getId().equals(((UploadInfo) o).getId()) && ((UploadInfo) o).getCategory() == UploadInfo.Category.FLAT).findFirst();
+                if (optional.isPresent()) {
+                    x.setUploadId(((UploadInfo) optional.get()).getUploadId());
+                }
+            }
+        });
+        return page;
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<DataTable> findSharedTables(final Map<String, Object> params, Pageable pageable) {
+
+        return tableRepository.findSharedTables(params, pageable);
+    }
+
+    @Override
+    public Long createTable(DataTable table, List<DataColumn> columns) throws DuplicateException {
+
+        DataTable duplicateTable = findTableByTableName(table.getTableName());
+        if (null != duplicateTable) {
+            throw new DuplicateException("数据表[" + table.getShowName() + "]已存在");
+        }
+        tableRepository.createTable(table.getTableName(), columns);
+        tableRepository.changeTableOwner(table.getTableName(), table.getCreatorName());
+        tableRepository.save(table);
+        return table.getId();
+    }
+
+    @Override
+    public void deleteTable(Long creatorId, Long tableId) throws IllegalAccessException {
+        DataTable table = tableRepository.findOne(tableId);
+        if (null == table) {
+            return;
+        }
+        if (!creatorId.equals(table.getCreatorId())) {
+            logger.info("creatorId:{}", table.getCreatorId());
+            logger.info("operator id:{}", creatorId);
+            throw new IllegalAccessException("删除数据表失败，操作人员与数据表的创建者不符");
+        }
+
+        tableRepository.dropTable(table.getTableName());
+        tableRepository.delete(tableId);
+    }
+
+    @Override
+    public DataTable findTableByTableName(String tableName) {
+
+        DataTable table = tableRepository.findByTableName(tableName);
+        return table;
+    }
+
+    /**
+     * 数据同步
+     * @param tableName
+     * @throws IllegalOperationException
+     */
+    @Override
+    public void syncTable(String tableName) throws IllegalOperationException {
+
+        DataTable dataTable = tableRepository.findByTableName(tableName);
+
+        if (null == dataTable) {
+            throw new IllegalOperationException("要同步的数据源不存在");
+        }
+
+        if (null == dataTable.getConn()) {
+            throw new IllegalOperationException("无法获取数据表的数据库连接信息");
+        }
+
+        if (dataTable.getStatus() == DataTable.Status.SYNCING) {
+            throw new IllegalOperationException("数据表正在同步中，请等待同步完成后再执行此操作");
+        }
+
+        dataTable.setStatus(DataTable.Status.SYNCING);
+        DbUtils.DataBase dataBase = null;
+        try {
+            dataBase = DbUtils.validURL(dataTable.getConn().getUrl());
+        } catch (SQLException e) {
+            throw new IllegalOperationException(e.getMessage());
+        }
+        String reader = dataBase.getReader();
+
+        JSONObject readerPlugin = DbUtils.getReaderTemplate(reader);
+        JSONObject parameter = readerPlugin.getJSONObject("parameter");
+        parameter.put("username", dataTable.getConn().getUserName());
+        parameter.put("password", dataTable.getConn().getPassword());
+        Map<String, Object> connection = new HashMap<>();
+        connection.put("jdbcUrl", new String[]{dataTable.getConn().getUrl()});
+        connection.put("querySql", new String[]{dataTable.getConn().getSql()});
+        parameter.getJSONArray("connection").set(0, connection);
+        readerPlugin.put("parameter", parameter);
+
+        JSONObject job = DbUtils.initJob(url, username, password, dataTable.getTableName(), true);
+        job.getJSONObject("job").getJSONArray("content").getJSONObject(0).put("reader", readerPlugin);
+
+        sync(dataTable, job);
+    }
+
+
+    /**
+     * 数据同步
+     * @param dataTable
+     * @param dataFile
+     * @param delimiter
+     * @param encoding
+     * @throws IllegalOperationException
+     */
+    @Override
+    public void syncTable(DataTable dataTable, File dataFile, String delimiter, String encoding) throws IllegalOperationException {
+
+        if (dataTable.getStatus() == DataTable.Status.SYNCING) {
+            throw new IllegalOperationException("数据表正在同步中，请等待同步完成后再执行此操作");
+        }
+
+        dataTable.setStatus(DataTable.Status.SYNCING);
+        JSONObject readerPlugin = DbUtils.getReaderTemplate("txtfilereader");
+        JSONObject parameter = readerPlugin.getJSONObject("parameter");
+        parameter.getJSONArray("column").set(0, "*");
+        parameter.getJSONArray("path").set(0, dataFile.getAbsolutePath());
+        parameter.put("encoding", encoding);
+        parameter.put("fieldDelimiter", delimiter);
+        readerPlugin.put("parameter", parameter);
+
+        JSONObject job = DbUtils.initJob(url, username, password, dataTable.getTableName(), true);
+        job.getJSONObject("job").getJSONArray("content").getJSONObject(0).put("reader", readerPlugin);
+        sync(dataTable, job);
+    }
+
+    /**
+     * 数据同步
+     *
+     * @param tableName
+     * @param job
+     */
+    private void sync(DataTable dataTable, JSONObject job) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String accessToken = request.getHeader("accessToken");
+        DataTable table = new DataTable();
+        table.setShowName(dataTable.getShowName());
+        table.setTableName(dataTable.getTableName());
+        table.setId(dataTable.getId());
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean res = DbUtils.dataSync(accessToken, table, job);
+                int status = res ? DataTable.Status.FINISH.getValue() : DataTable.Status.FAILED.getValue();
+                tableRepository.updateStatus(dataTable.getId(), status);
+                if (res) {
+                    tableRepository.analyzeDataTable(dataTable.getTableName());
+                }
+            }
+        });
+        t.start();
+    }
+
+//    /**
+//     * 获取表字段
+//     *
+//     * @param dataTable
+//     * @return
+//     */
+//    private String[] getColumns(DataTable dataTable) {
+//        List<Map<String, Object>> tableStructure = tableRepository.getTableStructure(dataTable.getCreatorName(), dataTable.getShowName());
+//        String[] columns = new String[tableStructure.size()];
+//        for (int i = 0; i < tableStructure.size(); i++) {
+//            Map<String, Object> item = tableStructure.get(i);
+//            columns[i] = ((String) item.get("name"));
+//        }
+//        return columns;
+//    }
+
+    @Override
+    public Page<Map<String, Object>> previewData(Long tableId, Pageable pageable) throws ElementNotFoundException {
+        DataTable table = tableRepository.findOne(tableId);
+        if (null == table) {
+            throw new ElementNotFoundException("数据表不存在");
+        }
+        return tableRepository.previewData("select * from " + table.getTableName(), pageable);
+    }
+
+    @Override
+    public List<Map<String, Object>> previewData(String tableName) throws ElementNotFoundException {
+        DataTable table = tableRepository.findByTableName(tableName);
+        //兼容旧的表名
+        if (table == null) {
+            throw new ElementNotFoundException("数据表不存在");
+        }
+        return tableRepository.previewData(tableName);
+    }
+
+    @Override
+    public List<Map<String, Object>> filterDataTable(Long creatorId, String prefix, List<Integer> excludeType, Integer limit) {
+
+        return tableRepository.findDataTableByPrefix(creatorId, prefix, excludeType, limit);
+    }
+
+    @Override
+    public List<Map<String, Object>> getTableStructure(String table) throws FileNotFoundException {
+        DataTable dataTable = null;
+
+        if (NumberUtils.isDigits(table)) {
+            dataTable = tableRepository.findOne(Long.parseLong(table));
+        } else {
+            dataTable = tableRepository.findByTableName(table);
+        }
+        if (null == dataTable) {
+            throw new ElementNotFoundException("数据表[" + table + "]不存在");
+        }
+        List<Map<String, Object>> struct = tableRepository.getTableStructure(dataTable.getCreatorName(), dataTable.getShowName());
+        Map<String, String> dataTypes = PropertiesUtil.getProperties("/sysconfig/dataType-mapping.properties");
+        if (null == dataTypes) {
+            throw new FileNotFoundException("数据类型映射配置文件/sysconfig/dataType-mapping.properties不存在，配置方式：double = numeric");
+        }
+
+        for (Map<String, Object> x : struct) {
+            String key = "dataType";
+            String dataType = (String) x.get(key);
+            String[] tmp = dataType.split(" ");
+            if (!dataTypes.containsKey(tmp[0])) {
+                throw new ElementNotFoundException("/sysconfig/dataType-mapping.properties不存在【" + tmp[0] + "】的映射");
+            }
+            x.put(key, dataTypes.get(tmp[0]));
+        }
+        return struct;
+    }
+
+
+    @Override
+    public void update(DataTable dataTable) {
+        tableRepository.updateStatus(dataTable.getId(), dataTable.getStatus().getValue());
+    }
+
+    @Override
+    public void shareDataTable(Long dataTableId, Audience[] audiences) {
+
+        DataTable table = tableRepository.findOne(dataTableId);
+        Assert.notNull(table, "数据表不存在，Id:" + dataTableId);
+        for (Audience audience : audiences) {
+            audience.setSharedObjectId(dataTableId);
+            ;
+            audience.setObjectType(ShareType.DATASOURCE);
+            // 授予被分享表的查询权限
+            tableRepository.grantPrivilege(table.getTableName(), audience.getUserName());
+        }
+        audienceRepository.save(Arrays.asList(audiences));
+    }
+
+    @Override
+    public void dropExpiredTable(String... tables) {
+
+        if (ArrayUtils.isNotEmpty(tables)) {
+            for (String table : tables) {
+                logger.info("drop table:{}", table);
+                tableRepository.dropTable(table);
+            }
+        }
+    }
+
+    @Override
+    public void batchExecuteSQL(String... sqls) throws SQLException {
+        tableRepository.batchExecuteSQL(sqls);
+    }
+
+    @Override
+    public Page<Map<String, Object>> findDataByOutputId(Long projectId, String outputId, Pageable pageable) throws ElementNotFoundException {
+
+        Project project = projectRepository.findOne(projectId);
+        if (null == project) {
+            throw new ElementNotFoundException("不存在id为" + projectId + "的工程");
+        }
+        if (NumberUtils.isDigits(outputId)) {
+            return previewData(Long.parseLong(outputId), pageable);
+        } else {
+            String tableName = CommonUtils.generateTableName(project.getCreatorName(), outputId);
+            return tableRepository.previewData("select * from " + tableName, pageable);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> findDataByVisualConfig(Long projectId, String inputId, VisualConfig config) throws ElementNotFoundException {
+        Project project = projectRepository.findOne(projectId);
+        if (null == project) {
+            throw new ElementNotFoundException("不存在id为" + projectId + "的工程");
+        }
+
+        String tableName;
+        if (NumberUtils.isDigits(inputId)) {
+            DataTable DataTable = findOne(Long.parseLong(inputId));
+            tableName = DataTable.getTableName();
+        } else {
+            tableName = CommonUtils.generateTableName(project.getCreatorName(), inputId);
+        }
+        String sql = config.toString(tableName);
+        logger.info("will executing SQL: {}", sql);
+        try {
+            return tableRepository.findBySQL(sql);
+        } catch (SQLException e) {
+            String errorMsgPattern = "SQL执行出错，SQLState: {}， {}";
+            String errorMsg = MessageFormatter.arrayFormat(errorMsgPattern, new Object[]{e.getSQLState(), StringKit.substringBefore(e.getMessage(), "\n").replaceAll(tableName + ".", "")}).getMessage();
+            throw new RuntimeException(errorMsg);
+        }
+    }
+
+    @Override
+    public DataSyncStrategy getStrategyByTableId(Long tableId) {
+        return dataSyncStrategyRepository.findByTableId(tableId);
+    }
+
+    @Override
+    public Long addDataSyncStrategy(DataSyncStrategy strategy) throws ClassNotFoundException, SQLException {
+
+        DataTable table = findOne(strategy.getTableId());
+        if (table == null) {
+            throw new ElementNotFoundException("数据源不存在，id:" + strategy.getTableId());
+        }
+
+        if (!table.getSupportDataSync()) {
+            throw new IllegalOperationException("数据源不支持同步操作，id:" + strategy.getTableId());
+        }
+        //如果是增量更新模式并且配置了数据库连接信息
+        if (strategy.getMode() == DataSyncStrategy.Mode.INCREMENT && null != table.getConn()) {
+
+            if (!strategy.getInsert().startsWith(table.getConn().getSql())) {
+                throw new IllegalArgumentException("增量插入SQL的主体必须与数据源的取数SQL“" + table.getConn().getSql() + "”一致");
+            }
+
+            DBConnection conn = table.getConn();
+            Optional<String> optional = Constants.DRIVERS.keySet().stream().filter(x -> x.equals(conn.getUrl().substring(0, x.length()))).findFirst();
+            Class.forName(Constants.DRIVERS.get(optional.get())[0]);
+            try (java.sql.Connection connection = DriverManager.getConnection(conn.getUrl(), conn.getUserName(), conn.getPassword());) {
+                ResultSetMetaData metaData = null;
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(strategy.getDelete());
+                metaData = resultSet.getMetaData();
+
+                if (metaData.getColumnCount() > 1) {
+                    throw new IllegalArgumentException("增量删除语句的结果集只能包含ID列");
+                }
+
+                resultSet = statement.executeQuery(strategy.getUpdate());
+                metaData = resultSet.getMetaData();
+
+                if (metaData.getColumnCount() > 1) {
+                    throw new IllegalArgumentException("增量修改语句的结果集只能包含ID列");
+                }
+                org.apache.commons.dbutils.DbUtils.close(resultSet);
+                org.apache.commons.dbutils.DbUtils.close(statement);
+            }
+        }
+
+
+        dataSyncStrategyRepository.save(strategy);
+//        //如果设定了cron且格式正确
+//        if (CronExpression.isValidExpression(strategy.getCron())) {
+//            DataTable dataTable = tableRepository.findOne(strategy.getTableId());
+//            String jobName = dataTable.getTableName();
+//            TriggerKey triggerKey = TriggerKey.triggerKey(jobName, "group");
+//            // 表达式调度构建器
+//            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(strategy.getCron());
+//            // 按新的表达式构建一个新的trigger
+//            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
+//            JobKey jobKey = new JobKey(jobName, "group");
+//            JobDetail jobDetail = JobBuilder.newJob(SyncDataJobBean.class).withIdentity(jobKey).build();
+//            jobDetail.getJobDataMap().put("dataTable", dataTable);
+//
+//            try {
+//                //调度前移除
+//                scheduler.deleteJob(jobKey);
+//                //开始调度
+//                scheduler.scheduleJob(jobDetail, trigger);
+//            } catch (SchedulerException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        return strategy.getId();
+    }
+
+    @Override
+    public void updateLastSyncTimeForTable(Long tableId, Date lastSyncTime) {
+        DataSyncStrategy strategy = dataSyncStrategyRepository.findByTableId(tableId);
+        if (strategy != null) {
+            strategy.setLastSyncTime(lastSyncTime);
+        }
+    }
+
+}

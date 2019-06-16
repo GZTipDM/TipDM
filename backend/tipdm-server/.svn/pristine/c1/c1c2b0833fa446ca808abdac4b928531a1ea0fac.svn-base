@@ -1,0 +1,47 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: yarn
+  Date: 2017/6/24
+  Time: 23:22
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>-_-。sorry！您还未获得授权许可哦</title>
+</head>
+<style type="text/css">
+    body,html,form,table,tr,th,td,input,buttom,div{padding:0;margin:0;}body,html{background:#eee;width:100%;font-size:14px;font-family:"Microsoft YaHei";}.unAuthDiv{background:#fff;box-shadow:0 5px 10px #ccc;margin:7% auto 0;width:40%;padding:0 2em 1em;min-width:400px;}.unAuthDiv .tit{border-bottom:1px solid #ccc;color:#c00;font-size:18px;font-weight:bold;padding:1.2em 0;text-align:center;}.unAuthTable td{padding:1.8em 10px;white-space:nowrap;vertical-align:top;}
+    .unAuthTable .mNum{word-break:break-all;word-wrap:break-word;white-space:normal;}
+    .unAuthTable .funBtn td{border-top:1px solid #ccc;}
+    .unAuthTable .upFile{float:left;height:3em;cursor:pointer;font-family:"Microsoft YaHei";}
+    .unAuthTable .btn{float:right;border:1px solid #ccc;float:right;height:3em;padding:0 1.5em;cursor:pointer;}
+    .unAuthTable .btn:hover{border-color:#c00;background-color:#c00;color:#fff;}
+</style>
+<body cz-shortcut-listen="true">
+<form method="post" name="form" action="<%=request.getContextPath()%>/license/install" enctype="multipart/form-data">
+    <div class="unAuthDiv">
+        <div class="tit"><%=request.getAttribute("message")%></div>
+        <table class="unAuthTable" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>机器码：</td>
+                <td class="mNum"><%=request.getAttribute("machineCode")%></td>
+            </tr>
+            <tr class="funBtn">
+                <td colspan="2"><input class="upFile" id="license" name="license" type="file"><button class="btn" type="button" onclick="installLicense(event)">安装License</button></td>
+            </tr>
+        </table>
+    </div>
+</form>
+<script>
+    function installLicense(event){
+        if (!document.getElementById("license").value) {
+            event.preventDefault();
+            alert("请选择License文件！");
+        }else{
+            document.forms["form"].submit();
+        }
+    }
+</script>
+</body>
+</html>

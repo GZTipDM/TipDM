@@ -1,0 +1,29 @@
+package com.tipdm.framework.dmserver;
+
+import com.tipdm.framework.service.dmserver.ProjectService;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springside.modules.test.spring.SpringTransactionalTestCase;
+
+import javax.transaction.Transactional;
+
+/**
+ * Created by zhoulong on 2016/12/15.
+ * E-mail:zhoulong8513@gmail.com
+ */
+@ContextConfiguration(locations = { "classpath*:/applicationContext*.xml" })
+@Transactional
+public class ProjectTest extends SpringTransactionalTestCase {
+
+    @Autowired
+    private ProjectService projectService;
+
+    @Test
+    public void testFindPath(){
+
+        String path = projectService.getRealPathByDocumentId(5L);
+
+        System.out.println(path);
+    }
+}

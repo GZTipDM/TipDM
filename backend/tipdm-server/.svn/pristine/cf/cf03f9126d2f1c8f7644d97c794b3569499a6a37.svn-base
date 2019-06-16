@@ -1,0 +1,13 @@
+package com.tipdm.framework.controller.dmserver.entity.datavisual;
+
+/**
+ * Created by zhoulong on 2017/8/23.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public enum AggregateFun {
+    sum,
+    count,
+    min,
+    max,
+    avg
+}

@@ -1,0 +1,56 @@
+package com.tipdm.framework.model.dmserver;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Notebook rest api request message
+ * 
+ */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class Notebook {
+
+	private String id;
+	private String name;
+	private List<Paragraph> paragraphs = new ArrayList<Paragraph>();
+
+	public Notebook() {
+
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public List<Paragraph> getParagraphs() {
+		return paragraphs;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setParagraphs(List<Paragraph> paragraphs) {
+		this.paragraphs = paragraphs;
+	}
+	
+	public void addGraph(Paragraph graph){
+		if(null != graph){
+			this.paragraphs.add(graph);
+		}
+	}
+	
+	public void clearGraphs(){
+		this.paragraphs.clear();
+	}
+}

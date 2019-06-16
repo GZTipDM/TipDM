@@ -1,0 +1,76 @@
+package com.tipdm.framework.multitenancy;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.tipdm.framework.common.utils.SpringUtils;
+import com.tipdm.framework.dmserver.utils.Constants;
+import org.hibernate.HibernateException;
+
+import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+
+import javax.sql.DataSource;
+
+/**
+ * Created by TipDM on 2017/11/11.
+ */
+public class MultiTenantProvider implements MultiTenantConnectionProvider {
+
+    private DataSource dataSource;
+
+    public MultiTenantProvider(){
+        this.dataSource = SpringUtils.getBean("dataSource", DataSource.class);
+    }
+
+    @Override
+    public boolean supportsAggressiveRelease() {
+        return false;
+    }
+
+    @Override
+    public boolean isUnwrappableAs(Class clazz) {
+        return false;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        return null;
+    }
+
+    @Override
+    public Connection getAnyConnection() throws SQLException {
+        final Connection connection = getConnection();
+        try {
+            connection.createStatement().execute("SET SCHEMA 'public'");
+        } catch (SQLException e) {
+            throw new HibernateException("Could not alter JDBC connection to specified schema [public]", e);
+        }
+        return connection;
+    }
+
+    @Override
+    public Connection getConnection(String tenantIdentifier) throws SQLException {
+        final Connection connection = getConnection();
+        try {
+            connection.createStatement().execute("SET SCHEMA '" + tenantIdentifier + "'");
+        } catch (SQLException e) {
+            throw new HibernateException("Could not alter JDBC connection to specified schema [" + tenantIdentifier + "]", e);
+        }
+        return connection;
+    }
+
+    @Override
+    public void releaseAnyConnection(Connection connection) throws SQLException {
+        connection.close();
+    }
+
+    @Override
+    public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
+        releaseAnyConnection(connection);
+    }
+
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+}

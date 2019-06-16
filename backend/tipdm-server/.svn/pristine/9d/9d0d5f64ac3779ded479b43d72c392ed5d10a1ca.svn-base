@@ -1,0 +1,22 @@
+package com.tipdm.framework.repository.dmserver;
+
+import com.tipdm.framework.model.dmserver.Model;
+import com.tipdm.framework.persist.BaseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Map;
+
+/**
+ * Created by zhoulong on 2016/12/15.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public interface ModelRepository extends BaseRepository<Model, Long> {
+
+    public Model findByNodeIdAndVersion(String nodeId, Integer version);
+
+    public Model findByModelNameAndCreatorId(String modelName, Long creatorId);
+
+    public Page<Model> findBySharedModels(Map<String, Object> params, Pageable pageable);
+
+}

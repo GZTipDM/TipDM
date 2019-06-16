@@ -1,0 +1,17 @@
+package com.tipdm.framework.dmserver.exception;
+
+/**
+ * Created by zhoulong on 2017/7/27.
+ * E-mail:zhoulong8513@gmail.com
+ * 记录不存在时抛出此异常
+ */
+public class ElementNotFoundException extends RuntimeException {
+
+    public ElementNotFoundException(String message) {
+        super(message);
+    }
+
+    public ElementNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

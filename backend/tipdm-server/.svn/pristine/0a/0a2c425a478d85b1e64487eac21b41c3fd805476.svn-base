@@ -1,0 +1,62 @@
+package com.tipdm.framework.dmserver.config;
+
+import com.google.common.base.Predicate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.google.common.base.Predicates.or;
+import static springfox.documentation.builders.PathSelectors.regex;
+/**
+ * Created by TipDM on 2016/12/10.
+ * E-mail:devp@tipdm.com
+ */
+@Configuration
+@EnableSwagger2
+@EnableWebMvc
+@PropertySource(value = "classpath:sysconfig/system.properties")
+public class RestApiConfig {
+
+
+    @Bean
+    public Docket api() {
+        Set<String> produces = new HashSet<>();
+        produces.add("application/json");
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .produces(produces)
+                .select()
+                .paths(tipDMAPIPaths())
+                .build();
+    }
+
+    private Predicate<String> tipDMAPIPaths() {
+        return or(
+                regex("/api/.*"),
+                regex("/token/.*"),
+                regex("/s/.*")
+        );
+    }
+
+    private ApiInfo apiInfo()
+    {
+        return new ApiInfoBuilder()
+                .title("TipDM大数据挖掘分析平台|在线API")
+                .description("在线学习，测试TipDM大数据挖掘分析平台的算法接口")
+                .termsOfServiceUrl("http://www.tipdm.cn")
+                .contact(new Contact("TipDM", "http://www.tipdm.cn", "services@tipdm.com"))
+                .version("3.0")
+                .build();
+    }
+
+}

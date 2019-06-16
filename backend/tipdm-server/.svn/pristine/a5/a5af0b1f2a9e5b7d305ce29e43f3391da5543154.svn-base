@@ -1,0 +1,50 @@
+package com.tipdm.framework.service.dmserver;
+
+import com.tipdm.framework.controller.dmserver.entity.task.UpdateModel;
+import com.tipdm.framework.dmserver.core.task.schedule.TaskState;
+import com.tipdm.framework.model.dmserver.Task;
+import com.tipdm.framework.service.BaseService;
+import org.quartz.SchedulerException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Map;
+
+public interface TaskService extends BaseService<Task, Long> {
+
+    public Page<Task> findTaskByCondition(Map<String, Object> params, Pageable pageable);
+
+    public List<Map<String, Object>> filterTaskByName(Long creatorId, String condition, Integer limit);
+
+    public void update(Long id, UpdateModel model);
+
+    public void updateStatus(Long id, TaskState state);
+
+    /**
+     * 获取任务信息
+     * @param id
+     * @return
+     */
+    public Task get(Long id);
+
+    public List<Task> findByName(String name);
+
+    /**
+     * 加入调度
+     * @param accessToken
+     * @param id
+     * @throws SchedulerException
+     */
+    public void start(String accessToken, Long id) throws SchedulerException;
+
+    /**
+     * 立即执行一次
+     * @param accessToken
+     * @param id
+     * @throws SchedulerException
+     */
+    public void now(String accessToken, Long id) throws SchedulerException;
+
+    public void stop(Long id) throws SchedulerException;
+}

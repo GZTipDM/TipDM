@@ -1,0 +1,187 @@
+package com.tipdm.framework.controller.dmserver;
+
+import com.alibaba.fastjson.JSON;
+import com.tipdm.framework.common.controller.Result;
+import com.tipdm.framework.common.controller.base.BaseController;
+import com.tipdm.framework.common.token.TokenManager;
+import com.tipdm.framework.common.token.model.TokenModel;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.controller.dmserver.entity.uda.UDAComponent;
+import com.tipdm.framework.controller.dmserver.entity.uda.UDATestBean;
+import com.tipdm.framework.model.dmserver.Component;
+import com.tipdm.framework.model.dmserver.ComponentExtra;
+import com.tipdm.framework.service.dmserver.UDAService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+@SuppressWarnings("all")
+@RestController
+@RequestMapping("/api/uda")
+@Api(value = "/api/uda", position = 1, tags = "自定义算法管理")
+public class UDAController extends BaseController {
+
+    private final Logger logger = LoggerFactory.getLogger(UDAController.class);
+
+    @Autowired
+    private TokenManager tokenManager;
+
+    @Autowired
+    private UDAService udaService;
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @ApiOperation(value = "自定义算法列表")
+    public Result getUDAList(@ApiParam(value = "用户访问令牌", required = true) @RequestHeader("accessToken") String accessToken,
+                             @ApiParam(value = "页码", required = true) @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+                             @ApiParam(value = "页大小", required = true) @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Result result = new Result();
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        List<Component> componentList = udaService.findList(0L, tokenModel.getUserId());
+        result.setData(componentList);
+        return result;
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ApiOperation(value = "测试脚本")
+    public Result testUDA(@ApiParam(value = "用户访问令牌", required = true) @RequestHeader("accessToken") String accessToken,
+                          @ApiParam(required = true, name = "component")@RequestBody UDATestBean uda) {
+        Result result = new Result();
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        String script = uda.getScript();
+        script = StringKit.replace(script, "\r\n", "\n");
+        uda.setScript(script);
+        Boolean testResult = udaService.testScript(uda, tokenModel.getUsername());
+        result.setData(testResult);
+        return result;
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ApiOperation(value = "新增算法", notes = "添加自定义算法，成功后返回uploadId", consumes = "application/json")
+//    @ApiImplicitParam(name = "udc", value = "算法对象", required = true, dataType = "json", paramType = "formData")
+    public Result add(@ApiParam(value = "用户访问令牌", required = true) @RequestHeader("accessToken") String accessToken,
+                      @ApiParam(required = true, name = "component", value = "自定义算法的信息")@RequestBody() UDAComponent udc,
+                      HttpServletResponse response) {
+        Result result = new Result();
+
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        Component component = JSON.parseObject(JSON.toJSONString(udc), Component.class);
+        ComponentExtra componentExtra = new ComponentExtra();
+//        if(udc.getEngine() == ComponentExtra.ENGINE.SPARK || udc.getEngine() == ComponentExtra.ENGINE.HADOOP) {
+////            String fileName = UUID.randomUUID() + ".jar";
+////            File jar = new File(RedisUtils.get(Constants.JAR_DIR, String.class), fileName);
+////            file.transferTo(jar);
+////            jar.createNewFile();
+////            componentExtra.setValue(jar.getName());
+//            componentExtra.setType(ComponentExtra.ExtraType.FILE);
+//            componentExtra.setMainClass(udc.getMainClass());
+//            if(udc.getEngine() == ComponentExtra.ENGINE.SPARK){
+//                component.setTargetAlgorithm("SparkAlgorithmPlugin");
+//            }else {
+//                component.setTargetAlgorithm("MRAlgorithmPlugin");
+//            }
+//        } else {
+            component.setTargetAlgorithm("com.tipdm.framework.dmserver.core.algo.unparallel.CommonAlgorithm");
+//        }
+//        componentExtra.setUdaType(udc.getUdaType());
+        componentExtra.setEngine(udc.getEngine());
+        component.setExtra(componentExtra);
+        component.setInBuilt(Boolean.FALSE);
+        component.setEnabled(Boolean.TRUE);
+        component.setCreatorId(tokenModel.getUserId());
+        component.setCreatorName(tokenModel.getUsername());
+        component.setComponent(Boolean.TRUE);
+//        component.setTargetAlgorithm(com.tipdm.framework.dmserver.utils.Constants.UDA_TYPE.get(udc.getUdaType().name()));
+//        component.setTargetAlgorithm("UserDefinedAlgorithm");
+        udaService.save(component);
+        result.setMessage("个人组件新增成功");
+//        if(udc.getEngine() == ComponentExtra.ENGINE.SPARK || udc.getEngine() == ComponentExtra.ENGINE.HADOOP) {
+//            String uploadId = StringKit.getBase64FromUUID();
+//            RedisUtils.putToMap(com.tipdm.framework.dmserver.utils.Constants.FILE_UPLOAD_ID, uploadId, new UploadInfo(component.getId(), uploadId, UploadInfo.Category.UDC));
+//            result.setData(uploadId);
+//        } else {
+            result.setData(component.getId());
+//        }
+        response.setStatus(HttpStatus.CREATED.value());
+        return result;
+    }
+
+    @RequestMapping(value = "/{id}/", method = RequestMethod.POST)
+    @ApiOperation(value = "更新自定义算法", consumes = "consumes = \"multipart/form-data\"")
+    public Result update(@ApiParam(value = "用户访问令牌", required = true) @RequestHeader("accessToken") String accessToken,
+                         @ApiParam(value = "id", required = true) @PathVariable(name = "id") Long id,
+                         @ApiParam(required = true, name="component") @RequestBody UDAComponent udc,
+                         HttpServletResponse response) throws IOException {
+        Result result = new Result();
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        Component component = JSON.parseObject(JSON.toJSONString(udc), Component.class);
+        ComponentExtra componentExtra = new ComponentExtra();
+//        if(udc.getEngine() == ComponentExtra.ENGINE.SPARK || udc.getEngine() == ComponentExtra.ENGINE.HADOOP) {
+////            String fileName = UUID.randomUUID() + ".jar";
+////            File jar = new File(RedisUtils.get(Constants.JAR_DIR, String.class), fileName);
+////            file.transferTo(jar);
+////            jar.createNewFile();
+////            componentExtra.setValue(jar.getName());
+////            componentExtra.setType(ComponentExtra.ExtraType.FILE);
+//            componentExtra.setMainClass(udc.getMainClass());
+//            if(udc.getEngine() == ComponentExtra.ENGINE.SPARK){
+//                component.setTargetAlgorithm("SparkAlgorithmPlugin");
+//
+//            }else {
+//                component.setTargetAlgorithm("MRAlgorithmPlugin");
+//
+//            }
+//        } else {
+            component.setTargetAlgorithm("com.tipdm.framework.dmserver.core.algo.unparallel.CommonAlgorithm");
+//        }
+//        componentExtra.setUdaType(udc.getUdaType());
+        componentExtra.setEngine(udc.getEngine());
+        component.setExtra(componentExtra);
+        component.setInBuilt(Boolean.FALSE);
+        component.setEnabled(Boolean.TRUE);
+        component.setCreatorId(tokenModel.getUserId());
+        component.setCreatorName(tokenModel.getUsername());
+        component.setComponent(Boolean.TRUE);
+//        String targetAlgorithm = com.tipdm.framework.dmserver.utils.Constants.UDA_TYPE.get(udc.getUdaType().name());
+//        component.setTargetAlgorithm(targetAlgorithm);
+//        component.setTargetAlgorithm("UserDefinedAlgorithm");
+        udaService.update(id, component);
+        result.setMessage("更新成功");
+//        if(udc.getEngine() == ComponentExtra.ENGINE.SPARK || udc.getEngine() == ComponentExtra.ENGINE.HADOOP) {
+//            String uploadId = StringKit.getBase64FromUUID();
+//            RedisUtils.putToMap(com.tipdm.framework.dmserver.utils.Constants.FILE_UPLOAD_ID, uploadId, new UploadInfo(component.getId(), uploadId, UploadInfo.Category.UDC));
+//            result.setData(uploadId);
+//        } else {
+            result.setData(component.getId());
+//        }
+        return result;
+    }
+
+    @RequestMapping(value = "/{id}/", method = RequestMethod.DELETE)
+    @ApiOperation(value = "删除自定义算法")
+    public Result delete(@ApiParam(value = "用户访问令牌", required = true) @RequestHeader("accessToken") String accessToken,
+                          @ApiParam(required = true)@PathVariable(name = "id") Long id) throws IllegalAccessException {
+        Result result = new Result();
+        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+        udaService.deleteUDA(id, tokenModel.getUserId());
+        result.setMessage("删除成功");
+        return result;
+    }
+
+//    @RequestMapping(value = "/help", method = RequestMethod.GET)
+//    @ApiOperation(value = "删除自定义算法")
+//    public Result getHelp(@ApiParam(value = "用户访问令牌", required = true) @RequestHeader("accessToken") String accessToken,
+//                         @ApiParam(required = true, allowableValues = "install.packages,dbutils, reportutils")@RequestParam(name = "cat") String cat) throws IllegalAccessException {
+//        Result result = new Result();
+//
+//        return result;
+//    }
+}

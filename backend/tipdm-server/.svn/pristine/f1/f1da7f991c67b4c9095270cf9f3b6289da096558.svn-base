@@ -1,0 +1,350 @@
+package com.tipdm.framework.dmserver.utils;
+
+import com.alibaba.druid.util.JdbcConstants;
+import com.alibaba.druid.util.JdbcUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.github.drinkjava2.jdialects.springsrc.utils.Assert;
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
+import com.tipdm.framework.common.controller.Result;
+import com.tipdm.framework.common.utils.PropertiesUtil;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.dmserver.exception.ConnectionException;
+import com.tipdm.framework.dmserver.websocket.MessageServer;
+import com.tipdm.framework.persist.jdbc.DynamicLoadDriver;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.postgresql.copy.CopyManager;
+import org.postgresql.core.BaseConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+//import com.tipdm.framework.dmserver.websocket.SystemWebSocketHandler;
+
+/**
+ * Created by TipDM on 2017/1/20.
+ * E-mail:devp@tipdm.com
+ */
+public final class DbUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(DbUtils.class);
+
+    private static int batchSize = 50000;
+
+    public static void copyData(String accessToken, final File dataFile, String targetTable, final String delimiter, final String encoding) {
+
+        Thread thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                Connection connection = null;
+                Statement statement = null;
+                ResultSet resultSet = null;
+
+                Reader reader = null;
+                String tableName = null;
+
+                try {
+                    Properties properties = PropertiesUtil.loadProperties("/sysconfig/database.properties");
+                    String driver = properties.getProperty("db.driver");
+                    String url = properties.getProperty("db.url");
+                    String user = properties.getProperty("db.user");
+                    String password = properties.getProperty("db.password");
+
+                    org.apache.commons.dbutils.DbUtils.loadDriver(driver);
+                    connection = DriverManager.getConnection(url, user, password);
+                    statement = connection.createStatement();
+
+                    String sql = "select creator_name as username, show_name as tableName from dm_user_table where table_name = '" + targetTable + "'";
+                    String truncatesql = "truncate table  \"" + targetTable + "\"";
+                    String defaultDelimiter = StringKit.isBlank(delimiter)?",":delimiter;
+                    String defaultEncoding = StringKit.isBlank(encoding)?"UTF-8":encoding;
+                    String copysql = "copy \"" + targetTable + "\" from stdin with csv header encoding '" + defaultEncoding + "'  delimiter '" + defaultDelimiter + "' NULL as ''";
+
+                    statement.execute(truncatesql);
+                    CopyManager copyManager = new CopyManager((BaseConnection) connection);
+                    reader = new InputStreamReader(new FileInputStream(dataFile), defaultEncoding);
+                    copyManager.copyIn(copysql, reader);
+                    resultSet = statement.executeQuery(sql);
+                    resultSet.next();
+                    tableName = resultSet.getString("tableName");
+
+                    statement.execute("update dm_user_table set status = 0 where table_name = '" + targetTable + "'");
+                    Result result = new Result();
+                    result.setStatus(Result.Status.SUCCESS);
+                    result.setData(tableName);
+                    result.setMessage("数据表"+ tableName +"同步成功");
+                    MessageServer.sendDataSyncResult(accessToken, JSON.toJSONString(result));
+                    statement.execute("analyze verbose \"" + targetTable + "\"");
+                } catch (Exception e){
+                    try {
+                        statement.execute("update dm_user_table set status = 2 where table_name = '" + targetTable + "'");
+                        Result result = new Result();
+                        result.setStatus(Result.Status.FAIL);
+                        result.setData(tableName);
+                        result.setMessage("数据表"+ tableName +"同步失败, 错误信息：" + ExceptionUtils.getRootCauseMessage(e));
+                        MessageServer.sendDataSyncResult(accessToken, JSON.toJSONString(result));
+                    } catch (SQLException e1) {
+                        logger.error("SQLException, error info:", e1);
+                    }
+                    logger.error("CSV入库失败，错误信息：{}", e);
+                } finally {
+
+                    try {
+                        org.apache.commons.dbutils.DbUtils.close(resultSet);
+                    } catch (SQLException e) {
+                        logger.error("close resultset error", e);
+                    }
+
+                    try {
+                        org.apache.commons.dbutils.DbUtils.close(statement);
+                    } catch (SQLException e) {
+                        logger.error("close statement error", e);
+                    }
+
+                    try {
+                        org.apache.commons.dbutils.DbUtils.close(connection);
+                    } catch (SQLException e) {
+                        logger.error("close connection error", e);
+                    }
+
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        logger.error("close reader error", e);
+                    }
+
+                    dataFile.delete();
+                }
+            }
+        });
+
+        thread.start();
+    }
+
+    public static void copyData(String accessToken, String sourceTable, String targetTable, Connection from, Connection to) throws SQLException {
+        PreparedStatement fps = null;
+        PreparedStatement tps = null;
+        ResultSet rs = null;
+
+        String url = null;
+
+        try {
+            url = to.getMetaData().getURL();
+            fps = from.prepareStatement("select * from " + sourceTable);
+            fps.setFetchSize(batchSize);
+            rs = fps.executeQuery();
+            ResultSetMetaData meta = rs.getMetaData();
+
+            List<String> columns = new ArrayList<>();
+            for (int i = 1; i <= meta.getColumnCount(); i++) {
+                columns.add(meta.getColumnName(i));
+            }
+
+            to.setAutoCommit(false);
+            tps = to.prepareStatement(
+                    "INSERT INTO " + targetTable + " VALUES ("
+                            + columns.stream().map(c -> "?").collect(Collectors.joining(", "))
+                            + ")");
+
+            while (rs.next()) {
+                for (int i = 1; i <= meta.getColumnCount(); i++) {
+                    tps.setObject(i, rs.getObject(i));
+                }
+                tps.addBatch();
+            }
+            tps.executeBatch();
+            to.commit();
+            Result result = new Result();
+            result.setStatus(Result.Status.SUCCESS);
+            result.setData(targetTable);
+            result.setMessage(url +"上的数据表"+ targetTable +"同步成功");
+            MessageServer.sendDataSyncResult(accessToken, JSON.toJSONString(result));
+        } catch (Exception ex){
+            try {
+                to.rollback();
+            } catch (SQLException e) {
+
+            }
+            String errorMsg = ExceptionUtils.getRootCauseMessage(ex);
+            if(StringKit.contains(errorMsg, ": ")){
+                errorMsg = StringKit.substringAfter(errorMsg, ": ");
+            }
+            logger.error("入库失败,", errorMsg);
+            Result result = new Result();
+            result.setStatus(Result.Status.FAIL);
+            result.setData(targetTable);
+            result.setMessage(url +"上的数据表"+ targetTable +"同步失败，错误信息：" + errorMsg);
+            MessageServer.sendDataSyncResult(accessToken, JSON.toJSONString(result));
+        } finally {
+            try {
+                org.apache.commons.dbutils.DbUtils.close(tps);
+            } catch (SQLException e) {
+                logger.error("close statement error", e);
+            }
+
+            try {
+                org.apache.commons.dbutils.DbUtils.close(rs);
+            } catch (SQLException e) {
+                logger.error("close resultset error", e);
+            }
+
+            try {
+                org.apache.commons.dbutils.DbUtils.close(fps);
+            } catch (SQLException e) {
+                logger.error("close statement error", e);
+            }
+        }
+    }
+
+
+    /**
+     * 生成建表语句
+     * @param columns
+     * @param newTable
+     * @param dbType
+     * @return
+     */
+    static
+    public String buildCreateSQL(String columns, String newTable, String dbType){
+        String sql = null;
+        switch (dbType){
+            case JdbcConstants.SQL_SERVER:
+                sql = " select * into " + newTable + " from ( select " + columns + " where 1=0) tmp";
+                break;
+            case JdbcConstants.POSTGRESQL:
+                sql = " create table " + newTable + " as select " + columns + " where 1=0";
+                break;
+            default:
+                sql = " create table" + newTable + " as select " + columns + " from dual where 1=0";
+                break;
+        }
+        return sql;
+    }
+
+
+    private static List<DataBase> dataBaseList;
+
+    static {
+        InputStream in = PagerKit.class.getResourceAsStream("/sysconfig/jdbcSupport.config");
+        try {
+            String text = IOUtils.toString(in, com.tipdm.framework.common.Constants.CHARACTER);
+            dataBaseList = JSON.parseObject(text, new TypeReference<List<DataBase>>(){});
+        } catch (IOException e) {
+            logger.error("配置文件解析错误，{}", e.getMessage());
+        }
+    }
+
+    public static class DataBase{
+
+        private String connectionUrlPrefix;
+
+        private String jarFileName;
+
+        private String driverClass;
+
+        private String pageSQL;
+
+        public String getConnectionUrlPrefix() {
+            return connectionUrlPrefix;
+        }
+
+        public void setConnectionUrlPrefix(String connectionUrlPrefix) {
+            this.connectionUrlPrefix = connectionUrlPrefix;
+        }
+
+        public String getJarFileName() {
+            return jarFileName;
+        }
+
+        public void setJarFileName(String jarFileName) {
+            this.jarFileName = jarFileName;
+        }
+
+        public String getDriverClass() {
+            return driverClass;
+        }
+
+        public void setDriverClass(String driverClass) {
+            this.driverClass = driverClass;
+        }
+
+        public String getPageSQL() {
+            return pageSQL;
+        }
+
+        public void setPageSQL(String pageSQL) {
+            this.pageSQL = pageSQL;
+        }
+
+        public String limit(String sql){
+            Assert.notNull(sql, "SQL can not be null");
+            try {
+                String dbType = JdbcUtils.getDbType(connectionUrlPrefix, driverClass);
+                return PagerKit.limit(sql, dbType, 0, 100);
+            } catch (Exception ex) {
+                Template template = Mustache.compiler().escapeHTML(false).compile(this.pageSQL);
+                sql = MessageFormatter.format(" ({}) as tmp ", sql).getMessage();
+                Map<String, Object> params = new HashMap<>();
+                params.put("table", sql);
+                return template.execute(params);
+            }
+        }
+    }
+
+    static
+    public DataBase validURL(String url) throws ClassNotFoundException,SQLException {
+        if(StringKit.isBlank(url)){
+            throw new IllegalArgumentException("数据源连接字符串不能为空！");
+        }
+
+        Optional<DataBase> optional = dataBaseList.stream().filter(x -> url.startsWith(x.getConnectionUrlPrefix())).findFirst();
+        if(optional.isPresent()){
+            DataBase dataBase = optional.get();
+            try {
+                Class.forName(dataBase.getDriverClass());
+            } catch (ClassNotFoundException ex) {
+                File classes = new File(DbUtils.class.getResource("/").getFile());
+                File jarFile = new File(classes.getParentFile(), "lib/" + dataBase.getJarFileName());
+                URL resource = null;
+                try {
+                    resource = jarFile.toURI().toURL();
+                } catch (MalformedURLException e) {
+                    logger.error(e.getMessage());
+                }
+                DynamicLoadDriver.loadDriver(resource, dataBase.getDriverClass());
+            }
+            return dataBase;
+        } else {
+            throw new ClassNotFoundException("不支持的数据库类别，请前往/sysconfig/jdbcSupport.config添加配置");
+        }
+    }
+
+    static
+    public void testConnection(String url, String username, String password){
+        Connection conn = null;
+        try{
+            conn = DriverManager.getConnection(url, username, password);
+        } catch (Exception ex){
+            throw new ConnectionException("无法连接到目标数据库！");
+        } finally {
+            if(null != conn){
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+
+                }
+            }
+        }
+    }
+}

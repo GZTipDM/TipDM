@@ -1,0 +1,161 @@
+package com.tipdm.framework.dmserver.core.task.schedule;
+
+import com.tipdm.framework.common.utils.DateKit;
+import com.tipdm.framework.dmserver.core.task.listener.TaskJobListener;
+import com.tipdm.framework.model.dmserver.Task;
+import com.tipdm.framework.model.dmserver.TaskType;
+import com.tipdm.framework.model.dmserver.UserTable;
+import com.tipdm.framework.service.dmserver.TaskService;
+import com.tipdm.framework.service.dmserver.UserTableService;
+import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+
+import java.util.Date;
+
+//@Service("taskScheduler")
+public class TaskScheduler {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private Scheduler scheduler;
+
+    private TaskService taskService;
+
+    private UserTableService tableService;
+
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
+    public void setTableService(UserTableService tableService) {
+        this.tableService = tableService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    /**
+     * 调度任务
+     *
+     * @param task
+     * @throws SchedulerException
+     */
+    public void schedule(String accessToken, Task task) throws SchedulerException {
+
+        //验证Cron表达式
+        if (!CronExpression.isValidExpression(task.getExpression())) {
+            throw new SchedulerException("非法的Cron表达式");
+        }
+        // 构建trigger
+        TriggerKey triggerKey = TriggerKey.triggerKey(task.getName(), task.getTaskGroup());
+        JobListener taskJobListener = scheduler.getListenerManager().getJobListener(task.getTaskGroup());
+        if (taskJobListener == null) {
+            taskJobListener = new TaskJobListener(task.getTaskGroup());
+            scheduler.getListenerManager().addJobListener(taskJobListener, GroupMatcher.groupEquals(task.getTaskGroup()));
+        }
+        JobKey jobKey = JobKey.jobKey(task.getName(), task.getTaskGroup());
+        deleteJob(jobKey);
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(triggerKey)
+                .withSchedule(CronScheduleBuilder.cronSchedule(task.getExpression()))
+                .build();
+        Class taskClass = task.getTaskClass();
+
+        JobDetail jobDetail = JobBuilder.newJob(taskClass).withIdentity(jobKey).build();
+        jobDetail.getJobDataMap().put("task", task);
+        jobDetail.getJobDataMap().put("modelName", "task");
+        jobDetail.getJobDataMap().put("accessToken", accessToken);
+        if (TaskType.DATASOURCE == task.getTaskType()) {
+            UserTable userTable = tableService.findOne(task.getInstanceId());
+            jobDetail.getJobDataMap().put("userTable", userTable);
+        }
+        //开始调度
+        scheduler.scheduleJob(jobDetail, trigger);
+    }
+
+    /**
+     * 调度任务
+     *
+     * @param accessToken
+     * @param jobName
+     * @param task
+     * @param triggerDate
+     * @throws SchedulerException
+     */
+    public void schedule(String accessToken, String jobName, Task task, Date triggerDate) throws SchedulerException {
+
+        // 构建trigger
+//        String taskName = TriggerKey.createUniqueName(task.getTaskGroup());
+        TriggerKey triggerKey = TriggerKey.triggerKey(jobName, task.getTaskGroup());
+
+        JobListener taskJobListener = scheduler.getListenerManager().getJobListener(TaskJobListener.DEFAULT_NAME);
+        if (taskJobListener == null) {
+            taskJobListener = new TaskJobListener();
+            scheduler.getListenerManager().addJobListener(taskJobListener, GroupMatcher.groupStartsWith(TaskJobListener.DEFAULT_NAME));
+        }
+        JobKey jobKey = JobKey.jobKey(jobName, task.getTaskGroup());
+        logger.info("任务执行时机: {}", DateKit.convert2Str("yyyy-MM-dd HH:mm:ss", triggerDate));
+        SimpleTrigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(triggerKey)
+                .startAt(triggerDate)
+                .withSchedule(
+                        SimpleScheduleBuilder.simpleSchedule()
+                                .withMisfireHandlingInstructionFireNow()
+                                .withIntervalInSeconds(0)
+                                .withRepeatCount(0))//不重复执行
+                .build();
+        Class taskClass = task.getTaskClass();
+
+        JobDetail jobDetail = JobBuilder.newJob(taskClass).withIdentity(jobKey).build();
+        jobDetail.getJobDataMap().put("task", task);
+        jobDetail.getJobDataMap().put("modelName", "task");
+        jobDetail.getJobDataMap().put("accessToken", accessToken);
+        if (TaskType.DATASOURCE == task.getTaskType()) {
+            UserTable userTable = tableService.findOne(task.getInstanceId());
+            jobDetail.getJobDataMap().put("userTable", userTable);
+        }
+        //开始调度
+        scheduler.scheduleJob(jobDetail, trigger);
+    }
+
+
+    public void pause(Task task) throws SchedulerException {
+
+        if (null == task) {
+            throw new SchedulerException("调度任务启动错误，无法获取任务信息");
+        }
+        JobKey jobKey = JobKey.jobKey(String.valueOf(task.getId()), task.getName());//触发器名和触发器组
+        scheduler.pauseJob(jobKey);
+        scheduler.interrupt(jobKey);
+        taskService.updateStatus(task.getId(), TaskState.END);
+
+        logger.info("jobKey:" + jobKey + ",结束成功");
+    }
+
+    public void deleteJob(JobKey jobKey) throws SchedulerException {
+        if(!scheduler.checkExists(jobKey)){
+            return;
+        }
+        GroupMatcher<JobKey> jobKeyGroupMatcher = null;
+        ListenerManager listenerManager = null;
+        try {
+            listenerManager = scheduler.getListenerManager();
+            jobKeyGroupMatcher = GroupMatcher.jobGroupEquals(jobKey.getGroup());
+            listenerManager.removeJobListenerMatcher(jobKey.getGroup(), jobKeyGroupMatcher);
+            scheduler.pauseJob(jobKey);
+            scheduler.deleteJob(jobKey);
+            logger.info("jobKey:" + jobKey + ",删除成功");
+        } catch (SchedulerException ex) {
+            throw new SchedulerException("任务停止调度失败，错误信息：" + ex.getMessage());
+        }
+    }
+
+    public Task getTask(Long taskId){
+        Assert.notNull(taskId, "任务Id不能为空");
+        return taskService.findOne(taskId);
+    }
+}

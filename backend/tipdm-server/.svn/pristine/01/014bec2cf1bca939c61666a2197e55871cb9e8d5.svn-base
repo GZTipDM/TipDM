@@ -1,0 +1,19 @@
+package com.tipdm.framework.repository.dmserver;
+
+import com.tipdm.framework.model.dmserver.Task;
+import com.tipdm.framework.persist.BaseRepository;
+
+import java.util.List;
+import java.util.Map;
+
+
+public interface TaskRepository extends BaseRepository<Task, Long> {
+
+    public List<Map<String, Object>> filterTaskByName(Long creatorId, String condition, Integer limit);
+
+//    public Integer countByDataSource(String dataSource);
+
+//    public Integer countByProject(Long project);
+
+    public List<Task> findByName(String name);
+}

@@ -1,0 +1,10 @@
+package com.tipdm.framework.service.dmserver;
+
+/**
+ * Created by zhoulong on 2017/1/17.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public interface WebSocketService {
+
+    public int getUnReadNews(String userName);
+}

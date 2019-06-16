@@ -1,0 +1,37 @@
+org.quartz.scheduler.instanceName = quartzScheduler
+org.quartz.scheduler.instanceId = AUTO
+
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
+org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+org.quartz.jobStore.tablePrefix = qrtz_
+
+#触发器超时临界值，单位：毫秒
+org.quartz.jobStore.misfireThreshold = 300000
+
+#是否加入集群
+org.quartz.jobStore.isClustered=true
+#调度实例失效的检查时间间隔
+org.quartz.jobStore.clusterCheckinInterval=20000
+
+#插件
+org.quartz.plugin.jobHistory.class=org.quartz.plugins.history.LoggingJobHistoryPlugin
+org.quartz.plugin.jobHistory.jobToBeFiredMessage=Job [{1}.{0}] to be fired by trigger [{4}.{3}], re-fire: {7}
+org.quartz.plugin.jobHistory.jobSuccessMessage=Job [{1}.{0}] execution complete and reports: {8}
+org.quartz.plugin.jobHistory.jobFailedMessage=Job [{1}.{0}] execution failed with exception: {8}
+org.quartz.plugin.jobHistory.jobWasVetoedMessage=Job [{1}.{0}] was vetoed. It was to be fired by trigger [{4}.{3}] at: {2, date, dd-MM-yyyy HH:mm:ss.SSS}
+
+#线程池维护线程的最小数量
+quartz.corePoolSize = 5
+#线程池维护线程的最大数量
+quartz.maxPoolSize = 100
+#闲置线程的最大存活时长，单位:秒
+quartz.keepAliveSeconds = 300
+#缓冲队列的大小
+quartz.queueCapacity = 5
+
+# 流程运行超时，单位：分钟
+quartz.timeout=60
+# 并发工程个数
+quartz.task.size=10
+
+

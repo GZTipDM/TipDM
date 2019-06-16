@@ -1,0 +1,88 @@
+package com.tipdm.framework.repository.dmserver.impl;
+
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.model.dmserver.Model;
+import com.tipdm.framework.model.dmserver.SharedUsers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.Date;
+import java.util.Map;
+
+/**
+ * Created by zhoulong on 2017/3/16.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class ModelRepositoryImpl {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
+
+
+    @SuppressWarnings("all")
+    public Page<Model> findBySharedModels(Map<String, Object> params, Pageable pageable){
+
+        StringBuilder sb = new StringBuilder("select distinct m from Model as m " +
+                " join SharedUsers as s on m.id = s.sharedObjectId " +
+                " where s.objectType = :objectType and s.userId = :userId ");
+
+        String modelName = (String)params.get("modelName");
+        if(StringKit.isNotBlank(modelName)){
+            sb.append(" and m.modelName like :name");
+        }
+
+        Date beginTime = null;
+        Date endTime = null;
+        try {
+            beginTime = (Date)params.get("beginTime");
+            endTime = (Date)params.get("endTime");
+        } catch (Exception e) {
+
+        }
+
+        if(beginTime != null && endTime != null){
+            sb.append("  and ( m.deployTime between :beginTime and :endTime )");
+        }
+
+        String sql = sb.toString();
+        Query query = em.createQuery(sql);
+
+        String countSQL = StringKit.replace(sql, "distinct m", "count(distinct m)");
+        Query countQuery = em.createQuery(countSQL);
+
+        query.setParameter("objectType", SharedUsers.ObjectType.MODEL);
+        query.setParameter("userId", params.get("userId"));
+
+        countQuery.setParameter("objectType", SharedUsers.ObjectType.MODEL);
+        countQuery.setParameter("userId", params.get("userId"));
+
+        if(StringKit.isNotBlank(modelName)) {
+            query.setParameter("name", modelName+"%");
+            countQuery.setParameter("name", modelName+"%");
+        }
+
+        if(beginTime != null && endTime != null) {
+            query.setParameter("beginTime", beginTime);
+            query.setParameter("endTime", endTime);
+
+            countQuery.setParameter("beginTime", beginTime);
+            countQuery.setParameter("endTime", endTime);
+        }
+
+        Long count = (Long)countQuery.getSingleResult();
+//        Long count = 10L;
+        query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
+
+        Page<Model> page = new PageImpl<Model>(query.getResultList(), pageable, count);
+        return page;
+    }
+}

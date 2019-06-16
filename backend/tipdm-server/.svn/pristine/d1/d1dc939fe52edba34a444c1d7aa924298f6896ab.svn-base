@@ -1,0 +1,11 @@
+package com.tipdm.framework.controller.dmserver.dto;
+
+public class JobClassConstant {
+    public static final String ENGINEERING = "WorkFlowJobBean";
+
+    public static final String DATASOURCE = "SyncDataJobBean";
+
+    public static final String TYPEBEAN = "ENGINEERING";
+
+    public static final String TYPEDATA = "DATASOURCE";
+}

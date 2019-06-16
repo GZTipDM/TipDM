@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: net.sf.ehcache:ehcache-core:2.6.9">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../maven/m2/net/sf/ehcache/ehcache-core/2.6.9/ehcache-core-2.6.9.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../maven/m2/net/sf/ehcache/ehcache-core/2.6.9/ehcache-core-2.6.9-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../maven/m2/net/sf/ehcache/ehcache-core/2.6.9/ehcache-core-2.6.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

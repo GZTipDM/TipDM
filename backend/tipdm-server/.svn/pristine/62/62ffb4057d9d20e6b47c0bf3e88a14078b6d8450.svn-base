@@ -1,0 +1,69 @@
+package com.tipdm.framework.dmserver.core.algo.model;
+
+import com.tipdm.framework.dmserver.core.algo.unparallel.AbstractPythonAlgorithm;
+import com.tipdm.framework.dmserver.exception.AlgorithmException;
+
+/**
+ * Created by zhoulong on 2017/8/16.
+ * E-mail:zhoulong8513@gmail.com
+ * 模型对比
+ */
+public class ModelComparer extends AbstractPythonAlgorithm {
+
+
+    @Override
+    protected void execute() throws AlgorithmException {
+
+        if(!getInputs().containsKey("input")){
+            throw new AlgorithmException("数据源缺失： input");
+        }
+
+        if(!getInputs().containsKey("first_model")){
+            throw new AlgorithmException("缺失参数： first_model");
+        }
+
+        if(!getInputs().containsKey("second_model")){
+            throw new AlgorithmException("缺失参数： second_model");
+        }
+
+        throw new AlgorithmException("Ooops... 该功能暂未实现");
+
+//        String modelDir = RedisUtils.get(Constants.MODEL_DIR, String.class);
+//        Map<String, ComponentIO> inputMap = component.getInputs().stream().collect(Collectors.toMap(ComponentIO::getKey, x -> x));
+//        ComponentIO firstModel = inputMap.get("first_model");
+//        //暂时先这样处理
+//        Model first = (Model)RedisUtils.getFromMap(Constants.UN_SAVED_MODEL, CommonUtils.recoverTableName(component.getWorkFlow().getCreator(), firstModel.getTempTable()));
+//        ComponentIO secondModel = inputMap.get("second_model");
+//        Model second = (Model)RedisUtils.getFromMap(Constants.UN_SAVED_MODEL, CommonUtils.recoverTableName(component.getWorkFlow().getCreator(), secondModel.getTempTable()));
+//        File firstModelFile = new File(modelDir, first.getModelPath());
+//        File secondModelFile = new File(modelDir, second.getModelPath());
+//
+//        session.readRDS("first_model", firstModelFile);
+//        session.readRDS("second_model", secondModelFile);
+//
+//        logger.info("载入算法脚本...");
+//        //执行算法
+//        if(component.getScript().size() == 0 || !component.getScript().containsKey(Step.MAIN)){
+//            throw new IllegalArgumentException("算法载入出错，无法读取脚本");
+//        }
+//
+//        String main = component.getScript().get(Step.MAIN);
+//        StringBuilder sb = new StringBuilder(main).append("\n");
+//        sb.append("source(dbUtils.R)  # 引入数据库工具类\n" +
+//                "conn <- tipdm.getConnection(host, port, dbname, user, password)\n");
+//        sb.append("tryCatch({").append("\n");
+//        sb.append("model <- execute(conn, inputs, params, outputs, reportFileName)");
+//        sb.append("}, finally = {").append("\n");
+//        sb.append("tipdm.closeConnection(conn)").append("\n");
+//        sb.append("})").append("\n");
+//        RScript script = RScript.createFromScriptString(sb.toString());
+//        try {
+//            script.execute(session);
+//            receiveReport();
+//        } catch (REXPMismatchException e) {
+//            throw new AlgorithmException(e.getMessage());
+//        } catch (REngineException e) {
+//            throw new AlgorithmException(e.getMessage());
+//        }
+    }
+}

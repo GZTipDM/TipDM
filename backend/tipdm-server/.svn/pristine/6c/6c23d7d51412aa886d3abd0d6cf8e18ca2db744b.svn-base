@@ -1,0 +1,26 @@
+package com.tipdm.framework.dmserver.config;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Created by TipDM on 2017/7/17.
+ * E-mail:devp@tipdm.com
+ */
+@Configuration
+public class MetricConfig {
+
+    @Bean
+    public Slf4jReporter slf4jReporter(MetricRegistry metrics) {
+        Slf4jReporter reporter = Slf4jReporter.forRegistry(metrics)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+        reporter.start(5, TimeUnit.MINUTES);
+        return reporter;
+    }
+}

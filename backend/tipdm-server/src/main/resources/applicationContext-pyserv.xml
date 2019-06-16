@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="config" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+		<property name="maxWaitMillis" value="30000"/>
+		<property name="maxIdle" value="${maxIdle}"/>
+		<property name="maxTotal" value="${maxTotal}"/>
+		<property name="minIdle" value="${minIdle}"/>
+		<property name="numTestsPerEvictionRun" value="${numTestsPerEvictionRun}"/>
+		<property name="lifo" value="${lifo}"/>
+		<property name="testOnBorrow" value="${testOnBorrow}"/>
+		<property name="testOnReturn" value="${testOnReturn}"/>
+		<property name="testWhileIdle" value="${testWhileIdle}"/>
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"/>
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"/>
+	</bean>
+
+	<bean id="pysessionPool" class="com.tipdm.framework.dmserver.pyserve.PySessionPool">
+		<constructor-arg index="0" ref="config"/>
+	</bean>
+	
+</beans>

@@ -1,0 +1,242 @@
+package com.tipdm.framework.dmserver.core.task.schedule;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.alibaba.fastjson.serializer.PropertyPreFilter;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.tipdm.framework.common.utils.PropertiesUtil;
+import com.tipdm.framework.common.utils.StringKit;
+import com.tipdm.framework.dmserver.core.task.model.Job;
+import com.tipdm.framework.dmserver.utils.RedissonUtils;
+import com.tipdm.framework.dmserver.websocket.MessageServer;
+import com.tipdm.framework.dmserver.websocket.workflow.Type;
+import com.tipdm.framework.dmserver.websocket.workflow.WorkFlowMessage;
+import io.netty.util.internal.ConcurrentSet;
+import org.apache.commons.lang3.ArrayUtils;
+import org.quartz.JobKey;
+import org.quartz.ListenerManager;
+import org.quartz.Scheduler;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.redisson.api.RCountDownLatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+
+//import org.redisson.core.RMapCache;
+
+/**
+ * Created by zhoulong on 2017/7/20.
+ * E-mail:zhoulong8513@gmail.com
+ */
+@SuppressWarnings("all")
+public class JobCallback extends Thread {
+
+    private final static Logger logger = LoggerFactory.getLogger(JobCallback.class);
+
+    public static final String JOB_CALLBACK_PREFIX = "jobCallBackThread_";
+
+    private WorkFlow workFlow;
+
+    private String workFlowId;
+
+    private Scheduler scheduler;
+
+    private long timeout = Long.valueOf(PropertiesUtil.getValue("sysconfig/quartz.properties", "quartz.timeout", "30")) * 60 * 1000;// 超时
+
+    private long startTime;
+
+    private ConcurrentSet<String> runningJobs = new ConcurrentSet<>();
+
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+
+    private Semaphore semaphore;
+
+    private final static long MIN = 1L;
+
+    private volatile boolean signal = true;
+
+    public JobCallback(WorkFlow workFlow, Scheduler scheduler, Semaphore semaphore) {
+        super(WorkFlowScheduler.jobCallbackGroup, JOB_CALLBACK_PREFIX + workFlow.getId());
+        this.workFlow = workFlow;
+        this.workFlowId = workFlow.getId();
+        this.scheduler = scheduler;
+        this.semaphore = semaphore;
+    }
+
+    @Override
+    public void run() {
+
+        await();
+        startTime = java.util.Calendar.getInstance().getTimeInMillis();
+        while (signal) {
+            delay(2);
+            //超时
+            if ((System.currentTimeMillis() - startTime >= timeout)) {
+                logger.error("运行时间过长，任务被强行终止，流程ID: {}，maxTimeOut:{}", workFlowId, timeout);
+                break;
+            }
+            //没有在运行的任务节点
+            if (runningJobs.isEmpty()) {
+                workFlow = null;
+                runningJobs = null;
+                signal = false;
+            } else {
+                for(String jobId : runningJobs){
+                    Job job = workFlow.getJob(jobId);
+                    if(job.getState() == JobState.ABORT || job.getState() == JobState.ERROR || job.getState() == JobState.COMPLETE){
+                        logger.warn("remove job with jobId: {} from RunningJobs", jobId);
+                        removeJob(jobId);
+                    }
+                }
+            }
+        }
+        abort();
+    }
+
+    public void shutdown() {
+        workFlow.updateState(WorkFlowState.COMPLETE);
+        signal = false;
+    }
+
+    private void delay(int delaySeconds) {
+        try {
+            Thread.sleep(delaySeconds * 1000L);
+        } catch (InterruptedException e) {
+
+        }
+    }
+
+    private void abort() {
+        //释放信号
+        semaphore.release();
+        GroupMatcher<JobKey> jobKeyGroupMatcher = null;
+        ListenerManager listenerManager = null;
+        List<JobKey> jobKeys = new ArrayList<>();
+        try {
+            listenerManager = scheduler.getListenerManager();
+            jobKeyGroupMatcher = GroupMatcher.jobGroupEquals(workFlowId);
+            jobKeys.addAll(scheduler.getJobKeys(jobKeyGroupMatcher));
+
+            for(JobKey jobKey : jobKeys){
+                //双重验证
+                if(scheduler.checkExists(jobKey)){
+                    try {
+                        //清除Job里可能存在的闭锁
+                        RCountDownLatch countDownLatch = RedissonUtils.getRCountDownLatch(jobKey.getGroup() + "." + jobKey.getName());
+                        countDownLatch.countDown();
+                    }catch (Exception ex){
+
+                    }
+                    scheduler.deleteJob(jobKey);
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("abort job failed, error: {}", ex.getMessage());
+        } finally {
+            try {
+                RCountDownLatch countDownLatch = RedissonUtils.getRCountDownLatch(workFlowId);
+                countDownLatch.countDown();
+            }catch (Exception ex){
+
+            }
+            if (null != listenerManager) {
+                //移除监听器
+                listenerManager.removeJobListenerMatcher(workFlowId, jobKeyGroupMatcher);
+            }
+            WorkFlowMessage message = new WorkFlowMessage();
+            message.setType(Type.WORKFLOW);
+            message.setState(JobState.COMPLETE);
+            MessageServer.notify(workFlowId, message);
+            logger.info("workFlowId: {} is done, exit jobCallback...", workFlowId);
+        }
+    }
+
+    private void await() {
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public synchronized boolean jobIsReady(String jobId) {
+        Job job = workFlow.getJob(jobId);
+        if (job.getState().compareTo(JobState.ABORT) == 0) {//job被终止
+            return true;
+        } else if (job.getPreJobs() == null || job.getPreJobs().size() == 0) {//没有依赖节点
+            return true;
+        } else {
+            List<String> preJobs = job.getPreJobs();
+            Set<String> allJobs = new HashSet<>();
+            //获取当前节点的所有上级
+            findAllPreJobs(preJobs, allJobs);
+            logger.debug("PRE JOBS: {}", JSON.toJSONString(allJobs));
+
+            SerializeFilter filter = new PropertyPreFilter() {
+                String[] ignoreFileds = new String[]{"attachment", "description", "targetClazz"};
+                @Override
+                public boolean apply(JSONSerializer jsonSerializer, Object o, String s) {
+                    return !ArrayUtils.contains(ignoreFileds, s);
+                }
+            };
+
+            for (String id : allJobs) {
+                Job pre = workFlow.getJob(id);
+                logger.debug("PRE JOB DETAILS: {}", JSON.toJSONString(pre, filter));
+                //上级节点被中断或运行出错
+                if (pre.getState().compareTo(JobState.ABORT) == 0 || pre.getState().compareTo(JobState.ERROR) == 0) {
+                    job.updateState(JobState.ABORT);
+                    return true;
+                }
+                if (!(pre.getState().compareTo(JobState.COMPLETE) == 0)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void findAllPreJobs(List<String> preJobs, Set<String> allJobs){
+        if(preJobs != null && preJobs.size() > 0){
+            preJobs.stream().filter(preJob -> !allJobs.contains(preJob)).forEach(preJob -> {
+                Job job = workFlow.getJob(preJob);
+                allJobs.add(preJob);
+                findAllPreJobs(job.getPreJobs(), allJobs);
+            });
+        }
+    }
+
+    public synchronized void updateJobState(String jobId, JobState state) {
+        Job job = workFlow.getJob(jobId);
+        if (null != job) {
+            job.updateState(state);
+        }
+    }
+
+    public void addJob(String jobId) {
+        if (StringKit.isNotBlank(jobId) && null != workFlow.getJob(jobId) && !runningJobs.contains(jobId)) {
+            runningJobs.add(jobId);
+            if (countDownLatch.getCount() == MIN) {
+                countDownLatch.countDown();
+            }
+        }
+    }
+
+    public boolean removeJob(String jobId) {
+        boolean result = runningJobs.remove(jobId);
+        if(result){
+            startTime = java.util.Calendar.getInstance().getTimeInMillis();
+        }
+        return result;
+    }
+
+    public WorkFlow getWorkFlow() {
+        return this.workFlow;
+    }
+}

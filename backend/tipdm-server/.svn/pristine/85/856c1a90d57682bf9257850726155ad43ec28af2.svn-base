@@ -1,0 +1,99 @@
+package com.tipdm.framework.dmserver.utils;
+
+import com.tipdm.framework.dmserver.exception.AlgorithmException;
+import com.tipdm.framework.model.dmserver.Component;
+import com.tipdm.framework.model.dmserver.ComponentIO;
+import com.tipdm.framework.model.dmserver.Element;
+import com.tipdm.framework.model.dmserver.ElementTab;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Component 处理类
+ * Created by fansy on 2017/2/6.
+ */
+public class ComponentParse {
+    private static Logger logger = LoggerFactory.getLogger(ComponentParse.class);
+    public static String out1="out1";
+
+    /**
+     * 根据Component拼凑算法参数,每个算法其拼凑方式不一样
+     * input、output只有表名；
+     * 属性字段（或目标列字段）作为算法的一个参数
+     * @param params
+     * @param algorithm
+     * @return
+     */
+    public static String[] getSparkParams(Component params,String algorithm) throws AlgorithmException {
+        String[] args = null;
+        switch (algorithm){
+            case "HiveInput":
+                args = new String[3];
+                args[0] = ComponentParse.getComponentIO(params.getInputs(),"in1");
+                args[1] = ComponentParse.getElement(params.getTabs(),"out1");
+                args[2] = ComponentParse.getElement(params.getTabs(), "columns");
+            case "HiveOutput" :// Hive输出
+                args = new String[2];
+                args[0] = ComponentParse.getComponentIO(params.getInputs(),"in1");
+                args[1] = ComponentParse.getElement(params.getTabs(), "destTable");
+                break;
+            default: throw new AlgorithmException("前台算法类名配置错误!");
+        }
+        return args;
+    }
+
+    /**
+     * 从ComponentIO中获取map参数值
+     * @param inputs
+     * @return
+     */
+    public static Map<String,  String> getMapFromIO(List<ComponentIO> inputs) {
+        Map<String, String> params = new HashMap<>();
+        for(ComponentIO inout : inputs){
+                params.put(inout.getKey(), inout.getTempTable());
+        }
+        return params;
+    }
+
+    /**
+     *  根据名字获取输入或输出表或路径
+     * @param ios
+     * @param name ： "in1" , "in2" ,"in3","out1"
+     * @return
+     * @throws AlgorithmException
+     */
+    public static String getComponentIO(List<ComponentIO> ios,String name) throws AlgorithmException {
+        for(ComponentIO in : ios){
+            if (in.getKey().equals( name)){// 匹配
+               return in.getTempTable();
+            }
+        }
+        throw new AlgorithmException("算法输入参数 "+name+" 无匹配!");
+    }
+
+    /**
+     * 根据某个name获取其值
+     * @param tabs
+     * @param name
+     * @return
+     * @throws AlgorithmException
+     */
+    public static String getElement(List<ElementTab> tabs,String name)throws AlgorithmException{
+        for(ElementTab tab :tabs){
+            List<Element> elements = tab.getElements();
+            for(Element element:elements){
+                if (element.getName().equals(name)){
+                    return element.getValue()== null ?
+                            element.getDefaultValue() :element.getValue();
+                }
+            }
+        }
+        throw new AlgorithmException("算法输入参数 "+name+" 无匹配!");
+    }
+}
+
+

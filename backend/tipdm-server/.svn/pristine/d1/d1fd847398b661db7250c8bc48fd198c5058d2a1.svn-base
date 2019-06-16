@@ -1,0 +1,94 @@
+package com.tipdm.framework.controller.dmserver.entity.datasource;
+
+import java.io.Serializable;
+
+/**
+ * HBase 连接实例类
+ * 封装连接参数
+ * Created by fansy on 2017/10/19.
+ */
+public class HBaseConnection implements Serializable {
+    private String hbaseTable;
+
+    public String getMaster() {
+        return master;
+    }
+
+    public void setMaster(String master) {
+        this.master = master;
+    }
+
+    public String getHbaseTable() {
+        return hbaseTable;
+    }
+
+    public void setHbaseTable(String hbaseTable) {
+        this.hbaseTable = hbaseTable;
+    }
+
+    public String gethTableColumns() {
+        return hTableColumns;
+    }
+
+    public void sethTableColumns(String hTableColumns) {
+        this.hTableColumns = hTableColumns;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getRootDir() {
+        return rootDir;
+    }
+
+    public void setRootDir(String rootDir) {
+        this.rootDir = rootDir;
+    }
+
+    public char getSplitter() {
+        return splitter;
+    }
+
+    public void setSplitter(char splitter) {
+        this.splitter = splitter;
+    }
+
+    public String getZookeepers() {
+        return zookeepers;
+    }
+
+    public void setZookeepers(String zookeepers) {
+        this.zookeepers = zookeepers;
+    }
+
+    private String master;
+    private String rootDir;
+    private String zookeepers;
+    private int port;
+    private String hTableColumns;
+    private char splitter;
+
+    public HBaseConnection(){}
+    public HBaseConnection(String hbaseTable,String hTableColumns,String master ,String rootDir,
+                           String zookeepers,int port,char splitter){
+        this.hbaseTable = hbaseTable;
+        this.hTableColumns = hTableColumns;
+        this.master = master;
+        this.rootDir = rootDir;
+        this.port = port;
+        this.zookeepers = zookeepers;
+        this.splitter = splitter;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return this.hbaseTable;
+    }
+}

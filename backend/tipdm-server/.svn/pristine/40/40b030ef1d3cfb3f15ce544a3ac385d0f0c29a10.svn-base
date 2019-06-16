@@ -1,0 +1,33 @@
+package com.tipdm.framework.dmserver;
+
+/**
+ * Created by zhoulong on 2017/5/31.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class PyConnectionTest {
+
+    static
+    public void main(String[] args){
+
+//        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+//        PySessionPool pool = new PySessionPool(config);
+//
+//        PySession session = pool.getSession(null);
+//
+//        if(null != session){
+//            File file = new File("d:/hello.py");
+//            try {
+//                session.execPythonFile(file);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (AlgorithmException e) {
+//                e.printStackTrace();
+//            }
+//            session.close();
+//        }
+
+//        File dir = new File("D:\\workspace\\TipDM\\tipdm-dmserver\\src\\main\\java\\com\\tipdm\\framework\\dmserver\\algo\\unparallel\\script\\python");
+//        Collection<File> files = FileUtils.listFiles(dir, new String[]{"py"}, true);
+//        System.out.println(files.size());
+    }
+}

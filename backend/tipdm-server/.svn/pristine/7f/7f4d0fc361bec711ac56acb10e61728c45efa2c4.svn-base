@@ -1,0 +1,64 @@
+package com.tipdm.framework.dmserver.utils;
+
+import com.tipdm.framework.common.Constants;
+import com.tipdm.framework.common.utils.StringKit;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+/**
+ * Created by TipDM on 2016/12/29.
+ * E-mail:devp@tipdm.com
+ */
+public class CommonUtils {
+
+    public static String generateTableName(String username, String oriTableName){
+        return generateTableName(username, oriTableName, true);
+    }
+
+    public static String generateTableName(String username, String oriTableName, boolean appendPrefix){
+        String tableName = DigestUtils.sha1Hex(Constants.TABLE_PREFIX + "_" + username) + "_" + oriTableName;
+        if(appendPrefix) {
+            tableName =  "t_" + tableName;
+        }
+        if(tableName.length() > 63){
+            // 生成一个MD5加密计算摘要
+            MessageDigest md = null;
+            try {
+                md = MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+
+            }
+            md.update((Constants.TABLE_PREFIX + username).getBytes());
+            tableName = "t_" + new BigInteger(1, md.digest()).toString(16) + "_md_" + oriTableName;
+        }
+        return tableName;
+    }
+
+    public static String removeTableNamePrefix(String tableName){
+        if(StringKit.isNotBlank(tableName)){
+            if(tableName.startsWith("t_")){
+                return StringKit.substringAfter(tableName, "t_");
+            }
+        }
+        return tableName;
+    }
+
+    public static String recoverTableName(String creator, String tableName){
+        if(StringKit.isNotBlank(tableName)){
+            if(StringKit.contains(tableName, "_md_")){
+                return StringKit.substringAfter(tableName, "_md_");
+            }
+            String prefix = DigestUtils.sha1Hex(Constants.TABLE_PREFIX + "_" + creator) + "_";
+            if(tableName.startsWith("t_")){
+                return StringKit.substringAfter(tableName, "t_" + prefix);
+            } else {
+                return StringKit.substringAfter(tableName, prefix);
+            }
+        }
+        return tableName;
+    }
+
+}

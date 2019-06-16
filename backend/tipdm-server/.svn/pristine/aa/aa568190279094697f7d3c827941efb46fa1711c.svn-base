@@ -1,0 +1,37 @@
+package com.tipdm.framework.dmserver;
+
+import com.github.drinkjava2.jdialects.Dialect;
+import com.github.drinkjava2.jdialects.model.TableModel;
+import com.tipdm.framework.common.utils.StringKit;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+/**
+ * Created by zhoulong on 2017/10/30.
+ * E-mail:zhoulong8513@gmail.com
+ * 动态建表测试
+ */
+public class DynamicGeneratorTableTest {
+
+    static
+    public void main(String[] args) throws Exception{
+
+//        Class.forName("org.postgresql.Driver");
+//        Connection connection = DriverManager.getConnection("jdbc:postgresql://192.168.0.17:5432/tipdm_DB", "postgres", "root");
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bjxf", "root", "root");
+        Dialect dialect = Dialect.guessDialect(connection);
+
+        TableModel t1 = new TableModel("customers");
+        t1.column("name").STRING(20).pkey();
+        t1.column("email").STRING(20).pkey().pojoField("email").updatable(true).insertable(false);
+        t1.column("address").VARCHAR(50).defaultValue("'Beijing'").comment("address comment");
+        t1.column("phoneNumber").VARCHAR(50).singleIndex("IDX2");
+        t1.column("age").INTEGER().notNull().check("'>0'");
+        t1.index("idx3").columns("address", "phoneNumber").unique();
+
+        System.out.println(StringKit.join(dialect.toDropAndCreateDDL(t1)));
+    }
+
+}

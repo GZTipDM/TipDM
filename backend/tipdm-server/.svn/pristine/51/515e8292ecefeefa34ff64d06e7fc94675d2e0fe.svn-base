@@ -1,0 +1,520 @@
+//package com.tipdm.framework.service.dmserver.impl;
+//
+//import com.alibaba.fastjson.JSON;
+//import com.google.common.collect.Lists;
+//import com.tipdm.framework.common.utils.FileKit;
+//import com.tipdm.framework.common.utils.RedisUtils;
+//import com.tipdm.framework.common.utils.StringKit;
+//import com.tipdm.framework.controller.dmserver.entity.RestfulDataSource;
+//import com.tipdm.framework.dmserver.mse.ModelUtil;
+//import com.tipdm.framework.dmserver.mse.ModelVersion;
+//import com.tipdm.framework.dmserver.rserve.RsessionPool;
+//import com.tipdm.framework.dmserver.rserve.script.RScript;
+//import com.tipdm.framework.dmserver.utils.Base62;
+//import com.tipdm.framework.dmserver.utils.Constants;
+//import com.tipdm.framework.model.dmserver.Component;
+//import com.tipdm.framework.model.dmserver.SharedUsers;
+//import com.tipdm.framework.model.dmserver.Step;
+//import com.tipdm.framework.repository.dmserver.ComponentRepository;
+//import com.tipdm.framework.repository.dmserver.ModelRepository;
+//import com.tipdm.framework.repository.dmserver.ModelTreeRepository;
+//import com.tipdm.framework.repository.dmserver.SharedUserRepository;
+//import com.tipdm.framework.service.AbstractBaseServiceImpl;
+//import com.tipdm.framework.service.dmserver.ModelService;
+//import org.apache.commons.io.FileUtils;
+//import org.dmg.pmml.PMML;
+//import org.jpmml.evaluator.ModelEvaluator;
+//import org.jpmml.evaluator.ModelEvaluatorFactory;
+//import org.math.R.Rsession;
+//import org.openscoring.common.EvaluationRequest;
+//import org.openscoring.common.EvaluationResponse;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.slf4j.helpers.MessageFormatter;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.data.domain.Page;
+//import org.springframework.data.domain.Pageable;
+//import org.springframework.data.jpa.domain.Specification;
+//import org.springframework.stereotype.Service;
+//import org.springframework.transaction.annotation.Transactional;
+//import org.xml.sax.SAXException;
+//
+//import javax.persistence.criteria.CriteriaBuilder;
+//import javax.persistence.criteria.CriteriaQuery;
+//import javax.persistence.criteria.Predicate;
+//import javax.persistence.criteria.Root;
+//import javax.xml.bind.JAXBException;
+//import java.io.*;
+//import java.nio.charset.Charset;
+//import java.util.*;
+//import java.util.stream.Collectors;
+//
+///**
+// * Created by zhoulong on 2017/3/16.
+// * E-mail:zhoulong8513@gmail.com
+// */
+//@SuppressWarnings("all")
+//@Transactional
+//@Service("modelService")
+//public class ModelServiceImpl extends AbstractBaseServiceImpl<Model, Long> implements ModelService {
+//
+//    private final static Logger logger = LoggerFactory.getLogger(ModelServiceImpl.class);
+//
+//    @Autowired
+//    private ModelRepository modelRepository;
+//
+//    @Autowired
+//    private ModelTreeRepository modelTreeRepository;
+//
+//    @Autowired
+//    private SharedUserRepository sharedUserRepository;
+//
+//    @Autowired
+//    private ComponentRepository componentRepository;
+//
+//    @Autowired
+//    private RsessionPool rsessionPool;
+//
+//    @Override
+//    public Page<Model> findOwnModels(Map<String, Object> params, Pageable pageable) {
+//
+//        Specification<Model> specification = new Specification<Model>() {
+//            @Override
+//            public Predicate toPredicate(Root<Model> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+//                Predicate predicates = null;
+//                Long creatorId = (Long)params.get("creatorId");
+//
+//                if(null != creatorId){
+//                    predicates = criteriaBuilder.equal(root.get("creatorId").as(Long.class), creatorId);
+//                    criteriaQuery.where(predicates);
+//                }
+//
+//                String modelName = (String)params.get("modelName");
+//
+//                if(StringKit.isNotBlank(modelName)){
+//                    Predicate condition = criteriaBuilder.like(root.get("modelName").as(String.class), "%" + modelName + "%");
+//                    if(null == predicates){
+//                        predicates = criteriaBuilder.and(condition);
+//                    } else {
+//                        predicates = criteriaBuilder.and(predicates, condition);
+//                    }
+//                }
+//
+//                Date beginTime = null;
+//                Date endTime = null;
+//                try {
+//                    beginTime = (Date)params.get("beginTime");
+//                    endTime = (Date)params.get("endTime");
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//                if(beginTime != null && endTime != null){
+//                    Predicate condition = criteriaBuilder.between(root.get("deployTime").as(Date.class), beginTime, endTime);
+//
+//                    if(null == predicates){
+//                        predicates = criteriaBuilder.and(condition);
+//                    } else {
+//                        predicates = criteriaBuilder.and(predicates, condition);
+//                    }
+//                }
+//                return predicates;
+//            }
+//        };
+//
+//        return modelRepository.findAll(specification, pageable);
+//    }
+//
+//    @Override
+//    public Page<Model> findSharedModels(Map<String, Object> params, Pageable pageable) {
+//
+//        return modelRepository.findBySharedModels(params, pageable);
+//    }
+//
+//    @Override
+//    public Long deployModel(Model model) throws IOException {
+//        ModelVersion modelVersion = (ModelVersion) RedisUtils.getFromMap(Constants.MODEL_VERSION, model.getNodeId());
+//        if(null == modelVersion) {
+//            modelVersion = new ModelVersion();
+//        } else {
+//            modelVersion.increment();
+//        }
+//        Integer version = modelVersion.getLatest();
+//        String modelDir = RedisUtils.get(Constants.MODEL_DIR, String.class);
+//        File file = new File(modelDir, model.getModelPath());
+//        File destFile = new File(modelDir,  StringKit.substring(model.getModelPath(), 0, model.getNodeId().length()) + "_" + version + StringKit.substringAfterLast(model.getModelPath(), model.getNodeId()));
+//        FileKit.copyFile(file, destFile);
+//        model.setModelPath(destFile.getName());
+//        model.setVersion(version);
+//        modelRepository.save(model);
+//        RedisUtils.putToMap(Constants.MODEL_VERSION, model.getNodeId(), modelVersion);
+//        return model.getId();
+//
+//    }
+//
+//    @Override
+//    public Long redeployModel(Model model, Integer version) throws IOException {
+//        Model existsModel = modelRepository.findByNodeIdAndVersion(model.getNodeId(), version);
+//
+//        if(null == existsModel){
+//            throw new NullPointerException("can not found model");
+//        }
+//        existsModel.setTarget(JSON.toJSONString(model.getTarget()));
+//        existsModel.setFeatures(JSON.toJSONString(model.getFeatures()));
+//        existsModel.setOutputs(JSON.toJSONString(model.getOutputs()));
+//        existsModel.setDeployTime(Calendar.getInstance().getTime());
+//
+//        String modelDir = RedisUtils.get(Constants.MODEL_DIR, String.class);
+//        File file = new File(modelDir, model.getModelPath());
+//        File destFile = new File(modelDir,  StringKit.substring(model.getModelPath(), 0, model.getNodeId().length()) + "_" + version + StringKit.substringAfterLast(model.getModelPath(), model.getNodeId()));
+//        FileKit.copyFile(file, destFile);
+//        existsModel.setVersion(version);
+//        update(existsModel);
+//        return existsModel.getId();
+//    }
+//
+//    @Override
+//    public void updateModel(Model model) {
+//        this.update(model);
+//    }
+//
+//    @SuppressWarnings("all")
+//    @Override
+//    public Long createNode(ModelTree node) {
+//
+//        List<String> paths = new ArrayList<>();
+//        getVirtualPath(node.getParentId(), paths);
+//        modelTreeRepository.save(node);
+//        paths.add(node.getId().toString());
+//        paths.add(0, "0");
+//        node.setPath(StringKit.join(paths, "/") + "/");
+//
+//        return node.getId();
+//    }
+//
+//    @Override
+//    public void deleteNode(Long nodeId, String contextPath) throws IOException {
+//
+//        ModelTree node = modelTreeRepository.findOne(nodeId);
+//        File parentDir = new File(contextPath + "/" + getRealPathByNodeId(node.getParentId()));
+//
+//        if(node.getLeaf()){
+//            File file = new File(parentDir, node.getModel().getModelPath());
+//            modelTreeRepository.delete(nodeId);
+//            file.delete();
+//        } else {
+//            File documentDir = new File(parentDir, node.getName());
+//            modelTreeRepository.deleteByPath(node.getPath() + "%");
+//            FileUtils.deleteDirectory(documentDir);
+//        }
+//    }
+//
+//    @Override
+//    public void deleteModel(Long modelId, String contextPath) {
+//        ModelTree node = findNodeByModelId(modelId);
+//        File parentDir = new File(contextPath + "/" + getRealPathByNodeId(node.getParentId()));
+//        File file = new File(parentDir, node.getModel().getModelPath());
+//        modelTreeRepository.delete(node.getId());
+//        file.delete();
+//    }
+//
+//    @Override
+//    public void deleteModel(Long modelId, Long creatorId) throws IllegalAccessException {
+//        Model model = findOne(modelId);
+//        if(model == null){
+//            throw new NullPointerException("模型不存在或已被删除");
+//        }
+//        if(model.getCreatorId().equals(creatorId)){
+//            modelRepository.delete(model);
+//        } else {
+//            throw new IllegalAccessException("您不能删除他人部署的模型");
+//        }
+//    }
+//
+//    @Override
+//    public String getRealPathByNodeId(Long nodeId) {
+//        List<String> paths = new ArrayList<>();
+//
+//        getPath(nodeId, paths);
+//
+//        return StringKit.join(paths, "/");
+//    }
+//
+//    @Override
+//    public List<ModelTree> getChild(Long nodeId, Long creatorId) {
+//        return modelTreeRepository.findByParentIdAndCreatorId(nodeId, creatorId);
+//    }
+//
+//    @Override
+//    public ModelTree findNodeByModelId(Long modelId) {
+//        return modelTreeRepository.findByModelId(modelId);
+//    }
+//
+//    @Override
+//    public void shareModel(Long modelId, Long[] sharedUsers) {
+//
+//        List<SharedUsers> users = new ArrayList<>();
+//        for(Long userId : sharedUsers) {
+//            SharedUsers sharedUser = new SharedUsers();
+//            sharedUser.setSharedObjectId(modelId);
+//            sharedUser.setUserId(userId);
+//            sharedUser.setObjectType(SharedUsers.ObjectType.MODEL);
+//            users.add(sharedUser);
+//        }
+//        sharedUserRepository.save(users);
+//    }
+//
+//    @Override
+//    public EvaluationResponse doEvaluate(Long modelId, EvaluationRequest evaluationRequest) throws IOException, JAXBException, SAXException {
+//
+//        Map<String, Object> map = loadModel(modelId);
+//        Model model = (Model)map.get("model");
+//        File modelFile = (File)map.get("modelFile");
+//        if(modelFile.getName().endsWith(".pmml")) {
+//            PMML pmml = org.jpmml.model.PMMLUtil.unmarshal(new FileInputStream(modelFile));
+//            ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+//            ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+//
+//            List<EvaluationRequest> evaluationRequests = Collections.singletonList(evaluationRequest);
+//            List<EvaluationResponse> responses = ModelUtil.evaluate(modelEvaluator, evaluationRequests, false);
+//            return responses.get(0);
+//        } else if(modelFile.getName().endsWith(".rds")){//R Model
+//            Long sourceId = model.getSourceId();
+//            Component component = componentRepository.findOne(sourceId);
+//            if(component == null || !component.getScript().containsKey(Step.PREDICT)){
+//                throw new IOException(MessageFormatter.format("加载组件[{}]的预测脚本出错, 请检查配置是否正确", component.getName()).getMessage());
+//            }
+//
+//            Rsession rsession = rsessionPool.getSession(null);
+//            rsession.readRDS("model", modelFile);
+//
+//            String head = StringKit.join(evaluationRequest.getArguments().keySet(), ",");
+//            String body = StringKit.join(evaluationRequest.getArguments().values(), ",");
+//            List<String> lines = Lists.newArrayList(head, body);
+//            File tmpFile = new File(Base62.encode(System.nanoTime()));
+//            tmpFile.createNewFile();
+//            FileKit.writeLines(tmpFile, com.tipdm.framework.common.Constants.CHARACTER, lines);
+//            rsession.set("data.csv", tmpFile);
+//            StringBuilder sb = new StringBuilder(component.getScript().get(Step.PREDICT)).append("\n");
+//            sb.append("tryCatch({").append("\n");
+//            sb.append("predata <- read.csv(data.csv,fileEncoding='" + com.tipdm.framework.common.Constants.CHARACTER + "')").append("\n");
+//            sb.append("data <- doPredict(model, predata)").append("\n");
+//            sb.append("}, finally = {").append("\n");
+//            sb.append("})").append("\n");
+//            RScript script = RScript.createFromScriptString(sb.toString());
+//            try {
+//                script.execute(rsession);
+//                REXPGenericVector rexp = (REXPGenericVector)rsession.eval("data");
+//                Map<String,?> data = (LinkedHashMap<String, ?>)rexp.asNativeJavaObject();
+////                data = MapUtils.invertMap(data);
+//                EvaluationResponse response = new EvaluationResponse(evaluationRequest.getId());
+//                response.setResult(data);
+//                return response;
+//            } catch (REXPMismatchException e) {
+//                logger.error("预测失败，错误信息：", e.getMessage());
+//            } catch (REngineException e) {
+//                logger.error("预测失败，错误信息：", e.getMessage());
+//            } finally {
+//                if(null != rsession) {
+//                    rsession.disconnect();
+//                }
+//                tmpFile.delete();
+//            }
+//            return null;
+//        } else {// other Spark Model
+//            return null;
+//        }
+//    }
+//
+//    @Override
+//    public byte[] doEvaluateCsv(Long modelId, String delimiter, String quote, String charset, InputStream csv) throws IOException, JAXBException, SAXException {
+//        Map<String, Object> map = loadModel(modelId);
+//        Model model = (Model)map.get("model");
+//        File modelFile = (File)map.get("modelFile");
+//        if(modelFile.getName().endsWith(".pmml")){
+//            PMML pmml = org.jpmml.model.PMMLUtil.unmarshal(new FileInputStream(modelFile));
+//            ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+//            ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+//
+//            byte[] bytes = ModelUtil.doEvaluateCsv(modelEvaluator, delimiter, quote, Charset.forName(charset), csv);
+//            return bytes;
+//        } else if(modelFile.getName().endsWith(".rds")){//R Model
+//            Long sourceId = model.getSourceId();
+//            Component component = componentRepository.findOne(sourceId);
+//            if(component == null || !component.getScript().containsKey(Step.PREDICT)){
+//                throw new IOException(MessageFormatter.format("加载组件[{}]的预测脚本出错, 请检查配置是否正确", component.getName()).getMessage());
+//            }
+//            Rsession rsession = rsessionPool.getSession(null);
+//            rsession.readRDS("model", modelFile);
+//            File tmpFile = new File(Base62.encode(System.nanoTime()));
+//            FileKit.copyInputStreamToFile(csv, tmpFile);
+////            rsession.sendFile(tmpFile, "data.csv");
+//            rsession.set("data.csv", tmpFile);
+//            StringBuilder sb = new StringBuilder(component.getScript().get(Step.PREDICT)).append("\n");
+//            sb.append("tryCatch({").append("\n");
+//            sb.append("predata <- read.csv(data.csv,fileEncoding='" + charset + "')").append("\n");
+//            sb.append("data <- doPredict(model, predata)").append("\n");
+//            sb.append("tmp.file <- paste(file.path(tempdir()), \""+tmpFile.getName()+".csv\" ,sep=\"/\")").append("\n");
+//            sb.append("write.csv(data, tmp.file, row.names=FALSE)").append("\n");
+//            sb.append("}, finally = {").append("\n");
+//            sb.append("})").append("\n");
+//            RScript script = RScript.createFromScriptString(sb.toString());
+//            try {
+//                script.execute(rsession);
+//                String predictFile = rsession.eval("file.path(tempdir())").asString() + "/" + tmpFile.getName()+".csv";
+//                rsession.receiveFile(tmpFile, predictFile);
+//                byte[] bytes = FileKit.readFileToByteArray(tmpFile);
+//                return bytes;
+//            } catch (REXPMismatchException e) {
+//                logger.error("预测失败，错误信息：", e.getMessage());
+//            } catch (REngineException e) {
+//                logger.error("预测失败，错误信息：", e.getMessage());
+//            } finally {
+//                if(null != rsession) {
+//                    rsession.disconnect();
+//                }
+//                tmpFile.delete();
+//            }
+//            return null;
+//        } else {// other Spark Model
+//            return null;
+//        }
+//    }
+//
+//    @Override
+//    public void doEvaluateRDBMS(Long modelId, RestfulDataSource dataSource) throws SAXException, IOException, JAXBException {
+//
+//        Map<String, Object> map = loadModel(modelId);
+//        Model model = (Model)map.get("model");
+//        File modelFile = (File)map.get("modelFile");
+//        if(modelFile.getName().endsWith(".pmml")){
+//            PMML pmml = org.jpmml.model.PMMLUtil.unmarshal(new FileInputStream(modelFile));
+//            ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+//            ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+//            ModelUtil.doEvaluateRDBMS(modelEvaluator, dataSource);
+//        } else if(modelFile.getName().endsWith(".rds")){//R Model
+//            Long sourceId = model.getSourceId();
+//            Component component = componentRepository.findOne(sourceId);
+//            if(component == null || !component.getScript().containsKey(Step.PREDICT)){
+//                throw new IOException(MessageFormatter.format("加载组件[{}]的预测脚本出错, 请检查配置是否正确", component.getName()).getMessage());
+//            }
+//            Rsession rsession = rsessionPool.getSession(null);
+//            rsession.readRDS("model", modelFile);
+//            rsession.set("url", dataSource.getUrl());
+//            rsession.set("user", dataSource.getUser());
+//            rsession.set("password", dataSource.getPassword());
+//            rsession.set("sql", dataSource.getSql());
+//            rsession.set("output", dataSource.getTarget());
+//            String dbType = com.tipdm.framework.common.Constants.DRIVERS.keySet().stream().filter(x -> x .equals(dataSource.getUrl().substring(0, x.length()))).collect(Collectors.toList()).get(0);
+//            String driverClass = com.tipdm.framework.common.Constants.DRIVERS.get(dbType)[0];
+//            rsession.set("driverClass", driverClass);
+//            rsession.set("truncate", dataSource.getTruncate());
+//
+//            StringBuilder sb = new StringBuilder(component.getScript().get(Step.PREDICT)).append("\n");
+//
+////            require(RJDBC)
+////            ##
+////            设置jdbc驱动
+////                    drv
+////            <- JDBC('org.apache.hive.jdbc.HiveDriver',
+////                    list.files("/home/hadoop/impala-jdbc-0.5-2",
+////                            pattern = "jar$", full.names=TRUE,
+////                            recursive=TRUE))
+////            sb.append("source(dbUtils.R)  # 引入数据库工具类\n" +
+////                    "conn <- tipdm.getConnection(host, port, dbname, user, password)\n");
+//            //获取R的安装目录
+////            String rhome = null;
+////            try {
+////                rhome = rsession.silentlyEval("R.home()", false).asString();
+////                rsession.set("dbUtils.R", rhome + "/TipDM/common/dbUtils.R");
+////
+////            } catch (REXPMismatchException e) {
+////
+////            }
+//            sb.append("source(sprintf('%s/TipDM/common/dbUtils.R', R.home()))").append("\n");
+//            sb.append("library(DBI)").append("\n");
+//            sb.append("library(rJava)").append("\n");
+//            sb.append("library(RJDBC)").append("\n");
+//            sb.append("drv <- JDBC(driverClass, classPath = list.files(sprintf('%s/TipDM/drivers', R.home()), pattern = 'jar$', full.names=TRUE,  recursive=TRUE))").append("\n");
+////            sb.append("drv <- JDBC(driverClass=driverClass, '/usr/local/R-3.2.0/TipDM/drivers/postgresql-9.4.1211.jar')").append("\n");
+//            sb.append("conn <- dbConnect(drv, url, user, password)").append("\n");
+//            //清除输出表
+//            sb.append("tryCatch({").append("\n");
+//            sb.append("if(truncate){").append("\n");
+//            sb.append(" tipdm.dropTable(conn, output)").append("\n");
+//            sb.append("}").append("\n");
+////            sb.append("sql <- paste(\"select * \" , \"from\", input)").append("\n");
+//            sb.append("rs <- dbSendQuery(conn, sql)").append("\n");
+//            sb.append("repeat{").append("\n");
+//            sb.append(" predata <- dbFetch(rs, 1000)").append("\n");
+//            sb.append(" if(nrow(predata) == 0){").append("\n");
+//            sb.append("     break;").append("\n");
+//            sb.append(" }").append("\n");
+//            sb.append(" data <- doPredict(model, predata)").append("\n");
+//            sb.append(" exists <- dbExistsTable(conn, output);").append("\n");
+//            sb.append(" if(exists){").append("\n");
+//            sb.append("     dbWriteTable(conn, name = output,overwrite=F, append=T, value = data, row.names = FALSE)").append("\n");
+//            sb.append(" } else {").append("\n");
+//            sb.append("     dbWriteTable(conn, name = output, value = data, row.names = FALSE)").append("\n");
+//            sb.append(" }").append("\n");
+//            sb.append("}").append("\n");
+//            sb.append("dbClearResult(rs)").append("\n");
+//            sb.append("}, finally = {").append("\n");
+//            sb.append("dbDisconnect(conn)").append("\n");
+//            sb.append("})").append("\n");
+//            RScript script = RScript.createFromScriptString(sb.toString());
+//            try {
+//                script.execute(rsession);
+//            } catch (REXPMismatchException e) {
+//                logger.error("预测失败，错误信息：", e.getMessage());
+//            } catch (REngineException e) {
+//                logger.error("预测失败，错误信息：", e.getMessage());
+//            } finally {
+//                if(null != rsession) {
+//                    rsession.disconnect();
+//                }
+//            }
+//
+//        } else {// other Spark Model
+//
+//        }
+//    }
+//
+//    private Map<String, Object> loadModel(Long modelId)throws FileNotFoundException{
+//        Model model = findOne(modelId);
+//        if(model == null){
+//            logger.error("can not found model");
+//            throw new FileNotFoundException("model file not found");
+//        }
+//        String modelDir = RedisUtils.get(Constants.MODEL_DIR, String.class);
+//        File modelFile = new File(modelDir, model.getModelPath());
+//        if (!modelFile.exists()) {
+//            logger.error("can not found model file, file path:{}", modelFile.getAbsolutePath());
+//            throw new FileNotFoundException("model file not found");
+//        }
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("model", model);
+//        result.put("modelFile", modelFile);
+//        return result;
+//    }
+//
+//    private void getVirtualPath(Long nodeId, List<String> path){
+//
+//        ModelTree node = modelTreeRepository.findOne(nodeId);
+//
+//        if(node != null){
+//            path.add(0, node.getId().toString());
+//            getVirtualPath(node.getParentId(), path);
+//        }
+//    }
+//
+//    private void getPath(Long nodeId, List<String> path){
+//
+//        ModelTree node = modelTreeRepository.findOne(nodeId);
+//
+//        if(node != null){
+//            path.add(0, node.getName());
+//            getPath(node.getParentId(), path);
+//        }
+//    }
+//}

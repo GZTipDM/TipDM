@@ -1,0 +1,765 @@
+package com.tipdm.framework.service.dmserver.impl;
+
+import com.tipdm.framework.common.Constants;
+import com.tipdm.framework.common.utils.*;
+import com.tipdm.framework.controller.dmserver.entity.DataColumn;
+import com.tipdm.framework.controller.dmserver.entity.UploadInfo;
+import com.tipdm.framework.controller.dmserver.entity.datavisual.VisualConfig;
+import com.tipdm.framework.dmserver.exception.DuplicateException;
+import com.tipdm.framework.dmserver.exception.ElementNotFoundException;
+import com.tipdm.framework.dmserver.exception.IllegalOperationException;
+import com.tipdm.framework.dmserver.task.job.SyncDataJobBean;
+import com.tipdm.framework.dmserver.utils.CommonUtils;
+import com.tipdm.framework.dmserver.utils.DbUtils;
+import com.tipdm.framework.dmserver.utils.excel.XLS2CSV;
+import com.tipdm.framework.dmserver.utils.excel.XLSX2CSV;
+import com.tipdm.framework.model.dmserver.*;
+import com.tipdm.framework.repository.dmserver.*;
+import com.tipdm.framework.service.AbstractBaseServiceImpl;
+import com.tipdm.framework.service.dmserver.UserTableService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
+import org.postgresql.util.PSQLException;
+import org.postgresql.util.PSQLState;
+import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import javax.persistence.criteria.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
+
+/**
+ * Created by zhoulong on 2016/12/15.
+ * E-mail:zhoulong8513@gmail.com
+ */
+@SuppressWarnings("all")
+@Transactional
+@Service("tableService")
+public class UserTableServiceImpl extends AbstractBaseServiceImpl<UserTable, Long> implements UserTableService {
+
+    private final static Logger logger = LoggerFactory.getLogger(UserTableServiceImpl.class);
+
+    //    @Autowired
+//    private HiveTableRepositoryImpl hiveTableRepository;
+    @Autowired
+    private UserTableRepository tableRepository;
+
+    @Autowired
+    private DBConnectionRepository dbConnectionRepository;
+
+    @Autowired
+    private Scheduler scheduler;
+
+    @Autowired
+    private SharedUserRepository sharedUserRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private DataSyncStrategyRepository dataSyncStrategyRepository;
+
+    @Override
+    public List<UserTable> find(Long... ids) {
+        return null;
+    }
+
+    @Override
+    public Page<UserTable> findTableByCondition(final Map<String, Object> params, Pageable pageable) {
+
+        Specification<UserTable> specification = new Specification<UserTable>() {
+            @Override
+            public Predicate toPredicate(Root<UserTable> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+                Predicate predicates = null;
+                String creatorName = (String) params.get("creatorName");
+
+                if (StringKit.isNotBlank(creatorName)) {
+                    predicates = criteriaBuilder.equal(root.get("creatorName").as(String.class), creatorName);
+                    criteriaQuery.where(predicates);
+                }
+
+                String showName = (String) params.get("showName");
+
+                if (StringKit.isNotBlank(showName)) {
+                    Predicate condition = criteriaBuilder.like(root.get("showName").as(String.class), "%" + showName + "%");
+                    if (null == predicates) {
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+                UserTable.Status status = (UserTable.Status) params.get("status");
+
+                if (null != status) {
+                    Predicate condition = criteriaBuilder.equal(root.get("status").as(UserTable.Status.class), status);
+                    if (null == predicates) {
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+
+                Date beginTime = null;
+                Date endTime = null;
+                try {
+                    beginTime = (Date) params.get("beginTime");
+                    endTime = (Date) params.get("endTime");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (beginTime != null && endTime != null) {
+                    Predicate condition = criteriaBuilder.between(root.get("createTime").as(Date.class), beginTime, endTime);
+
+                    if (null == predicates) {
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+                return predicates;
+            }
+        };
+
+        Page<UserTable> page = tableRepository.findAll(specification, pageable);
+        Map<String, Object> map = RedisUtils.getMap(com.tipdm.framework.dmserver.utils.Constants.FILE_UPLOAD_ID);
+
+        page.getContent().parallelStream().forEach(x -> {
+            if (x.getTableType() == UserTable.TableType.FLAT_FILE && (x.getStatus() == UserTable.Status.NOTSYNCHRONIZED || x.getStatus() == UserTable.Status.FAILED)) {
+                Optional optional = map.values().stream().filter(o -> x.getId().equals(((UploadInfo) o).getId()) && ((UploadInfo) o).getCategory() == UploadInfo.Category.FLAT).findFirst();
+                if (optional.isPresent()) {
+                    x.setUploadId(((UploadInfo) optional.get()).getUploadId());
+                }
+            }
+        });
+        return page;
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<UserTable> findSharedTables(final Map<String, Object> params, Pageable pageable) {
+
+        /*Specification<UserTable> specification = new Specification<UserTable>() {
+            @Override
+            public Predicate toPredicate(Root<UserTable> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+
+                Predicate predicates = null;
+                Long creatorId = (Long)params.get("creatorId");
+
+                String showName = (String)params.get("showName");
+
+                if(StringKit.isNotBlank(showName)){
+                    Predicate condition = criteriaBuilder.like(root.get("showName").as(String.class), "%" + showName + "%");
+                    if(null == predicates){
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+                UserTable.Status status = (UserTable.Status)params.get("status");
+
+                if(null != status){
+                    Predicate condition = criteriaBuilder.equal(root.get("status").as(UserTable.Status.class), status);
+                    if(null == predicates){
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+
+                Date beginTime = null;
+                Date endTime = null;
+                try {
+                    beginTime = (Date)params.get("beginTime");
+                    endTime = (Date)params.get("endTime");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if(beginTime != null && endTime != null){
+                    Predicate condition = criteriaBuilder.between(root.get("createTime").as(Date.class), beginTime, endTime);
+
+                    if(null == predicates){
+                        predicates = criteriaBuilder.and(condition);
+                    } else {
+                        predicates = criteriaBuilder.and(predicates, condition);
+                    }
+                }
+
+                Root<SharedUsers> usersRoot = criteriaQuery.from(SharedUsers.class);
+                root.alias("t");
+                usersRoot.alias("u");
+
+                Predicate  equals = criteriaBuilder.equal(root.get("id"), usersRoot.get("sharedObjectId"));
+
+                if(null != equals){
+                    predicates = criteriaBuilder.and(predicates, equals);
+                }
+                Predicate  equals1 = criteriaBuilder.equal(usersRoot.get("objectType"),SharedUsers.ObjectType.DATASOURCE);
+
+                if(null != equals1){
+                    predicates = criteriaBuilder.and(predicates, equals1);
+                }
+
+                Predicate  equals2 = criteriaBuilder.equal(usersRoot.get("userId"),creatorId);
+                if(null != equals2){
+                    predicates = criteriaBuilder.and(predicates, equals2);
+                }
+//                Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
+//                Root<SharedUsers> usersRoot = subquery.from(SharedUsers.class);
+//                subquery.select(usersRoot.<Long>get("sharedObjectId"));
+//                subquery.where(criteriaBuilder.equal(usersRoot.get("userId"),creatorId),
+//                        criteriaBuilder.equal(usersRoot.get("objectType"),SharedUsers.ObjectType.DATASOURCE)
+//                        );
+//
+//                CriteriaBuilder.In<Long> in = criteriaBuilder.in(root.get("id"));
+//                in.value(subquery);
+//                criteriaQuery.where(in);
+//                predicates = criteriaBuilder.and(predicates, in);
+                return predicates;
+            }
+        };
+
+        return tableRepository.findAll(specification, pageable);*/
+        return tableRepository.findSharedTables(params, pageable);
+    }
+
+    @Override
+    public boolean existsMD5(final String tableName, final String md5) {
+
+        List<String> tables = tableRepository.findDistinctUserTableByMd5(md5);
+
+        if (CollectionUtils.isEmpty(tables)) {
+            return false;
+        } else {
+            //存在MD5 同步数据到目标表
+            tableRepository.copyData(tables.get(0), tableName);
+            //同步完成后更新目标表的MD5
+            UserTable table = tableRepository.findByTableName(tableName);
+            table.setMd5(md5);
+            return true;
+        }
+    }
+
+    @Override
+    public Long createTable(UserTable table) throws DuplicateException {
+
+        UserTable duplicateTable = tableRepository.findByShowNameAndCreatorId(table.getShowName(), table.getCreatorId());
+        if (null != duplicateTable) {
+            throw new DuplicateException("数据表[" + table.getShowName() + "]已存在");
+        }
+
+        tableRepository.save(table);
+        return table.getId();
+    }
+
+    @Override
+    public Long createTable(UserTable table, List<DataColumn> columns) throws DuplicateException {
+
+        UserTable duplicateTable = findTableByTableName(table.getTableName());
+        if (null != duplicateTable) {
+            throw new DuplicateException("数据表[" + table.getShowName() + "]已存在");
+        }
+        tableRepository.createTable(table.getTableName(), columns);
+        tableRepository.save(table);
+        return table.getId();
+    }
+
+    @Override
+    public Long createTable(UserTable table, DBConnection connection, List<DataColumn> columns) throws DuplicateException {
+
+        UserTable duplicateTable = findTableByTableName(table.getTableName());
+        if (null != duplicateTable) {
+            throw new DuplicateException("数据表[" + table.getShowName() + "]已存在");
+        }
+        table.setConn(connection);
+        if (table.getConn().getUrl() != null && table.getConn().getUrl().indexOf("jdbc:hive2") == 0) {
+            table.setTableType(UserTable.TableType.HIVE);
+        } else {
+            tableRepository.createTable(table.getTableName(), columns);
+        }
+        tableRepository.save(table);
+        return table.getId();
+    }
+
+    @Override
+    @Transactional()
+    public void deleteTable(Long creatorId, Long tableId) throws IllegalAccessException {
+        UserTable userTable = tableRepository.findOne(tableId);
+        if (null == userTable) {
+            return;
+        }
+        if (null != userTable && !creatorId.equals(userTable.getCreatorId())) {
+            logger.info("creatorId:{}", userTable.getCreatorId());
+            logger.info("operatorId:{}", creatorId);
+            throw new IllegalAccessException("删除数据表失败，操作人员与数据表的创建者不符");
+        }
+        switch (userTable.getTableType()) {
+//            case HIVE:
+//            case HDFS:
+//                hiveTableRepository.delete(userTable.getTableName());
+//                break;
+            case UNSTRUCTURED:
+                try {
+                    //服务端的不可以删除
+                    if(userTable.getTableName().startsWith(RedisUtils.get(com.tipdm.framework.dmserver.utils.Constants.SMB_PRIVATE_DIR, String.class))) {
+                        FileKit.forceDeleteOnExit(new File(userTable.getTableName()));
+                    }
+                } catch (IOException e) {
+                    logger.error("NoSuchFileException, file path:{}", userTable.getTableName());
+                }
+                break;
+            default:
+                break;
+        }
+        if(userTable.getTableType() != UserTable.TableType.UNSTRUCTURED) {
+            tableRepository.dropTable(userTable);
+        }
+        tableRepository.delete(tableId);
+    }
+
+    @Override
+    public Long createDBConn(DBConnection dbConn) {
+        dbConnectionRepository.save(dbConn);
+        return dbConn.getId();
+    }
+
+    @Override
+    public List<UserTable> findTableByCreatorName(String creatorName) {
+        return tableRepository.findByCreatorName(creatorName);
+    }
+
+    @Override
+    public UserTable findTableByTableName(String tableName) {
+
+        UserTable table = tableRepository.findByTableName(tableName);
+        return table;
+    }
+
+    @Override
+    public void syncTable(String accessToken, String tableName) throws SchedulerException {
+
+        UserTable userTable = findTableByTableName(tableName);
+        if (null == userTable) {
+            String tmpTableName = CommonUtils.removeTableNamePrefix(tableName);
+            if (!tableName.equals(tmpTableName)) {
+                tableName = tmpTableName;
+                userTable = tableRepository.findByTableName(tableName);
+            }
+            if (userTable == null) {
+                throw new SchedulerException("数据表不存在");
+            }
+        }
+
+        if (userTable.getStatus() == UserTable.Status.SYNCING) {
+            throw new SchedulerException("数据表正在同步中，请等待同步完成后再执行此操作");
+        }
+        if (null == userTable.getConn()) {
+            throw new SchedulerException("无法获取数据表的数据库连接信息");
+        }
+        userTable.setStatus(UserTable.Status.SYNCING);
+        Thread thread = new Thread(new JobRunnable(accessToken, userTable));
+        thread.start();
+    }
+
+    class JobRunnable implements Runnable{
+        private String accessToken;
+        private UserTable userTable;
+        public JobRunnable(String accessToken, UserTable userTable){
+            this.accessToken = accessToken;
+            this.userTable = userTable;
+        }
+
+        @Override
+        public void run() {
+            String jobName = userTable.getTableName();
+            TriggerKey triggerKey = TriggerKey.triggerKey(jobName, "group");
+            JobKey jobKey = new JobKey(jobName, "group");
+            JobDetail jobDetail = JobBuilder.newJob(SyncDataJobBean.class).withIdentity(jobKey).build();
+            jobDetail.getJobDataMap().put("userTable", userTable);
+            jobDetail.getJobDataMap().put("accessToken", accessToken);
+
+            Date startTime = DateBuilder.nextGivenSecondDate(null, 2);//延迟一秒钟执行
+            logger.info("job will execute at: {}", DateKit.convert2Str("yyyy-MM-dd HH:mm:ss", startTime));
+            SimpleTrigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .startAt(startTime)
+                    .withSchedule(
+                            SimpleScheduleBuilder.simpleSchedule()
+                                    .withMisfireHandlingInstructionFireNow()//任务补偿策略：错过执行时间后立即执行
+                                    .withIntervalInSeconds(0)
+                                    .withRepeatCount(0))//不重复执行
+                    .build();
+            try {
+                scheduler.deleteJob(jobKey);
+                //开始调度
+                scheduler.scheduleJob(jobDetail, trigger);
+            } catch (SchedulerException e) {
+                logger.warn(e.getMessage());
+            }
+        }
+    }
+    @Transactional
+    @Override
+    public void copyData(String accessToken, File file, String targetTable, String delimiter, String encoding) throws FileFormatException, PSQLException {
+        copyData(accessToken, file, targetTable, null, delimiter, encoding);
+    }
+
+    @Transactional
+    @Override
+    public void copyData(String accessToken, File file, String targetTable, String md5, String delimiter, String encoding) throws FileFormatException, PSQLException {
+
+        File dataFile = null;
+        if (file.getName().toLowerCase().endsWith(".xls")) {
+            try {
+                XLS2CSV xls2csv = new XLS2CSV(file.getAbsolutePath(), file + ".csv");
+                xls2csv.process();
+                dataFile = new File(file + ".csv");
+            } catch (Exception e) {
+                logger.error("xls转换csv错误", e);
+                throw new FileFormatException("xls转换csv错误" + e);
+            }
+        } else if (file.getName().toLowerCase().endsWith(".xlsx")) {
+            try {
+                XLSX2CSV xlsx2csv = new XLSX2CSV(file.getAbsolutePath(), file + ".csv");
+                xlsx2csv.process();
+                dataFile = new File(file + ".csv");
+            } catch (Exception e) {
+                logger.error("xlsx转换csv错误", e);
+                throw new FileFormatException("xlsx转换csv错误" + e);
+            }
+        } else {
+            dataFile = file;
+        }
+        try {
+//            tableRepository.truncate(targetTable);
+//            tableRepository.copyData(dataFile, targetTable);
+            DbUtils.copyData(accessToken, dataFile, targetTable, delimiter, encoding);
+
+            if (StringKit.isNotBlank(md5)) {
+                UserTable userTable = tableRepository.findByTableName(targetTable);
+                userTable.setMd5(md5);
+            }
+        } catch (Exception e) {
+            logger.error("导入CSV文件出错", e);
+            throw new PSQLException("导入CSV文件出错," + e.getMessage(), PSQLState.UNDEFINED_COLUMN);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void delete(final Long... ids) {
+
+//        Specification<UserTable> specification = new Specification<UserTable>() {
+//
+//            @Override
+//            public Predicate toPredicate(Root<UserTable> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+//
+//                Expression exp = root.get("id");
+//                Predicate condition = exp.in(ids);
+//                criteriaQuery.where(condition);
+//                return condition;
+//            }
+//        };
+//        List<UserTable> tables = tableRepository.findAll(specification);
+//
+//        if (!CollectionUtils.isEmpty(tables)) {
+//            for (UserTable table : tables) {
+//                switch (table.getTableType()) {
+////                    case HIVE:
+////                        // 删除Hive对应表
+////                        hiveTableRepository.delete(table.getTableName());
+////                        break;
+//                    case FLAT_FILE:
+//                    case RDBMS:
+//                        tableRepository.dropTable(table);
+//                        break;
+//                    default: // HDFS 不需要删除
+//                        break;
+//                }
+//                tableRepository.delete(table.getId());
+//            }
+//        }
+    }
+
+    @Override
+    public List<Map<String, Object>> previewData(Long tableId) {
+        UserTable table = tableRepository.findOne(tableId);
+
+        if (null == table) {
+            throw new ElementNotFoundException("数据表不存在");
+        }
+        return tableRepository.previewData(table.getTableName());
+    }
+
+    @Override
+    public Page<Map<String, Object>> previewData(Long tableId, Pageable pageable) throws ElementNotFoundException {
+        UserTable table = tableRepository.findOne(tableId);
+
+        if (null == table) {
+            throw new ElementNotFoundException("数据表不存在");
+        }
+        return tableRepository.previewData("select * from " + table.getTableName(), pageable);
+    }
+
+    @Override
+    public List<Map<String, Object>> previewData(String tableName) throws ElementNotFoundException {
+        UserTable table = tableRepository.findByTableName(tableName);
+        //兼容旧的表名
+        if (table == null) {
+            String tmpTableName = CommonUtils.removeTableNamePrefix(tableName);
+            if (!tableName.equals(tmpTableName)) {
+                table = tableRepository.findByTableName(tmpTableName);
+                if (null != table) {
+                    tableName = tmpTableName;
+                } else {
+                    throw new ElementNotFoundException("数据表不存在");
+                }
+            } else {
+                throw new ElementNotFoundException("数据表不存在");
+            }
+        }
+        return tableRepository.previewData(tableName);
+    }
+
+    @Override
+    public List<Map<String, Object>> filterUserTable(Long creatorId, String prefix, List<Integer> excludeType, Integer limit) {
+
+        return tableRepository.findUserTableByPrefix(creatorId, prefix, excludeType, limit);
+    }
+
+    @Override
+    public List<Map<String, Object>> getTableStructure(String table) throws FileNotFoundException {
+        UserTable userTable = null;
+
+        if (NumberUtils.isDigits(table)) {
+            userTable = tableRepository.findOne(Long.parseLong(table));
+        } else {
+            userTable = tableRepository.findByTableName(table);
+        }
+        if (null != userTable) {
+            table = userTable.getTableName();
+        }
+        List<Map<String, Object>> struct = tableRepository.getTableStructure(table);
+        Map<String, String> dataTypes = PropertiesUtil.getProperties("/sysconfig/dataType-mapping.properties");
+        if (null == dataTypes) {
+            throw new FileNotFoundException("数据类型映射配置文件/sysconfig/dataType-mapping.properties不存在，配置方式：double = numeric");
+        }
+
+        for (Map<String, Object> x : struct) {
+            String key = "dataType";
+            String dataType = (String) x.get(key);
+            String[] tmp = dataType.split(" ");
+            if (!dataTypes.containsKey(tmp[0])) {
+                throw new ElementNotFoundException("/sysconfig/dataType-mapping.properties不存在【" + tmp[0] + "】的映射");
+            }
+            x.put(key, dataTypes.get(tmp[0]));
+        }
+        return struct;
+    }
+
+    @Override
+    public void copyTableStructure(String sourceTable, String targetTable, String... column) {
+
+        tableRepository.copyTableStructure(sourceTable, targetTable, column);
+    }
+
+    @Override
+    public void copyData(String sourceTable, String targetTable, String[] column) {
+        try {
+            tableRepository.dropTable(targetTable);
+        } catch (Exception ex) {
+
+        }
+        tableRepository.copyData(sourceTable, targetTable, column);
+    }
+
+    @Override
+    public void copyData(String sourceTable, String targetTable, boolean truncate, String[] column) {
+        tableRepository.copyData(sourceTable, targetTable, truncate, column);
+    }
+
+    @Override
+    public void update(UserTable userTable) {
+        tableRepository.update(userTable.getStatus().getValue(), userTable.getId());
+    }
+
+    @Override
+    public void shareModel(Long dataSourceId, Long[] sharedUsers) {
+
+        List<SharedUsers> users = new ArrayList<>();
+        for (Long userId : sharedUsers) {
+            SharedUsers sharedUser = new SharedUsers();
+            sharedUser.setSharedObjectId(dataSourceId);
+            sharedUser.setUserId(userId);
+            sharedUser.setObjectType(SharedUsers.ObjectType.DATASOURCE);
+            users.add(sharedUser);
+        }
+        sharedUserRepository.save(users);
+    }
+
+    @Override
+    public void dropExpiredTable(String... tables) {
+
+        if (ArrayUtils.isNotEmpty(tables)) {
+            for (String table : tables) {
+                logger.info("drop table:{}", table);
+                tableRepository.dropTable(table);
+            }
+        }
+    }
+
+    @Override
+    public void batchExecuteSQL(String... sqls) throws SQLException {
+        tableRepository.batchExecuteSQL(sqls);
+    }
+
+    @Override
+    public Page<Map<String, Object>> findDataByOutputId(Long projectId, String outputId, Pageable pageable) throws ElementNotFoundException {
+
+        Project project = projectRepository.findOne(projectId);
+        if (null == project) {
+            throw new ElementNotFoundException("不存在id为" + projectId + "的工程");
+        }
+        if (NumberUtils.isDigits(outputId)) {
+            return previewData(Long.parseLong(outputId), pageable);
+        } else {
+            String tableName = CommonUtils.generateTableName(project.getCreatorName(), outputId);
+            return tableRepository.previewData("select * from " + tableName, pageable);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> findDataByVisualConfig(Long projectId, String inputId, VisualConfig config) throws ElementNotFoundException {
+        Project project = projectRepository.findOne(projectId);
+        if (null == project) {
+            throw new ElementNotFoundException("不存在id为" + projectId + "的工程");
+        }
+//        String inputId = config.getInputId();
+        String tableName;
+        if (NumberUtils.isDigits(inputId)) {
+            UserTable userTable = findOne(Long.parseLong(inputId));
+            tableName = userTable.getTableName();
+        } else {
+            tableName = CommonUtils.generateTableName(project.getCreatorName(), inputId);
+        }
+        String sql = config.toString(tableName);
+        logger.info("will executing SQL: {}", sql);
+        try {
+            return tableRepository.findBySQL(sql);
+        } catch (SQLException e) {
+            String errorMsgPattern = "SQL执行出错，SQLState: {}， {}";
+            String errorMsg = MessageFormatter.arrayFormat(errorMsgPattern, new Object[]{e.getSQLState(), StringKit.substringBefore(e.getMessage(), "\n").replaceAll(tableName + ".", "")}).getMessage();
+            throw new RuntimeException(errorMsg);
+        }
+    }
+
+    @Override
+    public DataSyncStrategy getStrategyByTableId(Long tableId) {
+        return dataSyncStrategyRepository.findByTableId(tableId);
+    }
+
+    @Override
+    public Long addDataSyncStrategy(DataSyncStrategy strategy) throws ClassNotFoundException, SQLException {
+
+        UserTable table = findOne(strategy.getTableId());
+        if (table == null) {
+            throw new ElementNotFoundException("数据源不存在，id:" + strategy.getTableId());
+        }
+
+        if (!table.getSupportDataSync()) {
+            throw new IllegalOperationException("数据源不支持同步操作，id:" + strategy.getTableId());
+        }
+        //如果是增量更新模式并且配置了数据库连接信息
+        if (strategy.getMode() == DataSyncStrategy.Mode.INCREMENT && null != table.getConn()) {
+
+            if (!strategy.getInsert().startsWith(table.getConn().getSql())) {
+                throw new IllegalArgumentException("增量插入SQL的主体必须与数据源的取数SQL“" + table.getConn().getSql() + "”一致");
+            }
+
+            DBConnection conn = table.getConn();
+            Optional<String> optional = Constants.DRIVERS.keySet().stream().filter(x -> x.equals(conn.getUrl().substring(0, x.length()))).findFirst();
+            Class.forName(Constants.DRIVERS.get(optional.get())[0]);
+            try (java.sql.Connection connection = DriverManager.getConnection(conn.getUrl(), conn.getUserName(), conn.getPassword());) {
+                ResultSetMetaData metaData = null;
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(strategy.getDelete());
+                metaData = resultSet.getMetaData();
+
+                if (metaData.getColumnCount() > 1) {
+                    throw new IllegalArgumentException("增量删除语句的结果集只能包含ID列");
+                }
+
+                resultSet = statement.executeQuery(strategy.getUpdate());
+                metaData = resultSet.getMetaData();
+
+                if (metaData.getColumnCount() > 1) {
+                    throw new IllegalArgumentException("增量修改语句的结果集只能包含ID列");
+                }
+                org.apache.commons.dbutils.DbUtils.close(resultSet);
+                org.apache.commons.dbutils.DbUtils.close(statement);
+            }
+        }
+
+
+        dataSyncStrategyRepository.save(strategy);
+        //如果设定了cron且格式正确
+        if (CronExpression.isValidExpression(strategy.getCron())) {
+//            Scheduler scheduler = schedulerFactory.getScheduler();
+            UserTable userTable = tableRepository.findOne(strategy.getTableId());
+            String jobName = userTable.getTableName();
+            TriggerKey triggerKey = TriggerKey.triggerKey(jobName, "group");
+            // 表达式调度构建器
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(strategy.getCron());
+            // 按新的表达式构建一个新的trigger
+            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
+            JobKey jobKey = new JobKey(jobName, "group");
+            JobDetail jobDetail = JobBuilder.newJob(SyncDataJobBean.class).withIdentity(jobKey).build();
+            jobDetail.getJobDataMap().put("userTable", userTable);
+
+            try {
+                //调度前移除
+                scheduler.deleteJob(jobKey);
+                //开始调度
+                scheduler.scheduleJob(jobDetail, trigger);
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+            }
+        }
+        return strategy.getId();
+    }
+
+    @Override
+    public void updateLastSyncTimeForTable(Long tableId, Date lastSyncTime) {
+        DataSyncStrategy strategy = dataSyncStrategyRepository.findByTableId(tableId);
+        if (strategy != null) {
+            strategy.setLastSyncTime(lastSyncTime);
+        }
+    }
+
+    @Override
+    public void truncateTable(String tableName) {
+        tableRepository.truncate(tableName);
+    }
+}

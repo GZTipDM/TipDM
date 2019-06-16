@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <!-- 如果配置了<context:component-scan>那么<context:annotation-config/>标签就可以不用再xml中配置了，因为前者包含了后者 -->
+    <context:component-scan base-package="com.tipdm.framework.controller"
+                            use-default-filters="false">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation"
+                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+    <mvc:annotation-driven>
+        <!--<mvc:message-converters register-defaults="true">-->
+            <!--<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">-->
+                <!--<constructor-arg ref="ObjectMapper"></constructor-arg>-->
+            <!--</bean>-->
+        <!--</mvc:message-converters>-->
+    </mvc:annotation-driven>
+
+    <!-- 使用工厂模式 -->
+    <!--<bean id="ObjectMapper" class="com.tipdm.framework.common.controller.base.ObjectMapperFactory"-->
+          <!--factory-method="getMapper"/>-->
+
+    <context:property-placeholder location="classpath:sysconfig/system.properties"/>
+
+    <!-- 配置MultipartResolver 用于文件上传 使用spring的CommosMultipartResolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="resolveLazily" value="true"/>
+        <property name="maxUploadSize" value="${file.upload.maxUploadSize}"/>
+        <property name="uploadTempDir" value="${file.upload.dir}"/>
+    </bean>
+
+    <mvc:interceptors>
+        <!--请求速率拦截器，设定指定url每秒允许的请求数-->
+        <bean class="com.tipdm.framework.dmserver.interceptor.RateLimitInterceptor">
+            <property name="urlProperties">
+                <props>
+                    <prop key="/api/project/execute/**">5</prop>
+                    <prop key="/api/datasource/syncTable">5</prop>
+                </props>
+            </property>
+        </bean>
+    </mvc:interceptors>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <util:list id="beanList">
+                <ref bean="mappingJacksonHttpMessageConverter"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="mappingJacksonHttpMessageConverter"
+          class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/plain;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 定义无需Controller的url<->view直接映射 -->
+    <!--<mvc:view-controller path="/" view-name="redirect:/login" />-->
+
+    <!--<mvc:view-controller path="/404" view-name="404"/>-->
+    <mvc:view-controller path="/401" view-name="401"/>
+    <mvc:view-controller path="/403" view-name="403"/>
+    <mvc:view-controller path="/404" view-name="404"/>
+    <!-- 如果当前路径是/ 则交给相应的视图解析器直接解析为视图 -->
+    <!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- -->
+    <bean id="defaultViewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="contentType" value="text/html"/>
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 静态资源映射 -->
+    <mvc:resources mapping="/dev/**" location="/WEB-INF/api/"/>
+    <mvc:resources mapping="/report/**" location="/report/"/>
+
+    <!-- swagger 配置 -->
+    <context:component-scan base-package="com.tipdm.framework.dmserver.config"/>
+    <!--<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />-->
+</beans>

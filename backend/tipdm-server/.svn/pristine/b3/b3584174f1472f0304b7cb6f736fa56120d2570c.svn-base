@@ -1,0 +1,16 @@
+package com.tipdm.framework.dmserver.exception;
+
+/**
+ * Created by zhoulong on 2017/8/13.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class IllegalOperationException extends RuntimeException {
+
+    public IllegalOperationException(String message) {
+        super(message);
+    }
+
+    public IllegalOperationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

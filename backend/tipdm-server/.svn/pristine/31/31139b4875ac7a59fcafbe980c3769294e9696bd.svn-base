@@ -1,0 +1,132 @@
+package com.tipdm.framework.service.dmserver;
+
+import com.tipdm.framework.controller.dmserver.entity.DataColumn;
+import com.tipdm.framework.controller.dmserver.entity.datavisual.VisualConfig;
+import com.tipdm.framework.dmserver.exception.DuplicateException;
+import com.tipdm.framework.dmserver.exception.ElementNotFoundException;
+import com.tipdm.framework.model.dmserver.DBConnection;
+import com.tipdm.framework.model.dmserver.DataSyncStrategy;
+import com.tipdm.framework.model.dmserver.UserTable;
+import com.tipdm.framework.service.BaseService;
+import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
+import org.postgresql.util.PSQLException;
+import org.quartz.SchedulerException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * Created by zhoulong on 2016/12/15.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public interface UserTableService extends BaseService<UserTable, Long> {
+
+    /**
+     * 条件查找
+     * @param params
+     * @param pageable
+     * @return
+     */
+    public Page<UserTable> findTableByCondition(Map<String, Object> params, Pageable pageable);
+
+    public Page<UserTable> findSharedTables(Map<String, Object> params, Pageable pageable);
+
+
+    /**
+     * 检测MD5值是否存在
+     * @param tableName
+     * @param md5
+     * @return
+     */
+    public boolean existsMD5(String tableName, String md5);
+
+    /**
+     * 创建表 (非结构化数据)
+     * @param table
+     * @return
+     */
+    public Long createTable(UserTable table) throws DuplicateException;
+
+    /**
+     * 创建表
+     * @param table
+     * @param columns
+     * @return
+     */
+    public Long createTable(UserTable table, List<DataColumn> columns) throws DuplicateException;
+
+    Long createTable(UserTable table, DBConnection connection, List<DataColumn> columns) throws DuplicateException;
+
+    public void deleteTable(Long creatorId, Long tableId) throws IllegalAccessException;
+
+    public Long createDBConn(DBConnection dbConn);
+
+    public List<UserTable> findTableByCreatorName(String creatorName);
+
+    public UserTable findTableByTableName(String tableName);
+
+    public void syncTable(String accessToken, String tableName) throws SchedulerException;
+
+    public void copyData(String accessToken, File file, String targetTable, String delimiter, String encoding) throws FileFormatException, PSQLException;
+
+    public void copyData(String accessToken, File file, String targetTable, String md5, String delimiter, String encoding) throws FileFormatException, PSQLException;
+
+    public List<Map<String, Object>> previewData(Long tableId) throws ElementNotFoundException;
+
+    public Page<Map<String, Object>> previewData(Long tableId, Pageable pageable);
+
+    /**
+     * 该方法已废弃
+     * @param tableName
+     * @return
+     */
+    @Deprecated
+    public List<Map<String, Object>> previewData(String tableName) throws ElementNotFoundException;
+
+    public List<Map<String, Object>> filterUserTable(Long creatorId, String prefix, List<Integer> excludeType, Integer limit);
+
+    public List<Map<String, Object>> getTableStructure(String table) throws FileNotFoundException;
+
+    public void copyTableStructure(String sourceTable, String targetTable, String...column);
+
+    public void copyData(String sourceTable, String targetTable, String[] column);
+
+    public void copyData(String sourceTable, String targetTable, boolean truncate, String[] column);
+
+    public void update(UserTable userTable);
+
+    public void shareModel(Long dataSourceId, Long[] sharedUsers);
+
+    /**
+     * 删除过期的数据源
+     */
+    public void dropExpiredTable(String... tables);
+
+    public void batchExecuteSQL(String... sqls) throws SQLException;
+
+    /**
+     * 查看流程中组件的输出数据
+     * NumberUtils.isDigits(outputId) == true 表明是输入节点
+     * @param projectId
+     * @param outputId
+     * @return
+     */
+    public Page<Map<String, Object>> findDataByOutputId(Long projectId, String outputId, Pageable pageable) throws ElementNotFoundException;
+
+    public List<Map<String, Object>> findDataByVisualConfig(Long projectId, String inputId, VisualConfig config) throws ElementNotFoundException;
+
+    public DataSyncStrategy getStrategyByTableId(Long tableId);
+
+    public Long addDataSyncStrategy(DataSyncStrategy strategy) throws ClassNotFoundException, SQLException;
+
+    public void updateLastSyncTimeForTable(Long tableId, Date lastSyncTime);
+
+    public void truncateTable(String tableName);
+}

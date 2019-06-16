@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+
+	<!-- 缓存管理器 使用Ehcache实现 -->
+	<bean id="cacheManager" class="com.tipdm.framework.common.spring.SpringCacheManager">
+        <property name="cacheManager" ref="springCacheManager"/>
+    </bean>
+
+	<!-- 凭证匹配器，解密使用,注入到realm中使用 -->
+	<!-- 使用自定义的credentialMatcher,实现了多次参试失败后锁定用户的功能 -->
+	<!--<bean id="credentialsMatcher"-->
+		<!--class="com.tipdm.framework.dmserver.shiro.credential.RetryLimitHashedCredentialsMatcher">-->
+		<!--<constructor-arg ref="cacheManager" />-->
+		<!--&lt;!&ndash; 加密解密的算法要一样，迭代数也是 &ndash;&gt;-->
+		<!--<property name="hashAlgorithmName" value="md5" />-->
+		<!--<property name="hashIterations" value="2" />-->
+		<!--<property name="storedCredentialsHexEncoded" value="true" />-->
+
+	<!--</bean>-->
+
+	<!-- Realm实现 -->
+	<bean id="tokenRealm" class="com.tipdm.framework.dmserver.shiro.realm.BearerTokenRealm">
+		<property name="tokenManager" ref="tokenManager"/>
+		<property name="cachingEnabled" value="false" />
+		<!--<property name="cachingEnabled" value="true" />-->
+		<!--<property name="authenticationCachingEnabled" value="true" />-->
+		<!--<property name="authenticationCacheName" value="authenticationCache" />-->
+		<!--<property name="authorizationCachingEnabled" value="true" />-->
+		<!--<property name="authorizationCacheName" value="authorizationCache" />-->
+	</bean>
+
+	<!-- 会话ID生成器 -->
+	<!--<bean id="sessionIdGenerator"-->
+		<!--class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator" />-->
+
+	<!-- 会话Cookie模板 -->
+	<!--<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">-->
+		<!--<constructor-arg value="${shiro.uid.cookie.name}" />-->
+		<!--<property name="httpOnly" value="true" />-->
+		<!--<property name="maxAge" value="${shiro.uid.cookie.maxAge}" />&lt;!&ndash; -->
+			<!--单位秒 &ndash;&gt;-->
+	<!--</bean>-->
+	<!--<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">-->
+		<!--<constructor-arg value="${shiro.uid.rememeberMe.cookie.name}" />-->
+		<!--<property name="httpOnly" value="true" />-->
+		<!--<property name="maxAge" value="${shiro.uid.rememeberMe.cookie.maxAge}" />&lt;!&ndash; -->
+			<!--30天 &ndash;&gt;-->
+	<!--</bean>-->
+
+	<!-- 会话DAO -->
+	<!--<bean id="sessionDAO"-->
+		<!--class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO">-->
+		<!--<property name="activeSessionsCacheName" value="shiro-activeSessionCache" />-->
+		<!--<property name="sessionIdGenerator" ref="sessionIdGenerator" />-->
+	<!--</bean>-->
+
+	<!-- 会话验证调度器 -->
+	<!--<bean id="sessionValidationScheduler"-->
+		<!--class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">-->
+		<!--&lt;!&ndash; 30分钟验证一次会话是否过期 &ndash;&gt;-->
+		<!--&lt;!&ndash; <property name="sessionValidationInterval" value="${shiro.session.validation.interval}" /> &ndash;&gt;-->
+		<!--<property name="interval" value="${shiro.session.validation.interval}" />-->
+		<!--<property name="sessionManager" ref="sessionManager" />-->
+	<!--</bean>-->
+
+	<bean id="subjectFactory" class="com.tipdm.framework.dmserver.shiro.mgt.BearerTokenSubjectFactory"/>
+
+	<!-- 会话管理器 -->
+	<!--<bean id="sessionManager"
+		class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<property name="globalSessionTimeout" value="${shiro.session.globalSessionTimeout}" />&lt;!&ndash;
+			会话超时时间 两小时 单位毫秒 &ndash;&gt;
+		<property name="deleteInvalidSessions" value="true" />
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		<property name="sessionValidationScheduler" ref="sessionValidationScheduler" />
+		<property name="sessionDAO" ref="sessionDAO" />
+		<property name="sessionIdCookieEnabled" value="true" />
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+	</bean>-->
+	<bean id="sessionManager" class="org.apache.shiro.session.mgt.DefaultSessionManager">
+		<property name="sessionValidationSchedulerEnabled" value="false"/>
+	</bean>
+
+	<!-- rememberMe管理器 -->
+	<!--<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">-->
+		<!--&lt;!&ndash; rememberMe cookie加密的密钥 建议每个项目都不一样 默认AES算法 密钥长度（128 256 512 位） &ndash;&gt;-->
+		<!--<property name="cipherKey"-->
+			<!--value="#{T(org.apache.shiro.codec.Base64).decode('${shiro.uid.rememeberMe.cookie.base64.cipherKey}')}" />-->
+		<!--<property name="cookie" ref="rememberMeCookie" />-->
+	<!--</bean>-->
+
+	<!-- 安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="tokenRealm" />
+		<property name="sessionManager" ref="sessionManager" />
+		<property name="subjectDAO.sessionStorageEvaluator.sessionStorageEnabled" value="false"/>
+		<!--<property name="cacheManager" ref="cacheManager" />-->
+		<!--<property name="rememberMeManager" ref="rememberMeManager" />-->
+		<property name="subjectFactory" ref="subjectFactory"/>
+	</bean>
+
+	<!-- 相当于调用SecurityUtils.setSecurityManager(securityManager) -->
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="org.apache.shiro.SecurityUtils.setSecurityManager" />
+		<property name="arguments" ref="securityManager" />
+	</bean>
+
+	<!-- 基于Form表单的身份验证过滤器 -->
+	<!--<bean id="formAuthenticationFilter"
+		class="com.tipdm.framework.oauth.shiro.filter.CustomFormAuthenticationFilter">
+		<property name="usernameParam" value="username" />
+		<property name="passwordParam" value="password" />
+		<property name="loginUrl" value="${shiro.login.url}" />
+		&lt;!&ndash;即rememberMe请求参数名，请求参数是boolean类型，true表示rememberMe。 &ndash;&gt;
+		<property name="rememberMeParam" value="rememberMe" />
+	</bean>-->
+
+	<!--<bean id="monitorFilter"
+		class="com.tipdm.framework.oauth.shiro.filter.MonitorAccessControlFilter"></bean>-->
+
+	<!--<bean id="bearerAuthc" class="com.tipdm.framework.dmserver.shiro.filter.BearerTokenAuthenticatingFilter" />-->
+
+	<bean id="tokenAuthcFilter" class="com.tipdm.framework.dmserver.shiro.filter.BearerTokenAuthenticatingFilter" />
+
+	<bean id="corsFilter" class="com.tipdm.framework.dmserver.shiro.filter.CORSFilter" />
+
+	<!-- Shiro的Web过滤器 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- 此处使用ShiroFilterFactoryBean来创建ShiroFilter过滤器；filters属性用于定义自己的过滤器， 即ini配置中的[filters]部分；filterChainDefinitions用于声明url和filter的关系，即ini配置中的[urls]部分。 -->
+		<property name="securityManager" ref="securityManager" />
+		<!-- 即访问这些地址时会首先判断用户有没有登录，如果没有登录默会跳转到登录页面,设置loginUrl属性，默认是/login.jsp -->
+		<!--<property name="loginUrl" value="${shiro.login.url}" />-->
+		<!-- 没有权限的时候跳转页面 -->
+		<!--<property name="unauthorizedUrl" value="${shiro.unauthorizedUrl}" />-->
+		<!--<property name="successUrl" value="/"></property>-->
+		<property name="filters">
+			<util:map>
+				<!-- filters该属性用于定义自定义的过滤器 -->
+				<!--<entry key="authc" value-ref="formAuthenticationFilter" />-->
+				<!--<entry key="monitor" value-ref="monitorFilter" />-->
+				<!--<entry key="bearerAuthc" value-ref="bearerAuthc"/>-->
+				<entry key="tokenAuthc" value-ref="tokenAuthcFilter"/>
+				<entry key="cors" value-ref="corsFilter"/>
+			</util:map>
+		</property>
+
+		<property name="filterChainDefinitions"><!-- 用于申明过滤器与url的关系，过滤器采用短路原则，越上面越先匹配 -->
+			<value>
+				/ = anon
+				/401 = anon
+				/403 = anon
+				/404 = anon
+				/api-docs/** = anon
+				/apiDoc/** = anon
+				/dev/** = anon
+				/token/** = cors
+				/authorize = anon
+				/oauth2-login = anon
+				/license/** = anon
+				<!--/api/mse/*/detail = cors
+				/api/mse/*/scoring = cors
+				/api/mse/*/scoring/batch = cors-->
+				/api/** = tokenAuthc
+				/report/** = cors
+				/s/** = cors
+				<!--/login = authc		&lt;!&ndash;authc拦截器会判断用户是否是通过Subject.login（isAuthenticated()==true）登录的，如果是才放行，否则会跳转到登录页面叫你重新登录 &ndash;&gt;
+				/logout = logout 	&lt;!&ndash; 注销拦截器 &ndash;&gt;
+				/register=anon		&lt;!&ndash; 允许匿名访问 &ndash;&gt;
+      			/userInfo=anon
+				/prepareRegister=anon
+				/resources/**=anon  &lt;!&ndash; 不拦截静态资源！！ &ndash;&gt;
+				/** = user  &lt;!&ndash; isRemenber=true或者是通过login登录的就可以通过 &ndash;&gt;-->
+			</value>
+		</property>
+	</bean>
+
+	<!-- Shiro生命周期处理器 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+
+</beans>

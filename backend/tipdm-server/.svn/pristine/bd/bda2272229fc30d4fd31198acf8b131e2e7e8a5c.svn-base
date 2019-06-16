@@ -1,0 +1,462 @@
+//package com.tipdm.framework.controller.dmserver;
+//
+//import com.alibaba.fastjson.JSON;
+//import com.tipdm.framework.common.controller.Result;
+//import com.tipdm.framework.common.controller.base.BaseController;
+//import com.tipdm.framework.common.token.TokenManager;
+//import com.tipdm.framework.common.token.model.TokenModel;
+//import com.tipdm.framework.common.utils.RedisUtils;
+//import com.tipdm.framework.common.utils.StringKit;
+//import com.tipdm.framework.controller.dmserver.entity.RestfulDataSource;
+//import com.tipdm.framework.dmserver.exception.AlgorithmException;
+//import com.tipdm.framework.dmserver.mse.ModelUtil;
+//import com.tipdm.framework.dmserver.mse.ModelVersion;
+//import com.tipdm.framework.dmserver.utils.Constants;
+//import com.tipdm.framework.dmserver.utils.DbUtils;
+//import com.tipdm.framework.model.dmserver.Model;
+//import com.tipdm.framework.service.dmserver.ModelService;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.ApiParam;
+//import org.apache.commons.io.FileUtils;
+//import org.apache.commons.lang.ArrayUtils;
+//import org.apache.shiro.authz.annotation.RequiresPermissions;
+//import org.dmg.pmml.PMML;
+//import org.jpmml.evaluator.ModelEvaluator;
+//import org.jpmml.evaluator.ModelEvaluatorFactory;
+//import org.openscoring.common.EvaluationRequest;
+//import org.openscoring.common.EvaluationResponse;
+//import org.openscoring.common.Field;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.data.domain.Page;
+//import org.springframework.http.HttpHeaders;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.MediaType;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//import org.springframework.web.multipart.MultipartFile;
+//import org.springframework.web.multipart.MultipartHttpServletRequest;
+//import org.springframework.web.multipart.support.MissingServletRequestPartException;
+//
+//import javax.servlet.http.HttpServletRequest;
+//import java.io.File;
+//import java.io.FileInputStream;
+//import java.io.IOException;
+//import java.net.URLEncoder;
+//import java.util.*;
+//
+///**
+// * Created by zhoulong on 2017/4/28.
+// * E-mail:zhoulong8513@gmail.com
+// */
+//@SuppressWarnings("all")
+//@RestController
+//@RequestMapping("/api/mse")
+//@Api(value = "/api/mse", position = 15, tags = "模型管理")
+////@PropertySource(value = "classpath:sysconfig/system.properties")
+//public class MSEController extends BaseController {
+//
+//    private final static Logger logger = LoggerFactory.getLogger(MSEController.class);
+//
+////    @Value("${model.dir}")
+////    private String modelDir;
+//
+//    @Autowired
+//    private TokenManager tokenManager;
+//
+//    @Autowired
+//    private ModelService modelService;
+//
+//
+//    @RequiresPermissions("mse:shared")
+//    @RequestMapping(value = "/shares", method = RequestMethod.GET)
+//    @ApiOperation(value = "分享的模型列表", position = 1)
+//    public Result getSharedList(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                                @ApiParam(value = "模型名称") @RequestParam(value = "modelName", required = false) String modelName,
+//                                @ApiParam(value = "查询在指定时间段部署的模型，开始时间, 格式: yyyy-MM-dd HH:mm:ss", defaultValue = "2016-01-01 00:00:00") @RequestParam(required = false) Date beginTime,
+//                                @ApiParam(value = "结束时间, 格式: yyyy-MM-dd HH:mm:ss", defaultValue = "2016-01-02 00:00:00") @RequestParam(required = false) Date endTime,
+//                                @ApiParam(value = "页码", required = true) @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+//                                @ApiParam(value = "页大小", required = true) @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+//
+//        Result result = new Result();
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("userId", tokenModel.getUserId());
+//        params.put("modelName", modelName);
+//        params.put("beginTime", beginTime);
+//        params.put("endTime", endTime);
+//        Page<Model> page = modelService.findSharedModels(params, buildPageRequest(pageNumber,pageSize));
+//        result.setData(page);
+//        result.setStatus(Result.Status.SUCCESS);
+//        return result;
+//    }
+//
+//    @RequiresPermissions("mse:owned")
+//    @RequestMapping(value = "/owned", method = RequestMethod.GET)
+//    @ApiOperation(value = "获取个人模型列表", position = 2)
+//    public Result getOwnedModels(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                               @ApiParam(value = "模型名称") @RequestParam(value = "modelName", required = false) String modelName,
+//                               @ApiParam(value = "查询在指定时间段部署的模型，开始时间, 格式: yyyy-MM-dd HH:mm:ss", defaultValue = "2016-01-01 00:00:00") @RequestParam(required = false) Date beginTime,
+//                               @ApiParam(value = "结束时间, 格式: yyyy-MM-dd HH:mm:ss", defaultValue = "2016-01-02 00:00:00") @RequestParam(required = false) Date endTime,
+//                               @ApiParam(value = "页码", required = true) @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+//                               @ApiParam(value = "页大小", required = true) @RequestParam(value = "pageSize", defaultValue = "10") int pageSize)  {
+//
+//        Result result = new Result();
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//        //model name; deploy time
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("creatorId", tokenModel.getUserId());
+//        params.put("modelName", modelName);
+//        params.put("beginTime", beginTime);
+//        params.put("endTime", endTime);
+//        Page<Model> page = modelService.findOwnModels(params, buildPageRequest(pageNumber,pageSize));
+//        result.setData(page);
+//        result.setMessage("个人模型列表加载成功");
+//
+//        return result;
+//    }
+//
+//
+//    @RequiresPermissions("mse:deploy")
+//    @RequestMapping(value = "/{nodeId}/deploy", method = RequestMethod.POST)
+//    @ApiOperation(value = "部署模型", position = 3, notes = "模型更新后，可选择覆盖原有模型或重新部署模型")
+//    public Result deploy(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                         @ApiParam(value = "组件的客户端Id", required = true)@PathVariable(name = "nodeId") String nodeId,
+//                         HttpServletRequest request) throws AlgorithmException, IOException {
+//
+//        Result result = new Result();
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//        Model unsavedModel = (Model)RedisUtils.getFromMap(Constants.UN_SAVED_MODEL, nodeId);
+//        if(unsavedModel == null){
+//            result.setStatus(Result.Status.FAIL);
+//            result.setMessage("未能找到对应的模型对象");
+//            return result;
+//        }
+//        try {
+//            unsavedModel.setCreatorId(tokenModel.getUserId());
+//            Long id = modelService.deployModel(unsavedModel);
+//            result.setData(id);
+//            RedisUtils.removeFromMap(Constants.UN_SAVED_MODEL, nodeId);
+//        } catch (Exception ex){
+//            result.setMessage("模型部署失败，错误信息：" + ex.getMessage());
+//            result.setStatus(Result.Status.FAIL);
+//        }
+//        return result;
+//    }
+//
+//
+//    @RequiresPermissions("mse:redeploy")
+//    @RequestMapping(value = "/{nodeId}/redeploy/{version}", method = RequestMethod.POST)
+//    @ApiOperation(value = "重新部署模型", position = 3)
+//    public Result redeploy(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                           @ApiParam(value = "组件的客户端Id", required = true)@PathVariable(name = "nodeId") String nodeId,
+//                           @ApiParam(value = "版本号", required = true) @PathVariable(name = "version")Integer version,
+//                           HttpServletRequest request) throws AlgorithmException, IOException {
+//
+//        Result result = new Result();
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//
+//        Model unsavedModel = (Model)RedisUtils.getFromMap(Constants.UN_SAVED_MODEL, nodeId);
+//        if(unsavedModel == null){
+//            result.setStatus(Result.Status.FAIL);
+//            result.setMessage("未能找到对应的模型对象");
+//            return result;
+//        }
+//        try {
+//            unsavedModel.setCreatorId(tokenModel.getUserId());
+//            Long id = modelService.redeployModel(unsavedModel, version);
+//            result.setData(id);
+//            RedisUtils.removeFromMap(Constants.UN_SAVED_MODEL, nodeId);
+//        } catch (Exception ex){
+//            result.setMessage("模型部署失败，错误信息：" + ex.getMessage());
+//            result.setStatus(Result.Status.FAIL);
+//        }
+//        return result;
+//    }
+//
+//    /**
+//     *
+//     * @param accessToken
+//     * @param modelId
+//     * @param request
+//     * @return
+//     * @throws Exception
+//     */
+//    @RequiresPermissions("mse:detail")
+//    @RequestMapping(value = "/{modelId}/", method = RequestMethod.GET)
+//    @ApiOperation(value = "查看模型信息", notes = "查看模型的输入列、输出列...", position = 3)
+//    public Result showModelDetail(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                                  @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                                  HttpServletRequest request) throws AlgorithmException{
+//
+//        Result result = new Result();
+//        Model model = modelService.findOne(modelId);
+//        if(model == null){
+//            throw new NullPointerException("model not found");
+//        }
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//        String modelDir = RedisUtils.get(Constants.MODEL_DIR, String.class);
+//
+//        File modelFile = new File(modelDir, model.getModelPath());
+//        if(!modelFile.exists()){
+//            throw new NullPointerException("can not found model file");
+//        }
+////        PMML pmml = org.jpmml.model.PMMLUtil.unmarshal(new FileInputStream(modelFile));
+////        ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+////
+////        ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+//        Map<String, List<Field>> schema = new LinkedHashMap<>();
+//        schema.put("inputFields", model.getFeatures());
+//        schema.put("targetFields", model.getTarget());
+//        schema.put("outputFields", model.getOutputs());
+//        result.setData(schema);
+//        return result;
+//    }
+//
+//    @RequiresPermissions("mse:showUnSaveMode")
+//    @RequestMapping(value = "/{nodeId}/preview", method = RequestMethod.GET)
+//    @ApiOperation(value = "查看模型信息(未保存的)", notes = "查看模型的输入列、输出列...", position = 3)
+//    public Result previewModel(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                                  @ApiParam(value = "组件的客户端Id", required = true)@PathVariable(name = "nodeId") String nodeId,
+//                                  HttpServletRequest request) throws AlgorithmException{
+//
+//        Result result = new Result();
+//        Model model = (Model)RedisUtils.getFromMap(Constants.UN_SAVED_MODEL, nodeId);
+//        if(model == null){
+//            throw new NullPointerException("Model Not found");
+//        }
+//        ModelVersion modelVersion = (ModelVersion) RedisUtils.getFromMap(Constants.MODEL_VERSION, model.getNodeId());
+//        Map<String, Object> schema = new LinkedHashMap<>();
+//        schema.put("inputFields", model.getFeatures());
+//        schema.put("targetFields", model.getTarget());
+//        schema.put("outputFields", model.getOutputs());
+//        schema.put("versionInfo", modelVersion);
+//        result.setData(schema);
+//        return result;
+//    }
+//
+//    /**
+//     * 模型评估
+//     * @param accessToken
+//     * @param modelId
+//     * @param data
+//     * @param request
+//     * @return
+//     * @throws Exception
+//     */
+////    @RequiresPermissions("mse:single")
+//    @RequestMapping(value = "/{modelId}/", method = RequestMethod.POST)
+//    @ApiOperation(value = "模型评估", notes = "使用单条记录评估", position = 4)
+//    public Result scoring(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                          @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                          @ApiParam(name = "data", value = "评估数据") @RequestBody EvaluationRequest data,
+//                          HttpServletRequest request) throws Exception{
+//        Result result = new Result();
+//        EvaluationResponse evaluationResponse = modelService.doEvaluate(modelId, data);
+////        result.setData(JSON.toJSONString(evaluationResponse, SerializerFeature.UseSingleQuotes));
+//        result.setData(evaluationResponse);
+//        return result;
+//    }
+//
+//    /**
+//     * 批量评估
+//     * @param accessToken
+//     * @param modelId
+//     * @param file
+//     * @param delimiter
+//     * @param quote
+//     * @param charset
+//     * @param request
+//     * @return
+//     * @throws Exception
+//     */
+//    @RequiresPermissions("mse:csv")
+//    @RequestMapping(value = "/{modelId}/csv", method = RequestMethod.POST, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
+//    @ApiOperation(value = "模型评估(CSV)", notes = "批量评估", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, position = 5)
+//    public ResponseEntity<byte[]> scoring(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                                  @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                                  @ApiParam(value = "预测数据文件", required = true) @RequestBody MultipartFile file,
+//                                  @ApiParam(value = "列分隔符", required = true, defaultValue = ",") @RequestParam("delimiter") String delimiter,
+//                                  @ApiParam(value = "引号字符", required = true, defaultValue = "\"") @RequestParam("quote") String quote,
+//                                  @ApiParam(value = "文件编码", required = true, defaultValue = "UTF-8") @RequestParam("charset") String charset,
+//                                  HttpServletRequest request) throws Exception{
+//        Result result = new Result();
+//
+//        byte[] bytes = modelService.doEvaluateCsv(modelId, delimiter, quote, charset, file.getInputStream());
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//        String originalFilename = StringKit.split(file.getOriginalFilename(), ".")[0];
+//        headers.setContentDispositionFormData("attachment", URLEncoder.encode(originalFilename+"_scoring.csv", charset));
+//        headers.setContentLength(bytes.length);
+//        headers.set("Content-Disposition", "attachment;filename=" + URLEncoder.encode(originalFilename+"_scoring.csv", charset));
+//        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
+//    }
+//
+//    /**
+//     * 模型评估
+//     * @param accessToken
+//     * @param modelId
+//     * @param dataSource
+//     * @param request
+//     * @return
+//     * @throws Exception
+//     */
+//    @RequiresPermissions("mse:RDBMS")
+//    @RequestMapping(value = "/{modelId}/RDBMS", method = RequestMethod.POST)
+//    @ApiOperation(value = "模型评估(RDBMS)", notes = "批量评估", position = 6)
+//    public Result scoring(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                          @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                          @ApiParam(value = "数据库连接信息", name = "dataSource", required = true) @RequestBody RestfulDataSource dataSource,
+//                          HttpServletRequest request) throws Exception{
+//        Result result = new Result();
+//        DbUtils.validURL(dataSource.getUrl());
+//        DbUtils.testConnection(dataSource.getUrl(), dataSource.getUser(), dataSource.getPassword());
+//        modelService.doEvaluateRDBMS(modelId, dataSource);
+//        result.setData("评估任务创建成功");
+//        return result;
+//    }
+//
+//    @RequiresPermissions("model:undeploy")
+//    @RequestMapping(value = "/{modeId}/undeploy", method = RequestMethod.DELETE)
+//    @ApiOperation(value = "卸载模型", position = 5)
+//    public Result delete(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                         @ApiParam(value = "模型Id", required = true) @PathVariable(name = "modeId") Long modeId,
+//                         HttpServletRequest request) throws IllegalAccessException {
+//        Result result = new Result();
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//        modelService.deleteModel(modeId, tokenModel.getUserId());
+//        result.setMessage("卸载成功");
+//        return result;
+//    }
+//
+//    @RequiresPermissions("model:share")
+//    @RequestMapping(value = "/{modelId}/share", method = RequestMethod.POST)
+//    @ApiOperation(value = "分享模型", position = 6)
+//    public Result shareModel(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                             @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                             @ApiParam(value = "分享的目标用户", allowMultiple = true, required = true)@RequestParam Long[] users) {
+//        Result result = new Result();
+//
+//        if(!ArrayUtils.isEmpty(users)){
+//            modelService.shareModel(modelId, users);
+//            result.setMessage("模型分享成功");
+//            return result;
+//        }
+//        result.setMessage("分享的用户不能为空");
+//        result.setStatus(Result.Status.FAIL);
+//        return result;
+//    }
+//
+//    @RequiresPermissions("model:validate")
+//    @RequestMapping(value = "/{modelId}/validate", method = RequestMethod.GET)
+//    @ApiOperation(value = "检验模型", notes = "验证模型文件是否存在，是否支持转换成PMML", position = 7)
+//    public Result beforeExport(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                               @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                               HttpServletRequest request) {
+//        Result result = new Result();
+//
+//        Model model = modelService.findOne(modelId);
+//        if(model == null){
+//            result.setMessage("模型不存在或已被删除");
+//            result.setStatus(Result.Status.FAIL);
+//            return result;
+//        }
+//        File modelFile = new File(RedisUtils.get(Constants.MODEL_DIR, String.class), model.getModelPath());
+//        if(!modelFile.exists()){
+//            result.setMessage("模型文件不存在");
+//            result.setStatus(Result.Status.FAIL);
+//            return result;
+//        }
+//        if(!model.getModelPath().endsWith(".pmml")){
+//            result.setMessage("该模型不支持转换成PMML文件");
+//            result.setStatus(Result.Status.FAIL);
+//            return result;
+//        }
+//        return result;
+//    }
+//
+//    @RequiresPermissions("model:pmml")
+//    @RequestMapping(value = "/{modelId}/pmml", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
+//    @ApiOperation(value = "模型导出", notes = "导出模型为PMML文件，导出前先调用validate验证模型", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, position = 8)
+//    public ResponseEntity<byte[]> export2PMML(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                                              @ApiParam(value = "模型ID", required = true)@PathVariable(name = "modelId") Long modelId,
+//                                              HttpServletRequest request) throws Exception {
+//
+//        Model model = modelService.findOne(modelId);
+//        File modelFile = new File(RedisUtils.get(Constants.MODEL_DIR, String.class), model.getModelPath());
+//
+//        byte[] bytes = FileUtils.readFileToByteArray(modelFile);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//        headers.setContentDispositionFormData("attachment", URLEncoder.encode(model.getModelName()+".pmml", com.tipdm.framework.common.Constants.CHARACTER));
+//        headers.setContentLength(bytes.length);
+//        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+//    }
+//
+//    @RequiresPermissions("model:import")
+//    @RequestMapping(value = "/import", method = RequestMethod.POST)
+//    @ApiOperation(value = "导入模型", notes = "支持导入PMML version 3.0+的分类/回归模型", position = 9)
+//    public Result importModel(@ApiParam(value = "用户访问令牌", required = true) @RequestParam("accessToken") String accessToken,
+//                              @ApiParam(value = "模型名称", required = true, name = "modelName") @RequestPart(required = false, name = "modelName") String modelName,
+//                              @ApiParam(value = "PMML文件", required = true) @RequestBody MultipartFile pmmlFile,
+//                              MultipartHttpServletRequest request) throws MissingServletRequestPartException {
+//
+//        Result result = new Result();
+//        if(StringKit.isNotBlank(request.getParameter("modelName"))){
+//            modelName = request.getParameter("modelName");
+//        } else {
+//            throw new MissingServletRequestPartException("Required request part 'modelName' is not present");
+//        }
+//
+//        TokenModel tokenModel = tokenManager.getPermissions(accessToken);
+//        String modelDir = RedisUtils.get(Constants.MODEL_DIR, String.class);
+//        String uuid = StringKit.replace(UUID.randomUUID().toString(), "-", "");
+//        String fileName =  uuid + ".pmml";
+//        File file = new File(modelDir, fileName);
+//        if(file.exists()){
+//            file.delete();
+//        }
+//
+//        PMML pmml = null;
+//        try {
+//            pmmlFile.transferTo(file);
+//            file.createNewFile();
+//            pmml = org.jpmml.model.PMMLUtil.unmarshal(new FileInputStream(file));
+//        } catch (Exception ex) {
+//            result.setStatus(Result.Status.FAIL);
+//            result.setMessage("文件解析出错，请确认上传的是合法的PMML文件");
+//            return result;
+//        }
+//        ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
+//        ModelEvaluator<?> modelEvaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+//        Map<String, List<Field>> schema = ModelUtil.encodeSchema(modelEvaluator);
+//
+//        Model model = new Model();
+//        model.setModelPath(fileName);
+//        model.setCreatorName(tokenModel.getUsername());
+//        model.setCreatorId(tokenModel.getUserId());
+//        model.setModelName(modelName);
+//        model.setParentId(0L);
+//        model.setFeatures(JSON.toJSONString(schema.get("activeFields")));
+//        model.setTarget(JSON.toJSONString(schema.get("targetFields")));
+//        model.setOutputs(JSON.toJSONString(schema.get("outputFields")));
+//        model.setNodeId(uuid);
+////        model.setAlgorithmName(pmml.getModels().get(0).getAlgorithmName());
+////        model.setAlgorithmName("test");
+//        Long id = null;
+//        try {
+//            id = modelService.deployModel(model);
+//            file.delete();
+//        } catch (IOException e) {
+//            logger.error("模型部署失败，错误信息：{}", e);
+//            result.setStatus(Result.Status.FAIL);
+//            result.setMessage("模型部署失败");
+//        }
+//        result.setData(id);
+//        return result;
+//    }
+//}

@@ -1,0 +1,20 @@
+package com.tipdm.framework.controller.dmserver.entity;
+
+import java.util.List;
+
+/**
+ * Created by zhoulong on 2016/12/21.
+ * E-mail:zhoulong8513@gmail.com
+ */
+public class DataColumnList {
+
+    List<DataColumn> columns;
+
+    public List<DataColumn> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<DataColumn> columns) {
+        this.columns = columns;
+    }
+}
