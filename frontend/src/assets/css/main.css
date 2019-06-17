@@ -1,0 +1,25 @@
+.fades-enter-active,.fades-leave-active{transition:opacity .5s}
+.fades-enter,.fades-leave-active{opacity:0}
+
+/* 可以设置不同的进入和离开动画 */
+/* 设置持续时间和动画函数 */
+.slide-fade-enter-active{transition:all .3s ease}
+.slide-fade-leave-active{transition:all .8s cubic-bezier(1,.5,.8,1)}
+.slide-fade-enter,.slide-fade-leave-active{padding-left:10px;opacity:0}
+
+.bounce-enter-active{animation:bounce-in .5s}
+.bounce-leave-active{animation:bounce-out .5s}
+
+@keyframes bounce-in{0%{transform:scale(0)}
+50%{transform:scale(1.5)}
+100%{transform:scale(1)}
+}
+@keyframes bounce-out{0%{transform:scale(1)}
+50%{transform:scale(1.5)}
+100%{transform:scale(0)}
+}
+.component-fade-enter-active,.component-fade-leave-active{transition:opacity .3s ease}
+.component-fade-enter,.component-fade-leave-active{opacity:0}
+.list-item{display:inline-block;margin-right:10px}
+.list-enter-active,.list-leave-active{transition:all 1s}
+.list-enter,.list-leave-active{opacity:0;transform:translateY(30px)}

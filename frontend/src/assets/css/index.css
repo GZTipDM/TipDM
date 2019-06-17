@@ -1,0 +1,36 @@
+@charset "utf-8";
+/* CSS Document */
+.indSubMenu{height:5rem;background:#fff;overflow:hidden}
+.indSubMenu li{display:inline-block;width:16.6%;height:5rem;overflow:hidden;font-size:1.2rem;text-align:center;float:left}
+.indSubMenu li img{display:inline-block;margin:.7rem auto .3rem;height:2.2rem}
+.indSubMenu li span{display:block;text-align:center;height:1.2rem}
+
+/*  */
+.indBlock{background:#fff;padding:0 12px}
+.indBlock .hd{height:4.2rem;border-bottom:1px solid #eee;line-height:4.2rem}
+.indBlock .hd h3{font-weight:700;font-size:1.6rem}
+.indBlock .hd h3 a{color:#444}
+.indBlock .hd .more{float:right;font-size:1.4rem;color:#ddb172;padding-right:1.6rem;background:url(images/ar.svg) no-repeat right 1.4rem/auto 1.5rem}
+.indBlock .bd{padding-bottom:.3rem;overflow:hidden}
+
+#pxrz .bd{padding:.8rem 0 1.3rem}
+#cpfw{position:relative}
+#cpfw .bd{padding-bottom:1.3rem}
+#cpfw .cpli{position:absolute;top:1.7rem;left:38%}
+.cpli li{float:left;width:8px;height:8px;overflow:hidden;background:#ccc;border-radius:50%;white-space:nowrap;text-indent:10px;margin:0 2px}
+.cpli .cur{background-color:#666}
+
+.cpFouce{border:1px solid #eee;border-width:0 1px 1px;height:17.5rem;overflow:hidden;position:relative}
+.cpSwipe{overflow:hidden;position:relative}
+.cpList{overflow:hidden;position:relative;height:20rem}
+.cpList li{float:left;position:relative;height:16rem;overflow:hidden}
+.cpList li .cp-title{border-bottom:1px solid #eee;height:4.4rem;line-height:4.4rem;overflow:hidden;font-size:1.6rem;color:#fb9708;margin:0 12px}
+.cpList li .cp-title .tit{float:left;width:72%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600}
+.cpList li .cp-title .buy{float:right;font-size:1.2rem;height:2rem;border:1px solid #fb9708;font-weight:600;border-radius:1rem;display:inline-block;padding:0 .85rem;line-height:2rem;margin-top:1.2rem}
+.cpList li .cp-imgdes{padding:1.4rem 12px}
+.cpList li .cp-imgdes .cp-img{float:left;width:25%;height:10rem;overflow:hidden;border-radius:6px;text-align:center;background-repeat:no-repeat;background-size:auto 100%;background-position:0 50%}
+.cpList li .cp-imgdes .cp-des{margin-left:25%;padding-left:1.5rem;color:#7c7c7c;height:10rem;overflow:hidden;font-size:1.4rem;line-height:1.4;text-overflow:ellipsis}
+
+.bgLine{width:98.5%;height:2px;background:#eee;margin:0 auto}
+.bgLine2{width:97.5%}
+.bgLine3{width:96.5%;height:1px}

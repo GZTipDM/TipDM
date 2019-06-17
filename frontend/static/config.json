@@ -1,0 +1,10 @@
+{
+    "httpServer": "http://localhost:8088/dmserver",
+    "httpOauth": "http://localhost:8082/oauth",
+    "httpClient": "http://localhost:8089",
+    "socketServer": "localhost",
+    "socketPort": 9020,
+    "title": "数据挖掘建模平台",
+    "databaseUploadFileSize": 10,
+    "mode": "online"
+}

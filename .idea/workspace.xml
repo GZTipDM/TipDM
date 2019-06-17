@@ -1,448 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="60637fc5-6c14-4fc1-bf01-8924385cf84e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/lib/datax-common-0.0.1-SNAPSHOT.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/lib/datax-core-0.0.1-SNAPSHOT.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/lib/feature-stats-1.0.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/lib/icb-utils.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-700.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-700.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-700.woff2" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-regular.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-regular.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-regular.woff2" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/Swagger_explorer.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/Swagger_explorer_min.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/explorer_icons.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/favicon-16x16.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/favicon-32x32.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/favicon.ico" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/json_editor_integration.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/logo_small.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/pet_store_api.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/senodio.old.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/senodio.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/throbber.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/images/wordnik_api.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/target/classes/com/tipdm/auth/Application.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/target/classes/com/tipdm/auth/AuthorizeController.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/README.md" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/.settings/org.eclipse.core.resources.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/.settings/org.eclipse.jdt.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/.settings/org.eclipse.m2e.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/framework-common.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/Constants.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/LinkedProperties.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/Result.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/base/BaseController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/base/DateEditor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/base/DefaultJsonDeserializer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/base/DefaultJsonSerializer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/base/ObjectMapperFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/controller/base/StringEditor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/exception/UncheckedExceptionhandler.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/spring/ApplicationContextInitializer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/spring/SpringCacheManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/token/TokenManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/token/impl/RedisTokenManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/token/model/TokenModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/CronExpressionKit.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/DateKit.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/FileKit.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/PropertiesUtil.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/RedisUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/SerializationKit.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/Servlets.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/SpringUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/StringKit.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/main/java/com/tipdm/framework/common/utils/WebUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-common/src/test/java/com/tipdm/framework/common/AppTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/.settings/org.eclipse.core.resources.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/.settings/org.eclipse.jdt.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/.settings/org.eclipse.m2e.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/framework-model.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/IdEntity.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/OAuthClient.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/Organization.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/Resource.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/ResourceScope.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/Role.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/User.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/main/java/com/tipdm/framework/model/oauth/UserResource.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-model/src/test/java/com/tipdm/framework/model/AppTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/.settings/org.eclipse.core.resources.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/.settings/org.eclipse.jdt.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/.settings/org.eclipse.m2e.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/framework-persist.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/BaseRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/DataSourceConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/DynamicDataSource.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/Hibernates.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/NamedParameterStatement.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/ResultSetAsInputStream.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/RowToByteArrayConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datasource/ThreadPoolConf.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datatype/JsonType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datatype/StringArrayType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/datatype/TextType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/dialect/DmPostgreSQL94Dialect.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/jdbc/DriverShim.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/jdbc/DynamicLoadDriver.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-persist/src/main/java/com/tipdm/framework/persist/transform/AliasToEntityLinkedMapResultTransformer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/.settings/org.eclipse.core.resources.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/.settings/org.eclipse.jdt.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/.settings/org.eclipse.m2e.core.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/.settings/org.eclipse.wst.common.component" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/.settings/org.eclipse.wst.common.project.facet.core.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/.settings/org.eclipse.wst.validation.prefs" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/framework-service.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/src/main/java/com/tipdm/framework/service/AbstractBaseServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/framework-service/src/main/java/com/tipdm/framework/service/BaseService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/ExceptionHandlerController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/BannerController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/ComponentController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/DataSourceController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/FileManagerController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/MSEController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/ProjectController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/SequenceController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/TemplateController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/TokenController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/UserController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Category.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Component.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/DataColumn.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/DataColumnList.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Doc.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Element.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Input.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/KeyValue.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Model.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Output.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Project.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/ProjectShareInfo.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/RestfulDataSource.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/SearchParam.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Tab.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Table.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/TreeNode.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/UploadInfo.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/Widget.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/datasource/Audience.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/datasource/Connection.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/datasource/Flat.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/datasource/HDFS.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/datasource/RDBMS.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/uda/Input.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/uda/Output.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/uda/Param.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/controller/dmserver/dto/uda/UDAComponent.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/config/InitSystemConstListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/config/SpringBean.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/IAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/log/EndTagConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/log/LogAppender.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/log/StartTagConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/model/ModelLoader.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/AbstractAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/AbstractPythonAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/CommonAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/DummyAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/dataexplore/OverView.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/evaluate/PythonEvaluator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/executor/AlgorithmExecutor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/executor/ExecutorContext.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/executor/PyExecutor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/interpreter/PythonInterpreter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/io/Input.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/io/Output.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/listener/AlgorithmListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/listener/PyAlgorithmListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/predict/Predictor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/preprocessing/AlterColumn.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/preprocessing/GenerateAttr.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/preprocessing/Selection.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/special/CustomPyScript.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/algo/unparallel/sql/SQLExecutor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/AtomicEnum.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/Command.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/Dependency.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/Edge.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/JobContext.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/JobProvider.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/SpringBeanJobFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/State.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/WorkFlow.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/WorkFlowDexecutor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/WorkFlowHandler.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/WorkFlowScheduler.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/job/LogCleanJobBean.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/job/WorkFlowJobBean.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/listener/SchedulerListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/listener/WorkFlowJobListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/model/IO.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/model/Job.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/model/Link.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/core/scheduling/model/Node.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/AlgorithmException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/ConnectionException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/DuplicateException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/ElementNotFoundException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/FileUploadException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/IllegalOperationException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/exception/PythonInterpreterException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/interceptor/RateLimitInterceptor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/interceptor/model/URLLimitMapping.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/mse/ModelUtil.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/mse/ModelVersion.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/pyserve/PySession.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/pyserve/PySessionFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/pyserve/PySessionPool.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/pyserve/PySftpProgressMonitor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/redis/DataTableExpiredDelegate.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/redis/MessageDelegate.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/rpc/MessageManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/shiro/filter/BearerTokenAuthenticatingFilter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/shiro/filter/CORSFilter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/shiro/mgt/BearerTokenSubjectFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/shiro/realm/BearerTokenRealm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/shiro/token/BearerAuthenticationToken.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/Base62.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/CommonUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/Constants.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/DBUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/GlobalSeqGenerator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/IpUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/PagerKit.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/utils/RedissonUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/websocket/SocketServer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/websocket/dto/Category.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/websocket/dto/Message.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/websocket/dto/ModelMessage.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/websocket/dto/Type.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/dmserver/websocket/dto/WorkFlowMessage.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/launch/Bootstrap.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/launch/ServerConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Audience.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Component.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/ComponentExtra.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/ComponentIO.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Cron.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/DBConnection.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/DataSchema.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/DataTable.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/DataType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/DependentMode.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Document.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Element.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/ElementTab.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Model.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/ModelTree.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/PreViewMode.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Project.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/ShareType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Step.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Template.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/model/dmserver/Widget.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/AudienceRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/ComponentRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/DBConnectionRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/DataSchemaRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/DataTableRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/DocumentRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/ElementRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/ModelRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/ModelTreeRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/ProjectRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/TemplateRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/WidgetRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/AudienceRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/ComponentRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/DBConnectionRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/DataSchemaRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/DataTableRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/DocumentRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/ElementRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/ModelRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/ModelTreeRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/ProjectRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/TemplateRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/repository/dmserver/impl/WidgetRepositoryImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/ComponentService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/DataSchemaService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/DataTableService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/DocumentService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/MessageService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/ModelService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/ProjectService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/TemplateService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/UDAService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/ComponentServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/DataSchemaServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/DataTableServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/DocumentServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/MessageServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/ModelServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/ProjectServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/TemplateServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/com/tipdm/framework/service/dmserver/impl/UDAServiceImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/org/dmg/pmml/DataType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/org/dmg/pmml/Field.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/org/dmg/pmml/OpType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/java/org/springframework/scheduling/quartz/LocalTaskExecutorThreadPool.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/main.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/PyConnectionPool.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/README.md" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/algoconfig/algorithms.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-dmserver.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-pyserv.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-quartz.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-redis.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-repository.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-rpc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/applicationContext-websocket.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/datasource-config.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/dmserver-config.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/dmserver-ehcache.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/dmserver-mvc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/logback.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/script/python/db_utils.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/script/python/pyh.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/script/python/report_utils.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/spring-config-cache.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/spring-shiro-mvc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/spring-shiro-web.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sql/initData.sql" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sql/quartz_postgres.sql" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/bbsBanner.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/dataType-mapping.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/database.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/dbSupport.config" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/delimiter-mapping.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/docsBanner.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/pysession-pool.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/quartz.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/redis.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/resources/sysconfig/system.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/api-explorer.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/index.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/print.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/reset.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/screen.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/standalone.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/typography.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/css/zeroModal.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-700.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-700.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-regular.svg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/fonts/droid-sans-v6-latin-regular.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/index.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/backbone-min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/bootstrap.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/handlebars-2.0.0.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/highlight.7.3.pack.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/jquery-1.8.0.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/jquery.ba-bbq.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/jquery.cookie.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/jquery.slideto.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/jquery.wiggle.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/jsoneditor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/marked.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/swagger-oauth.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/underscore-min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/underscore-min.map" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/lib/zeroModal.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/o2c.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/api/swagger-ui.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/pages/401.jsp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/pages/403.jsp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/pages/404.jsp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/WEB-INF/web.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/main/webapp/index.jsp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/src/test/test.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdm-server/tipdm-dmserver.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend/tipdmframework-root.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/compiler.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_3.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_3.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_classmate_1_4_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_9_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_9_8.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_9_8.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jdk8_2_9_8.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_9_8.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_parameter_names_2_9_8.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__commons_codec_commons_codec_1_11.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_lettuce_lettuce_core_5_1_6_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_netty_netty_buffer_4_1_36_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_netty_netty_codec_4_1_36_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_netty_netty_common_4_1_36_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_netty_netty_handler_4_1_36_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_netty_netty_resolver_4_1_36_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_netty_netty_transport_4_1_36_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__io_projectreactor_reactor_core_3_2_9_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__javax_annotation_javax_annotation_api_1_3_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__javax_validation_validation_api_2_0_1_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_logging_log4j_log4j_api_2_11_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_logging_log4j_log4j_to_slf4j_2_11_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_oltu_oauth2_org_apache_oltu_oauth2_authzserver_1_0_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_oltu_oauth2_org_apache_oltu_oauth2_common_1_0_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_oltu_oauth2_org_apache_oltu_oauth2_resourceserver_1_0_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_core_9_0_19.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_el_9_0_19.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_websocket_9_0_19.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_hibernate_validator_hibernate_validator_6_0_16_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_3_2_Final.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_json_json_20140107.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_reactivestreams_reactive_streams_1_0_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_slf4j_jul_to_slf4j_1_7_26.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_26.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_autoconfigure_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_data_redis_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_json_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_logging_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_tomcat_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_web_2_1_5_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_data_spring_data_commons_2_1_8_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_data_spring_data_keyvalue_2_1_8_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_data_spring_data_redis_2_1_8_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_aop_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_beans_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_context_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_context_support_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_core_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_expression_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_jcl_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_oxm_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_tx_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_web_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_springframework_spring_webmvc_5_1_7_RELEASE.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/libraries/Maven__org_yaml_snakeyaml_1_23.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/.idea/workspace.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/mock-oauth-server.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/pom.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/src/main/java/com/tipdm/auth/Application.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/src/main/java/com/tipdm/auth/AuthorizeController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/src/main/resources/application.yml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mock-oauth-server/target/classes/application.yml" />
-    </list>
+    <list default="true" readonly="true" id="7c4d9580-53dc-4cbd-bc9f-98254adcf768" name="Default" comment="" />
+    <ignored path="tipdm-webapp.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -450,14 +14,20 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="tipdm-webapp" />
+  </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="tipdmframework-root.iml" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/tipdmframework-root.iml">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/webapp/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="180">
+              <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -465,12 +35,86 @@
       </file>
     </leaf>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>dealStatue</find>
+      <find>handlePreview</find>
+      <find>box-card</find>
+      <find>dateFormat</find>
+      <find>loadingInstance</find>
+      <find>view</find>
+      <find>handleSubmitSure</find>
+      <find>next</find>
+      <find>checkIfExistTable</find>
+      <find>addDatabaseTable</find>
+      <find>handleSubmitTest</find>
+      <find>push</find>
+      <find>handleReset</find>
+      <find>onload</find>
+      <find>login</find>
+      <find>checkToken</find>
+    </findStrings>
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
       <projects_view />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/components/main/main_left_menu/LeftMenuItem.vue" />
+        <option value="$PROJECT_DIR$/src/js/tip.js" />
+        <option value="$PROJECT_DIR$/src/App.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/database_list/ListItem.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/DatabaseList.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/database_list/list_item/DeleteDialog.vue" />
+        <option value="$PROJECT_DIR$/src/js/webupload/webuploader.js" />
+        <option value="$PROJECT_DIR$/src/js/upload.js" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/FileUpload.vue" />
+        <option value="$PROJECT_DIR$/src/main.js" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/file_upload/uploader/FileListItem.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/file_upload/Uploader.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MenuDatabase.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_database/DatabaseUpload.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/ProjectProps.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/ViewEditArea.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/project_menu/ProjectTree.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/ProjectMenu.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/project_menu/project_tree/ContentMenu.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/project_menu/project_tree/CreateProjectDialog.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_components/ComponentsTree.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MenuComponents.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_components/ComponentContentTabs.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_components/component_content_tabs/basic_field_param/AddFieldDialog.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_components/component_content_tabs/basic_field_param/TabPaneItem.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_components/component_content_tabs/BasicFieldParam.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_components/components_tree/ComponentsMenu.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MenuSetting.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MenuTask.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MenuProject.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/view_edit_area/WorkHeader.vue" />
+        <option value="$PROJECT_DIR$/webpack.config.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/view_edit_area/drag_component/RightMenuContent.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_main/FastCreatProjectDialog.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MenuMain.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/menu_project/project_menu/project_tree/CopyTemplateAsProject.vue" />
+        <option value="$PROJECT_DIR$/src/components/main/MainHeader.vue" />
+        <option value="$PROJECT_DIR$/src/vuex/routers.js" />
+        <option value="$PROJECT_DIR$/src/vuex/stores.js" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/menu_custom_algorithm/AlgorithmContentTabs.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/MenuCustomAlgorithm.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/config.json" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/Header.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/MenuDatabase.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/vuex/stores.js" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/DatabaseList.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/database_list/list_item/PreviewConnection.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/DatabaseUpload.vue" />
+        <option value="$PROJECT_DIR$/src/main/webapp/index.html" />
+      </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
@@ -479,29 +123,20 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="localRepository" value="$PROJECT_DIR$/../../../../Ext/maven/m2" />
-        <option name="mavenHome" value="$PROJECT_DIR$/../../../../Ext/maven" />
-        <option name="userSettingsFile" value="$PROJECT_DIR$/../../../../Ext/maven/conf/settings.xml" />
-      </MavenGeneralSettings>
-    </option>
-    <option name="importingSettings">
-      <MavenImportingSettings>
-        <option name="importAutomatically" value="true" />
-      </MavenImportingSettings>
-    </option>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
   </component>
-  <component name="MavenRunner">
-    <option name="jreName" value="1.8" />
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/src/main/webapp/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="823" />
+    <option name="height" value="824" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
@@ -517,27 +152,62 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane" />
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TipDM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TipDM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TipDM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TipDM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="preferences.externalDependencies" />
-    <property name="settings.editor.splitter.proportion" value="0.42089844" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="nodejs_interpreter_path" value="/usr/local/bin/node" />
-    <property name="node.js.selected.package.eslint" value="" />
-    <property name="node.js.path.for.package.standard" value="project" />
-    <property name="node.js.selected.package.standard" value="" />
-    <property name="node.js.path.for.package.jscs" value="project" />
-    <property name="node.js.selected.package.jscs" value="" />
-    <property name="project.structure.last.edited" value="Libraries" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="nodejs_interpreter_path" value="D:/Program Files/nodejs/node" />
+    <property name="js-jscs-nodeInterpreter" value="D:\Program Files\nodejs\node.exe" />
+    <property name="SearchEverywhereHistoryKey" value="right&#9;FILE&#9;file://D:/svn/TIPDM/tipdm-webapp/src/components/main/menu_project/view_edit_area/drag_component/RightMenuContent.vue" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="aspect.path.notification.shown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\svn\TIPDM\tipdm-webapp\src\components\main\menu_components" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\svn\TIPDM\tipdm-webapp\src\main\webapp\src\components\main\menu_custom_algorithm" />
+      <recent name="D:\svn\TIPDM\tipdm-webapp\src\css" />
+      <recent name="D:\svn\TIPDM\tipdm-webapp\src\components\main\menu_database\file_upload" />
+      <recent name="D:\svn\TIPDM\tipdm-webapp\src\resource" />
+      <recent name="D:\svn\TIPDM\tipdm-webapp\src\js" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -552,91 +222,23 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
-      <module name="" />
-      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
-      <option name="PROGRAM_PARAMETERS" />
-      <predefined_log_file id="idea.log" enabled="true" />
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <module />
-      <method />
-    </configuration>
-    <configuration default="true" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
       <envs />
       <method />
     </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run" />
+      <scripts />
+      <node-interpreter value="project" />
       <envs />
-      <patterns />
-      <method />
-    </configuration>
-    <configuration default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
-      <method />
-    </configuration>
-    <configuration default="true" type="TestNG" factoryName="TestNG">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="SUITE_NAME" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="GROUP_NAME" />
-      <option name="TEST_OBJECT" value="CLASS" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="OUTPUT_DIRECTORY" />
-      <option name="ANNOTATION_TYPE" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <option name="USE_DEFAULT_REPORTERS" value="false" />
-      <option name="PROPERTIES_FILE" />
-      <envs />
-      <properties />
-      <listeners />
       <method />
     </configuration>
   </component>
@@ -648,72 +250,245 @@
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>$USER_HOME$/.subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="$PROJECT_DIR$" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$/backend/tipdm-server" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="$PROJECT_DIR$" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$/backend/tipdm-server" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="60637fc5-6c14-4fc1-bf01-8924385cf84e" name="Default" comment="" />
-      <created>1560653471778</created>
+      <changelist id="7c4d9580-53dc-4cbd-bc9f-98254adcf768" name="Default" comment="" />
+      <created>1482205569809</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1560653471778</updated>
-      <workItem from="1560653473620" duration="17000" />
+      <updated>1482205569809</updated>
+      <workItem from="1482205571415" duration="30864000" />
+      <workItem from="1482478688766" duration="23758000" />
+      <workItem from="1482716170373" duration="20797000" />
+      <workItem from="1482887432240" duration="21498000" />
+      <workItem from="1483065355847" duration="2307000" />
+      <workItem from="1483406187717" duration="19023000" />
+      <workItem from="1483578645371" duration="42472000" />
+      <workItem from="1483923651712" duration="31982000" />
+      <workItem from="1484038696788" duration="48826000" />
+      <workItem from="1484537941523" duration="46778000" />
+      <workItem from="1484875307199" duration="6642000" />
+      <workItem from="1486170015252" duration="13855000" />
+      <workItem from="1486342597785" duration="20408000" />
+      <workItem from="1486527922307" duration="18614000" />
+      <workItem from="1486947589273" duration="17285000" />
+      <workItem from="1487032879353" duration="22621000" />
+      <workItem from="1487145435549" duration="6748000" />
+      <workItem from="1487294815679" duration="9395000" />
+      <workItem from="1487378491799" duration="8757000" />
+      <workItem from="1487554248553" duration="17257000" />
+      <workItem from="1488251222207" duration="4534000" />
+      <workItem from="1489715274857" duration="2652000" />
+      <workItem from="1489997648718" duration="26453000" />
+      <workItem from="1490335178416" duration="2621000" />
+      <workItem from="1490582009432" duration="5762000" />
+      <workItem from="1490665129649" duration="11270000" />
+      <workItem from="1490749256653" duration="15288000" />
+      <workItem from="1490924423976" duration="11079000" />
+      <workItem from="1491008605972" duration="6282000" />
+      <workItem from="1491353340991" duration="13125000" />
+      <workItem from="1491444093722" duration="306000" />
+      <workItem from="1491444438890" duration="12189000" />
+      <workItem from="1491787167576" duration="15662000" />
+      <workItem from="1502329026176" duration="80000" />
+      <workItem from="1509413021909" duration="126000" />
+      <workItem from="1509414383819" duration="14000" />
+      <workItem from="1509415155970" duration="1307000" />
+      <workItem from="1509417012198" duration="83000" />
+      <workItem from="1509417970125" duration="24000" />
+      <workItem from="1510627656178" duration="23315000" />
+      <workItem from="1511143373665" duration="64000" />
+      <workItem from="1512108840029" duration="8240000" />
+      <workItem from="1513667317651" duration="3735000" />
+      <workItem from="1560734241304" duration="27000" />
     </task>
+    <task id="LOCAL-00001">
+      <created>1487572135019</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1487572135019</updated>
+    </task>
+    <task id="LOCAL-00002" summary="链接信息预览">
+      <created>1510641193399</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1510641193399</updated>
+    </task>
+    <task id="LOCAL-00003" summary="分步骤上传数据源">
+      <created>1510651837667</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1510651837667</updated>
+    </task>
+    <task id="LOCAL-00004">
+      <created>1510652496179</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1510652496179</updated>
+    </task>
+    <task id="LOCAL-00005">
+      <created>1510653302193</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1510653302193</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="17000" />
+    <option name="totallyTimeSpent" value="594125000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="823" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="824" extended-state="6" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22366412" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="IvyIDEA" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3715084" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2639485" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="processedProjectFiles" value="true" />
   </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="链接信息预览" />
+    <MESSAGE value="分步骤上传数据源" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="38" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tipdmframework-root.iml">
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_components/component_content_tabs/BasicFieldParam.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_components/components_tree/ComponentsMenu.vue" />
+    <entry file="file://$PROJECT_DIR$/node_modules/webpack/lib/webpack.web.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/babel-core/lib/transformation/file/options/config.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/webpack/lib/webpack.js" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/MenuModel.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/MenuSetting.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/MenuTask.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_project/view_edit_area/WorkHeader.vue" />
+    <entry file="file://$PROJECT_DIR$/src/js/tip.js" />
+    <entry file="file://$PROJECT_DIR$/index.html" />
+    <entry file="file://$PROJECT_DIR$/src/components/MenuProject.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_project/view_edit_area/ProjectContentMsg.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/MenuProject.vue" />
+    <entry file="file://$PROJECT_DIR$/package.json" />
+    <entry file="file://$PROJECT_DIR$/webpack.config.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/pdfjs-dist/package.json" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_project/view_edit_area/drag_component/RightMenuContent.vue" />
+    <entry file="file://$PROJECT_DIR$/node_modules/pdfjs-dist/README.md" />
+    <entry file="file://$PROJECT_DIR$/node_modules/vue2-ace-editor/index.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/vue2-ace-editor/package.json" />
+    <entry file="file://$PROJECT_DIR$/node_modules/pdfjs-dist/build/pdf.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/sockjs-client/lib/entry.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/vue/package.json" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_main/FastCreatProjectDialog.vue" />
+    <entry file="file://$PROJECT_DIR$/src/App.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_components/component_content_tabs/basic_field_param/AddFieldDialog.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/MenuMain.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_project/project_menu/project_tree/CopyTemplateAsProject.vue" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/menu_components/component_content_tabs/basic_field_param/TabPaneItem.vue" />
+    <entry file="file://$PROJECT_DIR$/node_modules/reconnecting-websocket/dist/index.js" />
+    <entry file="file://$PROJECT_DIR$/src/components/main/MainHeader.vue" />
+    <entry file="file://$PROJECT_DIR$/src/vuex/stores.js" />
+    <entry file="file://$PROJECT_DIR$/src/vuex/routers.js" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/menu_custom_algorithm/TestScriptDialog.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/MenuCustomAlgorithm.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/Header.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/menu_custom_algorithm/AlgorithmContentTabs.vue" />
+    <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="72">
+          <caret line="6" column="36" lean-forward="true" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/database_list/list_item/PreviewDialog.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/DatabaseList.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/database_list/list_item/PreviewConnection.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/MenuDatabase.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/config.json" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/menu_database/DatabaseUpload.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/main.html" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/webpack.config.js" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/MainContent.vue" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/vuex/stores.js" />
+    <entry file="file://$PROJECT_DIR$/src/main/webapp/src/components/main/MenuComponents.vue" />
   </component>
 </project>

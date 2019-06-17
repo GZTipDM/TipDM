@@ -1,0 +1,25 @@
+@charset "utf-8";
+/* */
+.subTree .el-tree{background:none;border:none;-moz-user-select:none;-khtml-user-select:none;user-select:none}
+/**/
+.inContent .el-tabs{height:calc(100% - 55px)}
+.inContent .el-tabs .el-tabs__header{margin-bottom:0}
+.inContent .el-tabs .el-tabs__content{height:calc(100% - 82px);overflow-y:auto;padding:25px 0 15px}
+.inContent .el-tabs .el-tabs__content .el-tabs__content{padding:25px 0 15px}
+.inContent .el-tabs--card .el-tabs__item.is-active{color:#fc9901}
+.inContent .el-tabs--card .el-tabs--card .el-tabs__item{border:0;border-radius:0;margin-right:10px}
+.inContent .el-tabs--card .el-tabs--card .el-tabs__item.is-active{border:0;position:relative;color:#fc9901}
+.inContent .el-tabs--card .el-tabs--card .is-active:before{content:"";width:100%;height:2px;position:absolute;left:0;bottom:0;background:#fc9901}
+.inContent .el-tabs--card .el-tabs--card .el-tabs__item.is-active.is-closable{padding:0 10px}
+.inContent .el-form .el-input__inner:focus,.inContent .el-form .el-textarea__inner:focus{border-color:#20a0ff}
+
+.el-table__body tr.hover-row td{background-color:#f5f7fa!important}
+.footBtn{text-align:center;padding:15px 0; margin:0 15px; border-top:1px solid #ccc;}
+
+.addP,.addP:focus,.addP:hover{display:block;height:26px;border:1px solid #dcdcdc;border-radius:15px;font-weight:700;color:#a0a0a0;text-align:center;line-height:27px;text-align:left;text-indent:20px;cursor:default;background:#f6c67b;border-color:#f6c67b;color:#9b5e00;width:100%;padding:0}
+.addP i{float:right;font-size:18px;margin:4px 5px 0 0}
+.sideTree .btn_add{font-size:18px;position:absolute;right:8px;top:4px;color:#9b5e00;cursor:pointer;padding:0;margin:0}
+#treeSor .addP{height:18px;line-height:18px;right:6px;text-align:center;top:5px;width:18px}
+#treeSor .addP i{margin:0}
+
+#gc .el-loading-mask{background:rgba(0, 0, 0, 0.05);border-radius:15px}

@@ -1,0 +1,71 @@
+@charset "utf-8";
+/* CSS Document */
+.homeMain{padding:0px 10px;height:100%}
+/* 论坛入门*/
+.tBlock{border:0;border-radius:0;background:0 0!important;box-shadow:none!important;overflow:visible}
+.tBlock .el-card__header{height:46px;line-height:48px;padding:0 10px 0 15px;border:none!important}
+.tBlock .el-card__header .moreA{float:right;color:#999;line-height:48px;padding:0;font-size:21px;color:#999}
+.tBlock .el-card__header h3{font-size:17px}
+.tBlock .el-card__header h3 a{color:#fc9901}
+.tBlock .el-card__header h3 a i{font-size:21px;margin-right:8px}
+.tBlock .el-card__header .search{float:right;display:inline-block;width:auto;margin-right:-5px}
+.tBlock .el-card__header .search .el-input__inner{border-width:0 0 1px 0;background:0 0;border-radius:0;width:13em;padding:3px 35px 3px 6px;white-space:nowrap;text-overflow:ellipsis;height:32px;line-height:32px;transition:all .4s ease-in-out 0s}
+.tBlock .el-card__header .search .el-input__inner:focus{/*min-width:28em;*/width:28em}
+.tBlock .el-card__header .search .el-icon-search{font-size:22px;color:#999;cursor:pointer}
+.tBlock .el-card__header .search:focus .el-icon-search{color:#20a0ff}
+.tBlock .el-card__body{padding:18px 10px;border:1px solid #d8d8d8;border-bottom:2px solid #fc9901;background:#fff;box-shadow:0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);position:relative;height:16px}
+.tBlock .el-card__body .moreA{height:21px;font-size:21px;color:#999;line-height:21px;float:right}
+.tBlock .el-card__body .moreA:hover,.tBlock .el-card__header .moreA:hover{color:#333}
+.oLink li{display:inline-block}
+.oLink li a{display:inline-block;position:relative;padding-left:15px;margin:0 15px 0 10px}
+.oLink li a:before{content:"";width:5px;height:5px;background:#999;position:absolute;left:0;top:8px}
+.oLink li a:hover{color:#fc9901}
+
+#rm .el-card__header h3 a{color:#090}
+#rm .el-card__header h3 a i{font-size:19px}
+#rm .el-card__body{border-bottom-color:#090}
+#rm .oLink li a:hover{color:#090}
+
+/* 示例*/
+#sl{margin-top:30px}
+#sl .el-card__header h3 a{color:#02428b}
+#sl .el-card__body{padding:10px 0 18px;border-bottom:0;background:0 0;box-shadow:none;border:0}
+
+.addProject{text-align:center;display:table;width:100%;height:250px;border:1px solid #d8d8d8;box-shadow:0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);background:rgba(255,255,255,.2);overflow:hidden}
+.addProject .apCom{vertical-align:middle;display:table-cell}
+.addProject i{display:block;font-size:40px;color:#b2b9bc}
+.addProject span{display:block;color:#b2b9bc;padding-top:8px}
+.addProject:hover{background:#fff;transform:scale(1.1)}
+.addProject:hover i{color:#408fcc}
+.addProject:hover span{color:#408fcc}
+.addProject:hover .apCom{-webkit-animation-name:fadeInUps;animation-name:fadeInUps;-webkit-animation-duration:.3s;animation-duration:.3s}
+
+.pList .el-col{ padding:0 15px!important }
+.pList .pListLi{margin-bottom:30px;height:250px;position:relative;border:1px solid #d8d8d8;display:block;box-shadow:0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);background:#fff;overflow:hidden}
+.pList .pListLi .id{display:inline-block;height:26px;line-height:26px;padding:0 15px 0 10px;background:#fff0d9;color:#bf7400;border-radius:0 13px 13px 0;margin-top:11px;overflow:hidden}
+.pList .pListLi .id i{color:#fc9901;margin-right:6px}
+.pList .pListLi .title{margin:12px 15px;line-height:22px;height:44px;overflow:hidden}
+.pList .pListLi .desc{margin:0 15px;font-size:12px;color:#acacac;line-height:18px;font-family:SimSun;height:54px;overflow:hidden}
+.pList .pListLi .author{color:#666;margin:15px 15px 0}
+.pList .pListLi .sort{margin:15px 15px 0;height:24px;line-height:24px;overflow:hidden;background:#408fcc;text-align:center;color:#fff;position:relative}
+.pList .pListLi .sort:before{content:"";width:0;height:0;position:absolute;border-top:12px solid #fff;border-right:12px solid transparent;left:0;top:0}
+.pList .pListLi .sort:after{content:"";width:0;height:0;position:absolute;border-bottom:12px solid #fff;border-right:12px solid transparent;left:0;bottom:0}
+.pList .pListLi .sort span{display:block;position:relative;height:24px}
+.pList .pListLi .sort span:before{content:"";width:0;height:0;position:absolute;border-top:12px solid #fff;border-left:12px solid transparent;right:0;top:0}
+.pList .pListLi .sort span:after{content:"";width:0;height:0;position:absolute;right:0;bottom:0;border-bottom:12px solid #fff;border-left:12px solid transparent}
+.pList .pListLi:hover{transform:scale(1.1)}
+.pList .pListLi:hover .title{color:#408fcc}
+.pList .pListLi .close{position:absolute;right:10px;top:10px;z-index:1;display:none}
+.pList .pListLi .close i{font-size:16px}
+.pList .pListLi .copy{height:100%;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,.9);display:none;text-align:center;line-height:250px;text-align:center;vertical-align:middle}
+.pList .pListLi .copy span{display:inline-block;color:#408fcc;padding:5px 12px;height:24px;line-height:24px;margin-top:45%}
+.pList .pListLi .copy span i{display:block;font-size:36px;margin-bottom:6px}
+.pList .pListLi:hover .copy span{-webkit-animation-name:fadeInUps;animation-name:fadeInUps;-webkit-animation-duration:.3s;animation-duration:.3s}
+.pList .pListLi:hover .close,.pList .pListLi:hover .copy{display:block}
+.moreList{width:100%;text-align:center;padding-bottom:15px;margin-top:-20px;position:relative;overflow:hidden}
+.moreList a{color:#ccc;display:block;position:relative}
+.moreList a i{font-size:40px;font-weight:400}
+.moreList:hover a{color:#fc9901;-webkit-animation-name:bounceIn;animation-name:bounceIn}
+
+/*分页*/
+.pagesize{position:relative;text-align:center}

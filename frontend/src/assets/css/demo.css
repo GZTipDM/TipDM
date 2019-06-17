@@ -1,0 +1,52 @@
+.dustbin{
+	width:100%;
+	height:600px;
+	border:1px solid gray;
+}
+.dragbox{
+	width:initial;
+	height:600px;
+	border:1px solid red;
+
+}
+.draglist{
+	/*width:100%;*/
+	height:30px;
+	line-height:30px;
+	text-align:center;
+	border:1px solid pink;
+}
+.showDom{
+	border:1px solid red;
+	position:absolute;
+	line-height: 30px;
+	text-align: center;
+}
+.single_data{
+	border:1px solid red;
+	height:600px;
+	width:200px;
+	float:left;
+}
+
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.node {
+    font: 12px sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+
+.test {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}

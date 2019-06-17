@@ -1,0 +1,26 @@
+@charset "utf-8";
+/* */
+.topForm{text-align:center;position:relative;vertical-align:middle;padding-top:8px}
+.topForm .tfCell{display:inline-block;padding:0 0 15px 10px}
+.tfCell label.tit{display:inline-block;height:36px;line-height:36px;float:left}
+.tfCell .cell-input{display:inline-block;float:left}
+.tfCell button,.tfCell input{border-radius:0}
+.el-dialog input{border-radius:0}
+.el-dialog__header{padding:15px 0!important;background:#20a0ff;text-align:center}
+.el-dialog__header .el-dialog__title{color:#fff;font-weight:400;border-radius:2px 2px 0 0}
+.el-dialog__headerbtn i{color:#a1ceef}
+.el-dialog__headerbtn i:hover{color:#fff}
+.el-dialog__body{padding:15px 20px 15px;overflow-y:auto}
+.el-dialog__footer{padding:15px 20px;border-top:1px solid #ccc}
+
+/* 表格 */
+.tipTable{width:100%}
+.tipTable td,.tipTable th{border:1px solid #e0e6ed;text-align:center;padding:7px 6px;background:#fff}
+.tipTable th{font-weight:700;background:#c6e2f2;white-space:nowrap;border-color:#b2d3e6}
+.tipTable tr:nth-child(2n+1) td{background:#f9f9f9}
+.tipTable tr:hover td{background:#e7f3fb}
+.tipTable .funBtn a,.tipTable .funBtn button{cursor:pointer;margin:0 8px}
+.tipTable .funBtn a i,.tipTable .funBtn button i{font-size:18px;color:#666}
+.tipTable .funBtn a:hover i,.tipTable .funBtn button:hover i{color:#f60}
+
+.pagesize{text-align:center;padding-top:1em}
