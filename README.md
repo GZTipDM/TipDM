@@ -21,6 +21,10 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 8. 提供完善的交流社区，提供数据挖掘相关的学习资源（数据、代码和模型等）。
 
 # Screenshot #
+![输入图片说明](https://gitee.com/guangzhou_TipDM_intelligence_devp/TipDM/blob/master/screenshots/1.jpg "在这里输入图片标题")
+![输入图片说明](https://gitee.com/guangzhou_TipDM_intelligence_devp/TipDM/blob/master/screenshots/2.jpg "在这里输入图片标题")
+![输入图片说明](https://gitee.com/guangzhou_TipDM_intelligence_devp/TipDM/blob/master/screenshots/3.jpg "在这里输入图片标题")
+![输入图片说明](https://gitee.com/guangzhou_TipDM_intelligence_devp/TipDM/blob/master/screenshots/4.jpg "在这里输入图片标题")
 
 # Development #
 ## 环境依赖 ##
