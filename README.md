@@ -64,17 +64,17 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 ##### 数据初始化 #####
 首先在本机上要有PostgreSQL服务，使它监听127.0.0.1的5432端口（默认安装和初始化的PostgreSQL即监听127.0.0.1的5432端口），然后使用PG的管理员身份(一般是初始化PG数据库的linux账号,这里是postgres账户)，运行$TipDM_HOME/WEB-INF/classes/sql/目录下的.sql脚本，初始化元数据：
 
-    psql -h 127.0.0.1 -p 5432 -U postgres tipdm_DB -f initData.sql
-    psql -h 127.0.0.1 -p 5432 -U postgres tipdm_DB -f quartz_postgres.sql
+    psql -h 127.0.0.1 -p 5432 -U postgres -d tipdm_DB -f initData.sql
+    psql -h 127.0.0.1 -p 5432 -U postgres -d tipdm_DB -f quartz_postgres.sql
 
 ##### 系统配置 #####
 配置文件说明：
 
-	sysconfig/database.properties		数据库配置文件
+	sysconfig/database.properties			数据库配置文件
 	sysconfig/dbSupport.config			在此配置系统可支持的数据库类型
 	sysconfig/system.properties			系统的相关配置
 	sysconfig/redis.properties			Redis
-	PyConnection.xml					Python服务(该文件在sysconfig目录的上层)
+	PyConnection.xml				Python服务(该文件在sysconfig目录的上层)
     
 ##### 启动 #####
 以IDEA为例，右击“src/main/java/com/tipdm/framework/launch/Bootstrap”，点击“Run 'Bootstrap.main()' ”启动项目。
