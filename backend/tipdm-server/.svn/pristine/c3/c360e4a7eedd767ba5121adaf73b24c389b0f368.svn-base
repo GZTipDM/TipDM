@@ -1,9 +1,0 @@
-package com.tipdm.framework.model.dmserver;
-
-/**
- * Created by zhoulong on 2018/1/9.
- * E-mail:zhoulong8513@gmail.com
- */
-public enum PreViewMode {
-    ONLY100,PAGEABLE
-}

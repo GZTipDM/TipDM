@@ -1,8 +1,0 @@
-#db.url=jdbc:postgresql://192.168.0.17:5432/tipdm_DB
-#db.url=jdbc:postgresql://localhost:5432/tipdm_DB
-#db.url=jdbc:postgresql://192.168.0.55:5432/tipdm_base
-db.url=jdbc:postgresql://192.168.0.10:5432/database
-db.driver=org.postgresql.Driver
-#db.driver=com.mysql.jdbc.Driver
-db.user=postgres
-db.password=root

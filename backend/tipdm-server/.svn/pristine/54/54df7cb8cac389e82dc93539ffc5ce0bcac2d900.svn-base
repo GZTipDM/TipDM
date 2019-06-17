@@ -1,9 +1,0 @@
-package com.tipdm.framework.dmserver.core.task.schedule;
-public enum TaskState {
-    INIT,
-    RUNNING,
-    COMPLETE,
-    ERROR,
-    END,
-    DELETE;
-}

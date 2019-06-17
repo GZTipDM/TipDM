@@ -1,5 +1,0 @@
-#alias
-PUBLICALIAS=publiccert
-#access password
-STOREPWD = abc123
-SUBJECT=TipDMLicense

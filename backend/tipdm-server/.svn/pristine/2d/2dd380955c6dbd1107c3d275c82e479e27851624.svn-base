@@ -1,9 +1,0 @@
-#\u8FFD\u52A0\u914D\u7F6E\u6587\u4EF6\u914D\u7F6E\u683C\u5F0F:\u7F16\u8BD1\u540E\u7684classpth\u76EE\u5F55\u540D+\u6587\u4EF6\u540D
-Rserver=sysconfig/rserver.properties
-系统算法列表=uiconfig/algorithms.properties
-hive=sysconfig/hive.properties
-redis=sysconfig/redis.properties
-\u9996\u9875\u793E\u533A=sysconfig/bbsBanner.properties
-\u9996\u9875\u5165\u95E8=sysconfig/docsBanner.properties
-spark=sysconfig/spark.properties
-#zeppelin=sysconfig/zeppelin.properties

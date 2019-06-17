@@ -1,5 +1,0 @@
-/*初始化系统数据*/
-INSERT INTO sys_user(create_time, creator_id, creator_name, last_login_time, locked,
-            login_time, password, salt, user_alias, username)
-    VALUES (2017-01-03 10:57:29.627, NULL, NULL, NULL, FALSE,
-            NULL, '125bf771d128db7c50d73ece0a02897a', '656ba66115696c8bb80f52a7261b6c4f', '系统管理员', 'admin');

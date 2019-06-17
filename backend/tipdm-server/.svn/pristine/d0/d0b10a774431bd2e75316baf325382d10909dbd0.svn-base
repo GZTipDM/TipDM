@@ -1,8 +1,0 @@
-#部署系统需要注意的事项
-
-1、Rserve服务器配置：
-   编辑classes/RConnectionPool.xml，在RConfiguration下新增一个RServer标签，设置相关属性即可。可同时配置多个RServer服务，系统启动时会根据连接池
-   的大小/RServer服务的数量的均值来创建连接。
-
-2、模型预测：
-    对R语言模型采用RDBMS方式预测时，需要先将数据库驱动拷贝到$R_HOME/TipDM/drivers目录下
