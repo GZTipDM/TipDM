@@ -1,4 +1,4 @@
-# Before starting you must start the forntend and mock-oauth-server
+# Before starting you must start the backend and mock-oauth-server
 
 # tipdm-webapp
 
