@@ -70,19 +70,11 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 ##### 系统配置 #####
 配置文件说明：
 
-<<<<<<< HEAD
 	sysconfig/database.properties			数据库配置文件
 	sysconfig/dbSupport.config			在此配置系统可支持的数据库类型
 	sysconfig/system.properties			系统的相关配置
 	sysconfig/redis.properties			Redis
 	PyConnection.xml				Python服务(该文件在sysconfig目录的上层)
-=======
-	sysconfig/database.properties		数据库配置文件
-	sysconfig/dbSupport.config			在此配置系统可支持的数据库类型
-	sysconfig/system.properties			系统的相关配置
-	sysconfig/redis.properties			Redis
-	PyConnection.xml					Python服务(该文件在sysconfig目录的上层)
->>>>>>> eed45922302a4e0a10282e901a143e073603576e
     
 ##### 启动 #####
 以IDEA为例，右击“src/main/java/com/tipdm/framework/launch/Bootstrap”，点击“Run 'Bootstrap.main()' ”启动项目。
@@ -102,8 +94,3 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 
 # FAQ #
 [http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98](http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
-<<<<<<< HEAD
- 
-=======
- 
->>>>>>> eed45922302a4e0a10282e901a143e073603576e
