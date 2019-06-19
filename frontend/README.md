@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
-# Before starting you must start the forntend and mock-oauth-server
+# Before starting you must start the backend and mock-oauth-server
 
->>>>>>> eed45922302a4e0a10282e901a143e073603576e
 # tipdm-webapp
 
 > rebuilder tipdm-webapp structure project 
@@ -13,11 +10,7 @@
 # install dependencies
 npm install
 
-<<<<<<< HEAD
-# serve with hot reload at localhost:8080
-=======
 # serve with hot reload at localhost:8089
->>>>>>> eed45922302a4e0a10282e901a143e073603576e
 npm run dev
 
 # build for production with minification
