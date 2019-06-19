@@ -37,7 +37,6 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 
 ### 安装Java开发环境 ###
 下载JDK 1.8.x和Apache-Maven并安装，设置JAVA_HOME和PATH环境变量，如添加以下到~/.bashrc中（不同的操作系统，环境变量的设置方式有所不同，请根据自己的情况设置环境变量）： 
- 
     echo 'export JAVA_HOME=~/jdk_1.8.0_171' >> ~/.bashrc  
     echo 'export PATH=$JAVA_HOME/bin:~/apache-maven-3.3.9/bin:$PATH' >> ~/.bashrc
     . ~/.bashrc
@@ -70,19 +69,12 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 ##### 系统配置 #####
 配置文件说明：
 
-<<<<<<< HEAD
-	sysconfig/database.properties			数据库配置文件
-	sysconfig/dbSupport.config			在此配置系统可支持的数据库类型
-	sysconfig/system.properties			系统的相关配置
-	sysconfig/redis.properties			Redis
-	PyConnection.xml				Python服务(该文件在sysconfig目录的上层)
-=======
+
 	sysconfig/database.properties		数据库配置文件
 	sysconfig/dbSupport.config			在此配置系统可支持的数据库类型
 	sysconfig/system.properties			系统的相关配置
 	sysconfig/redis.properties			Redis
 	PyConnection.xml					Python服务(该文件在sysconfig目录的上层)
->>>>>>> eed45922302a4e0a10282e901a143e073603576e
     
 ##### 启动 #####
 以IDEA为例，右击“src/main/java/com/tipdm/framework/launch/Bootstrap”，点击“Run 'Bootstrap.main()' ”启动项目。
@@ -102,8 +94,3 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 
 # FAQ #
 [http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98](http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
-<<<<<<< HEAD
- 
-=======
- 
->>>>>>> eed45922302a4e0a10282e901a143e073603576e
