@@ -74,8 +74,8 @@
       //单点登录
       this.onload();
       if(isDev) {
-        localStorage.accessToken = "3dae0a32-cd86-433d-9593-aeb890701423";
-        this.checkToken();
+        this.applyAccessToken();
+//        this.checkToken();
       }
     },
     mounted() {
@@ -93,6 +93,35 @@
       setInterval(this.gbAnimate(), 100);
     },
     methods: {
+      applyAccessToken() {
+        if (!localStorage.getItem("accessToken")) {//判断本地accessToken是否存在，不存在
+          var code = this.getParameter("code");//从网址栏获取返回的code
+          if (code != null) {//地址栏存在code，进入
+            var url = this.httpOauth + "/accessToken";
+            var httpClient = this.$store.state.global.httpClient;
+            var that = this;
+            this.$.ajax({
+              url: url,
+              type: "POST",
+              dataType: "json",
+              data: {
+                grant_type: "authorization_code",
+                client_id: that.clientId,
+                client_secret: that.clientSecret,
+                code: code,
+                redirect_uri: httpClient
+              },
+              success: function (data) {
+//                data = JSON.parse(data.replace(/&quot;/g,"\""));
+                localStorage.setItem("accessToken", data.access_token);
+                location.href = httpClient + "/home/main";
+              }
+            });
+          }
+        } else {//本地accessToken已存在,校验时效性
+          this.checkToken();//校验token时效性，失效则重新授权
+        }
+      },
       onload() {
         var sessionId = this.getParameter("TIPDM_SESSIONID");
         if (sessionId) {
@@ -160,15 +189,12 @@
         return url.match(reg) && url.match(reg)[1];
       },
       login() {
-        if(isDev) {
+//        if(isDev) {
           location.href = this.httpOauth + "/authorize?client_id="+this.clientId+"&response_type=code&redirect_uri=" + this.$store.state.global.httpClient + "/login_banner";
-        } else if(!isDev) {
-          location.href = this.httpClient + "/authorize";
-        }
+//        } else if(!isDev) {
+//          location.href = this.httpClient + "/authorize";
+//        }
       },//登录，重新获取授权
-      register() {
-        location.href = this.httpOauth + "/prepareRegister";
-      },
       myBrowser() {
         var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
         var isOpera = userAgent.indexOf("Opera") > -1;
