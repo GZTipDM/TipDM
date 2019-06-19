@@ -3,14 +3,10 @@ package com.tipdm.framework.dmserver.config;
 import com.tipdm.framework.common.utils.PropertiesUtil;
 import com.tipdm.framework.common.utils.RedisUtils;
 import com.tipdm.framework.dmserver.utils.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import java.io.File;
-import java.util.EnumSet;
 import java.util.Map;
 
 /**
@@ -21,8 +17,6 @@ import java.util.Map;
 @WebListener
 public class InitSystemConstListener implements ServletContextListener {
 
-    private final static Logger logger = LoggerFactory.getLogger(InitSystemConstListener.class);
-
     private String doc;
 
     private String model;
@@ -31,14 +25,9 @@ public class InitSystemConstListener implements ServletContextListener {
 
     private String jar;
 
-    @Value("${ROOT_DIR}")
-    private String root;
-
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-
-        ServletContext servletContext = servletContextEvent.getServletContext();
 
         Map<String, String> map = PropertiesUtil.getProperties("sysconfig/system.properties");
 

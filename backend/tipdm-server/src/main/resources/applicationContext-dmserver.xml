@@ -11,7 +11,7 @@
 	default-lazy-init="true">
 
 	<!--定义服务层代码存放的包扫描路径 -->
-	<context:component-scan base-package="com.tipdm.framework.dmserver.config, com.tipdm.framework.service, com.tipdm.framework.dmserver.task, com.tipdm.framework.dmserver.websocket" />
+	<context:component-scan base-package="com.tipdm.framework.dmserver.config, com.tipdm.framework.service,  com.tipdm.framework.dmserver.websocket" />
 
 	<import resource="datasource-config.xml" />
 
@@ -24,7 +24,7 @@
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.hbm2ddl.auto">none</prop>
 				<!--<prop key="hibernate.dialect">com.tipdm.framework.persist.dialect.DmPostgreSQL94Dialect</prop>-->
 				<!--<prop key="hibernate.multiTenancy" >SCHEMA</prop>
 				<prop key="hibernate.tenant_identifier_resolver">com.tipdm.framework.multitenancy.SchemaResolver</prop>

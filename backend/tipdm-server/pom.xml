@@ -253,31 +253,6 @@
 			<version>1.0.5</version>
 		</dependency>
 
-		<!-- 内嵌tomcat容器 -->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-core</artifactId>
-			<version>${tomcat.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<version>${tomcat.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-websocket</artifactId>
-			<version>${tomcat.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<version>8.5.2</version>
-		</dependency>
-		<!-- tomcat end -->
-
 		<dependency>
 			<groupId>org.apache.geronimo.components</groupId>
 			<artifactId>geronimo-jaspi</artifactId>
