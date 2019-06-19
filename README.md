@@ -91,7 +91,7 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 表示编译成功，生成的二进制包在$HOME/target/目录中。 
 
 ##### 部署 #####
-[IntelliJ IDEA – Run / debug web application on Tomcat](https://www.mkyong.com/intellij/intellij-idea-run-debug-web-application-on-tomcat/)
+部署详情参考[IntelliJ IDEA – Run / debug web application on Tomcat](https://www.mkyong.com/intellij/intellij-idea-run-debug-web-application-on-tomcat/)
 
 # FAQ #
 [http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98](http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
