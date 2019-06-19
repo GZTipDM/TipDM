@@ -69,7 +69,6 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 ##### 系统配置 #####
 配置文件说明：
 
-
 	sysconfig/database.properties		数据库配置文件
 	sysconfig/dbSupport.config			在此配置系统可支持的数据库类型
 	sysconfig/system.properties			系统的相关配置

@@ -73,10 +73,10 @@
       }
       //单点登录
       this.onload();
-      if(isDev) {
+      // if(isDev) {
         this.applyAccessToken();
-//        this.checkToken();
-      }
+      //  this.checkToken();
+      // }
     },
     mounted() {
       this.$('body').addClass('loaded');
