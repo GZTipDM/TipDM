@@ -34,6 +34,7 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 - [PostgreSQL 9.4.x及以上版本](http://www.postgresql.org/download/)
 - [Python 3.6.x版本及以上版本](https://www.python.org/)
 - [Redis 3.2.x及以上版本](https://redis.io/)
+- [Alibaba DataX](https://github.com/alibaba/DataX)
 - IntelliJ Idea IDE(可选，您也可以使用其他IDE，如eclipse、NetBeans)，安装详情可参考[IntelliJ安装教程](https://www.jetbrains.com/help/idea/installing-and-launching.html)
 
 ### 安装Java开发环境 ###
