@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by zhoulong on 2017/5/9.
  */
 @Service("dataSchemaService")
-public class DataSchemaServiceImpl implements DataSchemaService{
+public class DataSchemaServiceImpl implements DataSchemaService {
 
     @Autowired
     private DataSchemaRepository repository;
@@ -25,23 +25,28 @@ public class DataSchemaServiceImpl implements DataSchemaService{
     @Transactional
     @Override
     public void createSchema(String schema) {
-        Integer count = repository.existsSchema(schema);
+        boolean existsSchema = repository.existsSchema(schema) > 0;
+        boolean existsUser = repository.existsUser(schema) > 0;
         DataSchema dataSchema = repository.findByName(schema);
-        if(count == 0) {
+        if (!existsSchema) {
             //生成随机密码
             String password = RandomStringUtils.randomAlphabetic(8);
             repository.createSchema(schema, password);
-            if(dataSchema == null) {
+            if (dataSchema == null) {
                 DataSchema newSchema = new DataSchema(schema, password);
                 repository.save(newSchema);
             } else {
                 dataSchema.setPassword(password);
             }
         } else {
-            if(dataSchema == null) {
+            if (dataSchema == null) {
                 String password = RandomStringUtils.randomAlphabetic(8);
                 DataSchema newSchema = new DataSchema(schema, password);
                 repository.save(newSchema);
+            } else {
+                if (!existsUser) {
+                    repository.updateSchema(dataSchema.getName(), dataSchema.getPassword());
+                }
             }
         }
     }

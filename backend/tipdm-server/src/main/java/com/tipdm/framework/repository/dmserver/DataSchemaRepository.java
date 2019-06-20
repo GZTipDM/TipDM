@@ -23,9 +23,20 @@ public interface DataSchemaRepository extends BaseRepository<DataSchema, Long> {
     @Query(value = "SELECT count(schema_name) FROM information_schema.schemata where schema_name = ?1", nativeQuery = true)
     public Integer existsSchema(String schemaName);
 
+
+    @Query(value = "SELECT count(rolname) FROM pg_roles WHERE rolname = ?1", nativeQuery = true)
+    public Integer existsUser(String username);
+
     /**
      * 新建schema
      * @param schema
      */
     public void createSchema(String schema, String password);
+
+    /**
+     * 更新schema
+     * @param schema
+     * @param password
+     */
+    public void updateSchema(String schema, String password);
 }
