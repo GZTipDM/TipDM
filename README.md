@@ -30,6 +30,7 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 ## 环境依赖 ##
 - [Oracle JDK 1.8.x及以上版本](http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html)，安装详情可参考[JDK安装教程](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 - [Apache-Maven 3.x及以上版本](http://maven.apache.org)，安装详情可参考[Maven安装教程](https://maven.apache.org/install.html)
+- [Apache-Tomcat 8.x及以上版本](http://tomcat.apache.org)
 - [PostgreSQL 9.4.x及以上版本](http://www.postgresql.org/download/)
 - [Python 3.6.x版本及以上版本](https://www.python.org/)
 - [Redis 3.2.x及以上版本](https://redis.io/)
@@ -74,9 +75,7 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 	sysconfig/system.properties			系统的相关配置
 	sysconfig/redis.properties			Redis
 	PyConnection.xml				Python服务(该文件在sysconfig目录的上层)
-    
-##### 启动 #####
-以IDEA为例，右击“src/main/java/com/tipdm/framework/launch/Bootstrap”，点击“Run 'Bootstrap.main()' ”启动项目。
+
 ##### 编译 #####
 	cd进入到源码根目录，使用maven进行编译即可，源码结构如下：
 	framework-common		公共模块
@@ -90,6 +89,9 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 > Total time: ...  
 
 表示编译成功，生成的二进制包在$HOME/target/目录中。 
+
+##### 部署 #####
+部署详情参考[IntelliJ IDEA – Run / debug web application on Tomcat](https://www.mkyong.com/intellij/intellij-idea-run-debug-web-application-on-tomcat/)
 
 # FAQ #
 [http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98](http://python.tipdm.org/bzzx/index.jhtml?n=%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
