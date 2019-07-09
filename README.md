@@ -11,7 +11,7 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 [社区交流](http://bbs.tipdm.org)
 
 # Features #
-1. 基于Python引擎，用于数据挖掘建模。
+1. 基于Python，用于数据挖掘建模。
 2. 使用直观的拖放式图形界面构建数据挖掘工作流程，无需编程。
 3. 支持多种数据源，包括CSV文件和关系型数据库。
 4. 支持挖掘流程每个节点的结果在线预览。
@@ -54,6 +54,35 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 ### 安装Python ###
 
    下载Python 3.6.x，并完成环境变量的配置。
+   
+   required library:
+   
+   	arch==4.3.1
+	docx==0.2.4
+	gensim==3.6.0
+	graphviz==0.10.1
+	jieba==0.38
+	jieba-fast==0.53
+	Keras==2.2.4
+	matplotlib==2.2.0
+	numpy==1.16.3
+	pandas==0.23.4
+	pdfminer3k==1.3.1
+	pyclust==0.2.0
+	pydot==1.2.4
+	python-docx==0.8.10
+	scikit-learn==0.19.1
+	scipy==0.19.1
+	SQLAlchemy==1.2.0
+	statsmodels==0.9.0
+	tensorflow==1.12.0
+	thulac==0.2.0
+	wordcloud==1.5.0
+	
+####批量安装依赖库
+将上面的内容粘贴至requirements.txt（**可随意命名**），进入命令行，CD到requirements.txt所在的目录下，执行命令：
+
+	pip install -r requirements.txt
    	
 ### 安装PostgreSQL ###
   
