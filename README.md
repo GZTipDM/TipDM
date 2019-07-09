@@ -79,7 +79,7 @@ TipDM建模平台，是由广州泰迪智能科技公司研发并开源的数据
 	thulac==0.2.0
 	wordcloud==1.5.0
 	
-####批量安装依赖库
+#### 批量安装依赖库 ####
 将上面的内容粘贴至requirements.txt（**可随意命名**），进入命令行，CD到requirements.txt所在的目录下，执行命令：
 
 	pip install -r requirements.txt
