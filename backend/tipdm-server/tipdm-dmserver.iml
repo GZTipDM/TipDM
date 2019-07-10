@@ -84,12 +84,6 @@
     <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.54" level="project" />
     <orderEntry type="library" name="Maven: com.samskivert:jmustache:1.13" level="project" />
     <orderEntry type="library" name="Maven: com.github.drinkjava2:jdialects:1.0.5" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:8.5.20" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-jasper:8.5.20" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:8.5.20" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jdt:ecj:3.12.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-websocket:8.5.20" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.components:geronimo-jaspi:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jaspic_1.0_spec:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xbean:xbean-reflect:3.6" level="project" />
