@@ -5,11 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tipdm.framework.common.utils.StringKit;
 import com.tipdm.framework.dmserver.mse.ModelVersion;
 import com.tipdm.framework.model.IdEntity;
-import com.tipdm.framework.persist.datatype.JsonType;
-import com.tipdm.framework.persist.datatype.TextType;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.dmg.pmml.Field;
 
 import javax.persistence.*;
@@ -22,7 +18,6 @@ import java.util.List;
  */
 @Entity
 @Table(name = "dm_algorithm_model", uniqueConstraints = {@UniqueConstraint(columnNames = {"node_id", "model_version"})})
-@TypeDefs( {@TypeDef( name= "json", typeClass = JsonType.class), @TypeDef( name= "text", typeClass = TextType.class)})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Model extends IdEntity<Long>{
 

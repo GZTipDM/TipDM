@@ -3,11 +3,7 @@ package com.tipdm.framework.model.oauth;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tipdm.framework.model.IdEntity;
-import com.tipdm.framework.persist.datatype.JsonType;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-import org.hibernate.type.TextType;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -15,7 +11,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sys_organization", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "parent_id"}))
-@TypeDefs( {@TypeDef( name= "json", typeClass = JsonType.class), @TypeDef( name= "text", typeClass = TextType.class)})
 @JsonIgnoreProperties(value = {"users" })
 public class Organization extends IdEntity<Long> {
 	

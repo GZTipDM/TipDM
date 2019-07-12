@@ -1,10 +1,6 @@
 package com.tipdm.framework.model.dmserver;
 
-import com.tipdm.framework.persist.datatype.JsonType;
-import com.tipdm.framework.persist.datatype.TextType;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -16,7 +12,6 @@ import java.io.Serializable;
  * E-mail:devp@tipdm.com
  */
 @Embeddable
-@TypeDefs( {@TypeDef( name= "json", typeClass = JsonType.class), @TypeDef( name= "text", typeClass = TextType.class)})
 public class ComponentExtra implements Serializable{
 
     private static final long serialVersionUID = -8500579512357397082L;

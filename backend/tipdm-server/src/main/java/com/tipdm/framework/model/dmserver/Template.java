@@ -2,11 +2,7 @@ package com.tipdm.framework.model.dmserver;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tipdm.framework.model.IdEntity;
-import com.tipdm.framework.persist.datatype.JsonType;
-import com.tipdm.framework.persist.datatype.TextType;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -19,7 +15,6 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "dm_template")
-@TypeDefs( {@TypeDef( name= "json", typeClass = JsonType.class), @TypeDef( name= "text", typeClass = TextType.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Template extends IdEntity<Long> {
 

@@ -1,6 +1,10 @@
 package com.tipdm.framework.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tipdm.framework.common.hibernate.datatype.JsonType;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import org.hibernate.type.TextType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,6 +20,7 @@ import java.util.Date;
  */
 // JPA 基类的标识
 @MappedSuperclass
+@TypeDefs( {@TypeDef( name= "json", typeClass = JsonType.class), @TypeDef( name= "text", typeClass = TextType.class)})
 public abstract class IdEntity<PK extends Serializable> implements Serializable {
 
 	@Id

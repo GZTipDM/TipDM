@@ -3,11 +3,7 @@ package com.tipdm.framework.model.dmserver;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tipdm.framework.common.utils.StringKit;
 import com.tipdm.framework.model.IdEntity;
-import com.tipdm.framework.persist.datatype.JsonType;
-import com.tipdm.framework.persist.datatype.TextType;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.Where;
 import org.slf4j.helpers.MessageFormatter;
 
@@ -21,7 +17,6 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dm_component", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "parent_id", "creator_id", "in_built"})})
-@TypeDefs( {@TypeDef( name= "json", typeClass = JsonType.class), @TypeDef( name= "text", typeClass = TextType.class)})
 public class Component extends IdEntity<Long> {
 
     private static final long serialVersionUID = 6220545749518371134L;

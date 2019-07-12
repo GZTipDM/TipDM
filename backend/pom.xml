@@ -10,9 +10,9 @@
 
 	<modules>
 		<module>framework-common</module>
+		<module>framework-model</module>
 		<module>framework-persist</module>
 		<module>framework-service</module>
-		<module>framework-model</module>
 		<module>tipdm-server</module>
 
     </modules>

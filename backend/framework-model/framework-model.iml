@@ -15,10 +15,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="framework-persist" />
     <orderEntry type="module" module-name="framework-common" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jdbc:8.0.32" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-juli:8.0.32" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-entitymanager:5.1.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.3.0.Final" level="project" />

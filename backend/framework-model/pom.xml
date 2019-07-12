@@ -3,13 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<dependencies>
-		<dependency>
-			<groupId>com.tipdm</groupId>
-			<artifactId>framework-persist</artifactId>
-			<version>1.0</version>
-		</dependency>
-	</dependencies>
+
 	<parent>
 		<groupId>com.tipdm</groupId>
 		<artifactId>tipdmframework-root</artifactId>
@@ -24,4 +18,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.tipdm</groupId>
+			<artifactId>framework-common</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
 </project>
