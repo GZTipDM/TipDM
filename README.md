@@ -65,7 +65,7 @@ TipDM建模平台，是由广州泰迪智能科技股份有限公司研发并开
 	jieba-fast==0.53
 	Keras==2.2.4
 	matplotlib==2.2.0
-	numpy==1.16.3
+	numpy==1.14.2
 	pandas==0.23.4
 	pdfminer3k==1.3.1
 	pyclust==0.2.0
