@@ -13,12 +13,10 @@ import com.tipdm.framework.model.dmserver.ComponentExtra;
 import com.tipdm.framework.model.dmserver.ComponentIO;
 import com.tipdm.framework.model.dmserver.Widget;
 import com.tipdm.framework.service.dmserver.ComponentService;
-//import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+//import io.swagger.annotations.*;
 
 /**
  * Created by TipDM on 2017/1/3.
@@ -159,25 +159,7 @@ public class ComponentController extends BaseController {
                          HttpServletResponse response) throws Exception {
 
         Result result = new Result();
-        Component com = componentService.findOne(componentId);//查询，先获取com.getSequence()
-        if (com == null) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
-            throw new ElementNotFoundException("组件不存在");
-        }
-        List<Component> child = componentService.findChild(com.getParentId(), com.getCreatorId());//根据父节点的ID，获取该父节点下所有子节点
-        Integer sequence = com.getSequence();
-        sequence = sequence == null ? 0 : sequence;
-        if (sequence == child.size() - 1) {//已是最底下不需要更新
-        } else {
-            Integer number = sequence + 1;//删除一个，从下一个排序的数据开始更新所有sequence
-            for (int i = number; i < child.size(); i++) {
-                Component component = child.get(i);
-                Integer seq = component.getSequence();
-                seq = seq == null ? 0 : seq - 1;
-                component.setSequence(seq);
-                componentService.update(component.getId(), component);
-            }
-        }
+
         componentService.delete(componentId);
 
         result.setMessage("组件删除成功");
@@ -219,19 +201,6 @@ public class ComponentController extends BaseController {
                             /*@ApiParam(required = true)*/ @PathVariable(name = "catId") Long catId) throws Exception {
 
         Result result = new Result();
-
-        Component com = componentService.findOne(catId);//查询，先获取com.getSequence()
-        List<Component> child = componentService.findChild(com.getParentId(), com.getCreatorId());//根据父节点的ID，获取该父节点下所有子节点
-        Integer sequence = com.getSequence();
-        if (sequence == child.size() - 1) {//已是最底下不需要更新
-        } else {
-            Integer number = sequence + 1;//删除一个，从下一个排序的数据开始更新所有sequence
-            for (int i = number; i < child.size(); i++) {
-                Component comList = child.get(i);
-                comList.setSequence(comList.getSequence() - 1);
-                componentService.update(comList.getId(), comList);
-            }
-        }
 
         componentService.delete(catId);
         result.setMessage("组件分类删除成功");
