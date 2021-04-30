@@ -20,7 +20,7 @@
 	<properties>
 
         <!-- 主要依赖库的版本定义 -->
-		<spring.version>4.3.4.RELEASE</spring.version>
+		<spring.version>4.3.29.RELEASE</spring.version>
 		<hibernate.version>5.1.0.Final</hibernate.version>
 		<spring-data-jpa.version>1.6.0.RELEASE</spring-data-jpa.version>
 		<tomcat-jdbc.version>8.0.32</tomcat-jdbc.version>
