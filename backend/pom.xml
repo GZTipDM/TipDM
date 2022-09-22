@@ -42,7 +42,7 @@
 		<jetty.version>8.1.16.v20140903</jetty.version>
 		<h2.version>1.4.192</h2.version>
 		<quartz.version>2.2.1</quartz.version>
-		<postgresql.version>9.4.1211</postgresql.version>
+		<postgresql.version>42.3.7</postgresql.version>
 		<spring-data-redis.version>1.6.2.RELEASE</spring-data-redis.version>
 		<redis.version>2.9.0</redis.version>
 		<druid.version>1.1.6</druid.version>
